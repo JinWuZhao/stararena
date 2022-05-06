@@ -1,0 +1,13 @@
+[bilidanmu]
+room_id = 23891811
+
+[sc2client]
+red_player = 3
+blue_player = 4
+game_map = "Custom/StarArena.SC2Map"
+
+[msq]
+cmd_queue_cap = 100
+
+[state]
+player_cap = 20
