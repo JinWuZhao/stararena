@@ -5,9 +5,13 @@ room_id = 23891811
 red_player = 3
 blue_player = 4
 game_map = "Custom/StarArena.SC2Map"
+director_name = "GM"
+audience_name = "SYSTEM"
 
 [msq]
 cmd_queue_cap = 100
+msg_queue_cap = 100
 
 [state]
 player_cap = 20
+join_cap = 100

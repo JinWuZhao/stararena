@@ -193,27 +193,27 @@ func (c *ChangeModeCmd) String() string {
 	return fmt.Sprintf("cmd-set-behavior-mode %s %s", c.player, c.mode)
 }
 
-type ChangeUnitCmd struct {
+type CreateUnitCmd struct {
 	sc2PlayerId uint32
 	player      string
 	unit        string
 }
 
-func (*ChangeUnitCmd) New(...any) Command {
-	return new(ChangeUnitCmd)
+func (*CreateUnitCmd) New(...any) Command {
+	return new(CreateUnitCmd)
 }
 
-func (*ChangeUnitCmd) Name() string {
-	return "CHANGE_UNIT"
+func (*CreateUnitCmd) Name() string {
+	return "CREATE_UNIT"
 }
 
-func (c *ChangeUnitCmd) Parser(ast *parsec.AST) parsec.Parser {
+func (c *CreateUnitCmd) Parser(ast *parsec.AST) parsec.Parser {
 	return ast.And(c.Name(), nil,
 		parsec.AtomExact(`u`, "OP"),
 		parsec.Token(`[a-zA-Z0-9-]{1,64}`, "UNIT"))
 }
 
-func (c *ChangeUnitCmd) Init(ctx Context, query parsec.Queryable) error {
+func (c *CreateUnitCmd) Init(ctx Context, query parsec.Queryable) error {
 	unitName := query.GetChildren()[1].GetValue()
 	unit, ok := unitDataAcc[unitName]
 	if !ok {
@@ -225,13 +225,16 @@ func (c *ChangeUnitCmd) Init(ctx Context, query parsec.Queryable) error {
 	if ctx.Points-unit.Points < 0 {
 		return fmt.Errorf("not enough score: %d, need: %d", ctx.Points, unit.Points)
 	}
+	if ctx.Unit != "" {
+		return fmt.Errorf("unit exists: %s", ctx.Unit)
+	}
 	c.unit = unit.Name
 	c.player = ctx.Player
 	c.sc2PlayerId = ctx.SC2PlayerId
 	return nil
 }
 
-func (c *ChangeUnitCmd) String() string {
+func (c *CreateUnitCmd) String() string {
 	return fmt.Sprintf("cmd-create-%s %d %s", c.unit, c.sc2PlayerId, c.player)
 }
 

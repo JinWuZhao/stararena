@@ -1,39 +1,37 @@
 package msq
 
-import "github.com/jinwuzhao/stararena/command"
-
-type CommandQueue struct {
-	ch chan command.Command
+type Queue[T any] struct {
+	ch chan T
 }
 
-func NewCommandQueue(cap int) *CommandQueue {
-	return &CommandQueue{
-		ch: make(chan command.Command, cap),
+func NewQueue[T any](cap int) *Queue[T] {
+	return &Queue[T]{
+		ch: make(chan T, cap),
 	}
 }
 
-func (m *CommandQueue) Push(cmd command.Command) bool {
+func (m *Queue[T]) Push(data T) bool {
 	select {
-	case m.ch <- cmd:
+	case m.ch <- data:
 		return true
 	default:
 		return false
 	}
 }
 
-func (m *CommandQueue) Pop() (command.Command, bool) {
+func (m *Queue[T]) Pop() (T, bool) {
 	select {
-	case cmd := <-m.ch:
-		return cmd, true
+	case data := <-m.ch:
+		return data, true
 	default:
 		return nil, false
 	}
 }
 
-func (m *CommandQueue) PushChan() chan<- command.Command {
+func (m *Queue[T]) PushChan() chan<- T {
 	return m.ch
 }
 
-func (m *CommandQueue) PopChan() <-chan command.Command {
+func (m *Queue[T]) PopChan() <-chan T {
 	return m.ch
 }

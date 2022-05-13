@@ -3,7 +3,7 @@ package command
 import "github.com/jinwuzhao/stararena/data"
 
 var cmdCtors = []commandConstructor{
-	makeCmdCtor[*ChangeUnitCmd](),
+	makeCmdCtor[*CreateUnitCmd](),
 	makeCmdCtor[*IssueSkillCmd](),
 	makeCmdCtor[*MoveCmd](),
 	makeCmdCtor[*MoveXCmd](),

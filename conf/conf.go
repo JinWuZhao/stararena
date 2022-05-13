@@ -11,17 +11,21 @@ type BiliDanMu struct {
 }
 
 type SC2Client struct {
-	RedPlayer  uint32 `toml:"red_player"`
-	BluePlayer uint32 `toml:"blue_player"`
-	GameMap    string `toml:"game_map"`
+	RedPlayer    uint32 `toml:"red_player"`
+	BluePlayer   uint32 `toml:"blue_player"`
+	GameMap      string `toml:"game_map"`
+	DirectorName string `toml:"director_name"`
+	AudienceName string `toml:"audience_name"`
 }
 
 type Msq struct {
 	CmdQueueCap int `toml:"cmd_queue_cap"`
+	MsgQueueCap int `toml:"msg_queue_cap"`
 }
 
 type State struct {
 	PlayerCap int `toml:"player_cap"`
+	JoinCap   int `toml:"join_cap"`
 }
 
 type Conf struct {

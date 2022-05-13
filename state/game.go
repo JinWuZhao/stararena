@@ -21,14 +21,16 @@ type Game struct {
 	playerCap int
 	players   map[string]*Player
 	joinQueue chan *Player
+	joinSet   map[string]struct{}
 	m         sync.RWMutex
 }
 
-func NewGame(playerCap int) *Game {
+func NewGame(playerCap int, joinCap int) *Game {
 	return &Game{
 		playerCap: playerCap,
 		players:   make(map[string]*Player, playerCap),
-		joinQueue: make(chan *Player, playerCap),
+		joinQueue: make(chan *Player, joinCap),
+		joinSet:   make(map[string]struct{}),
 	}
 }
 
@@ -41,6 +43,14 @@ func (m *Game) GetProgress() GameProgress {
 }
 
 func (m *Game) Join(player *Player) bool {
+	m.m.Lock()
+	if _, ok := m.joinSet[player.GetName()]; ok {
+		m.m.Unlock()
+		return false
+	}
+	m.joinSet[player.GetName()] = struct{}{}
+	m.m.Unlock()
+
 	select {
 	case m.joinQueue <- player:
 		return true
@@ -62,6 +72,7 @@ joinLoop:
 		case player := <-m.joinQueue:
 			m.m.Lock()
 			m.players[player.GetName()] = player
+			delete(m.players, player.GetName())
 			m.m.Unlock()
 		default:
 			break joinLoop

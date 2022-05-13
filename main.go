@@ -10,6 +10,7 @@ import (
 	"github.com/JinWuZhao/sc2client"
 	"github.com/JinWuZhao/sc2client/sc2proto"
 
+	"github.com/jinwuzhao/stararena/command"
 	"github.com/jinwuzhao/stararena/conf"
 	"github.com/jinwuzhao/stararena/control"
 	"github.com/jinwuzhao/stararena/game"
@@ -26,18 +27,21 @@ func main() {
 		return
 	}
 
-	cmdQueue := msq.NewCommandQueue(cfg.CmdQueueCap)
-	gameState := state.NewGame(cfg.PlayerCap)
+	cmdQueue := msq.NewQueue[command.Command](cfg.CmdQueueCap)
+	msgQueue := msq.NewQueue[string](cfg.MsgQueueCap)
+	gameState := state.NewGame(cfg.PlayerCap, cfg.JoinCap)
 	director := game.NewDirector(&game.Services{
 		CmdQueue:  cmdQueue,
 		GameState: gameState,
 	})
+	audience := game.NewAudience(msgQueue)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)
 	defer cancel()
 
 	controller, err := control.NewController(cfg, &control.Services{
 		CmdQueue:  cmdQueue,
+		MsgQueue:  msgQueue,
 		GameState: gameState,
 	})
 	if err != nil {
@@ -68,6 +72,7 @@ func main() {
 				Name:       "Audience",
 				Difficulty: sc2proto.Difficulty_Easy,
 				AIBuild:    sc2proto.AIBuild_RandomBuild,
+				Agent:      audience,
 			}},
 		true)
 	if err != nil {

@@ -14,14 +14,14 @@ import (
 )
 
 type Services struct {
-	CmdQueue  *msq.CommandQueue
+	CmdQueue  *msq.Queue[command.Command]
 	GameState *state.Game
 }
 
 type Director struct {
 	playerId  uint32
 	sc2rpc    *sc2client.RpcClient
-	cmdQueue  *msq.CommandQueue
+	cmdQueue  *msq.Queue[command.Command]
 	gameState *state.Game
 }
 
@@ -75,7 +75,7 @@ cmdLoop:
 		Actions: sc2Actions,
 	})
 	if err != nil {
-		log.Println("m.sc2rpc.Action() error:", err)
+		log.Println("Director.OnStep(): m.sc2rpc.Action() error:", err)
 		return
 	}
 }
@@ -96,6 +96,7 @@ func (m *Director) handleCommand(cmd command.Command) *sc2proto.Action {
 	default:
 		return &sc2proto.Action{
 			ActionChat: &sc2proto.ActionChat{
+				Channel: sc2proto.ActionChat_Team.Enum(),
 				Message: proto.String(cmd.String()),
 			},
 		}

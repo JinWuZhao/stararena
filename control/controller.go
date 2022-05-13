@@ -14,14 +14,16 @@ import (
 )
 
 type Services struct {
-	CmdQueue  *msq.CommandQueue
+	CmdQueue  *msq.Queue[command.Command]
+	MsgQueue  *msq.Queue[string]
 	GameState *state.Game
 }
 
 type Controller struct {
 	config    *conf.Conf
 	client    *bilidanmu.Client
-	cmdQueue  *msq.CommandQueue
+	cmdQueue  *msq.Queue[command.Command]
+	msgQueue  *msq.Queue[string]
 	gameState *state.Game
 }
 
@@ -34,6 +36,7 @@ func NewController(cfg *conf.Conf, svc *Services) (*Controller, error) {
 		config:    cfg,
 		client:    client,
 		cmdQueue:  svc.CmdQueue,
+		msgQueue:  svc.MsgQueue,
 		gameState: svc.GameState,
 	}, nil
 }
