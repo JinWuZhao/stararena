@@ -142,3 +142,38 @@ func TestParseCommand(t *testing.T) {
 		})
 	}
 }
+
+func TestParseReport(t *testing.T) {
+	tests := []struct {
+		Text string
+		Want string
+	}{
+		{
+			Text: `report-attack-unit attacker target 100`,
+			Want: `report-attack-unit attacker target 100`,
+		},
+		{
+			Text: `report-kill-unit attacker target`,
+			Want: `report-kill-unit attacker target`,
+		},
+		{
+			Text: "report-victory 3",
+			Want: "report-victory 3",
+		},
+	}
+	for _, p := range tests {
+		t.Run(p.Text, func(t *testing.T) {
+			report, err := ParseReport(Context{}, p.Text)
+			if err != nil {
+				t.Error("ParseReport() error:", err)
+				return
+			}
+			result := report.String()
+			if p.Want != result {
+				t.Error("incorrect report string:", result, "want:", p.Want)
+				return
+			}
+			fmt.Println(report.String())
+		})
+	}
+}

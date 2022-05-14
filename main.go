@@ -61,7 +61,7 @@ func main() {
 			{
 				Type:       sc2proto.PlayerType_Participant,
 				Race:       sc2proto.Race_Random,
-				Name:       "Director",
+				Name:       cfg.DirectorName,
 				Difficulty: sc2proto.Difficulty_Easy,
 				AIBuild:    sc2proto.AIBuild_RandomBuild,
 				Agent:      director,
@@ -69,7 +69,7 @@ func main() {
 			{
 				Type:       sc2proto.PlayerType_Participant,
 				Race:       sc2proto.Race_Random,
-				Name:       "Audience",
+				Name:       cfg.AudienceName,
 				Difficulty: sc2proto.Difficulty_Easy,
 				AIBuild:    sc2proto.AIBuild_RandomBuild,
 				Agent:      audience,

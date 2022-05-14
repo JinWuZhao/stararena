@@ -278,3 +278,26 @@ func (c *IssueSkillCmd) String() string {
 	}
 	return fmt.Sprintf("cmd-issue-ability-%s %s %s", c.unit, c.player, c.skill.String())
 }
+
+type EndGameCmd struct {
+}
+
+func (*EndGameCmd) New(...any) Command {
+	return new(EndGameCmd)
+}
+
+func (*EndGameCmd) Name() string {
+	return "END_GAME"
+}
+
+func (*EndGameCmd) Parser(ast *parsec.AST) parsec.Parser {
+	panic("not support")
+}
+
+func (*EndGameCmd) Init(ctx Context, query parsec.Queryable) error {
+	return nil
+}
+
+func (*EndGameCmd) String() string {
+	return "cmd-end-game"
+}

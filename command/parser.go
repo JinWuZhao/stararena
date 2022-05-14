@@ -11,6 +11,7 @@ import (
 var (
 	cmdAST, cmdParser       = makeParser()
 	skillASTs, skillParsers = makeSkillParsers()
+	reportAST, reportParser = makeReport()
 )
 
 type Context struct {
@@ -56,6 +57,15 @@ func makeParser() (*parsec.AST, parsec.Parser) {
 			ast.End("END"))
 }
 
+func makeReport() (*parsec.AST, parsec.Parser) {
+	ast := parsec.NewAST("REPORT", 20)
+	return ast,
+		ast.Kleene("TEXT", nil,
+			ast.OrdChoice("REPORT", nil,
+				makeCmdParsers(reportCtors, ast)...),
+			ast.End("END"))
+}
+
 func parseText(ast *parsec.AST, parser parsec.Parser, text string) parsec.Queryable {
 	scanner := parsec.NewScanner([]byte(text))
 	query, _ := ast.Parsewith(parser, scanner)
@@ -64,14 +74,14 @@ func parseText(ast *parsec.AST, parser parsec.Parser, text string) parsec.Querya
 	return query
 }
 
-func makeCommand(ctx Context, query parsec.Queryable) (Command, error) {
+func makeCommand(ctors []commandConstructor, ctx Context, query parsec.Queryable) (Command, error) {
 	if len(query.GetChildren()) != 1 {
 		return nil, fmt.Errorf("invalid command")
 	}
 	var cmd Command
 	var err error
-	for _, cmdCtor := range cmdCtors {
-		newCmd := cmdCtor()
+	for _, ctor := range ctors {
+		newCmd := ctor()
 		if query.GetChildren()[0].GetName() == newCmd.Name() {
 			err = newCmd.Init(ctx, query.GetChildren()[0])
 			if err != nil {
@@ -85,13 +95,21 @@ func makeCommand(ctx Context, query parsec.Queryable) (Command, error) {
 	return cmd, err
 }
 
-func ParseCommand(ctx Context, text string) (Command, error) {
-	query := parseText(cmdAST, cmdParser, text)
-	cmd, err := makeCommand(ctx, query)
+func parseCommand(ctors []commandConstructor, ast *parsec.AST, parser parsec.Parser, ctx Context, text string) (Command, error) {
+	query := parseText(ast, parser, text)
+	cmd, err := makeCommand(ctors, ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("makeCommand() error: %w", err)
 	}
 	return cmd, nil
+}
+
+func ParseCommand(ctx Context, text string) (Command, error) {
+	return parseCommand(cmdCtors, cmdAST, cmdParser, ctx, text)
+}
+
+func ParseReport(ctx Context, text string) (Command, error) {
+	return parseCommand(reportCtors, reportAST, reportParser, ctx, text)
 }
 
 func makeSkillCtor[T Command](op string) commandConstructor {
