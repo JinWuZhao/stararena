@@ -2,24 +2,41 @@ package data
 
 type Unit struct {
 	Name   string
-	Points int64
+	Cost   int64
+	Reward int64
+}
+
+var unitByName = map[string]Unit{
+	UnitHellion.Name:       UnitHellion,
+	UnitSiegeTank.Name:     UnitSiegeTank,
+	UnitThor.Name:          UnitThor,
+	UnitBattlecruiser.Name: UnitBattlecruiser,
+}
+
+func GetUnitByName(name string) (unit Unit, ok bool) {
+	unit, ok = unitByName[name]
+	return
 }
 
 var (
 	UnitHellion = Unit{
 		Name:   "hellion",
-		Points: 0,
+		Cost:   0,
+		Reward: 100,
 	}
 	UnitSiegeTank = Unit{
 		Name:   "siege-tank",
-		Points: 100,
+		Cost:   100,
+		Reward: 150,
 	}
 	UnitThor = Unit{
 		Name:   "thor",
-		Points: 300,
+		Cost:   300,
+		Reward: 200,
 	}
 	UnitBattlecruiser = Unit{
 		Name:   "battlecruiser",
-		Points: 500,
+		Cost:   500,
+		Reward: 300,
 	}
 )

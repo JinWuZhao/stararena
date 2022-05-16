@@ -222,8 +222,8 @@ func (c *CreateUnitCmd) Init(ctx Context, query parsec.Queryable) error {
 	if ctx.SC2PlayerId != ctx.SC2RedPlayer && ctx.SC2PlayerId != ctx.SC2BluePlayer {
 		return fmt.Errorf("invalid sc2 player: %d", ctx.SC2PlayerId)
 	}
-	if ctx.Points-unit.Points < 0 {
-		return fmt.Errorf("not enough score: %d, need: %d", ctx.Points, unit.Points)
+	if ctx.Points-unit.Cost < 0 {
+		return fmt.Errorf("not enough score: %d, need: %d", ctx.Points, unit.Cost)
 	}
 	if ctx.Unit != "" {
 		return fmt.Errorf("unit exists: %s", ctx.Unit)

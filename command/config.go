@@ -12,7 +12,7 @@ var cmdCtors = []commandConstructor{
 }
 
 var reportCtors = []commandConstructor{
-	makeCmdCtor[*AttackUnitReport](),
+	makeCmdCtor[*DamageUnitReport](),
 	makeCmdCtor[*KillUnitReport](),
 	makeCmdCtor[*VictoryReport](),
 }

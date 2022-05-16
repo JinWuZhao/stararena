@@ -175,3 +175,11 @@ func parseUnitSkill(ctx Context, text string) (Command, error) {
 func parsecInt(name string, maxLen int) parsec.Parser {
 	return parsec.Token(`-?[0-9]{1,`+strconv.Itoa(maxLen)+"}", name)
 }
+
+func parsecUint(name string, maxLen int) parsec.Parser {
+	return parsec.Token(`[0-9]{1,`+strconv.Itoa(maxLen)+"}", name)
+}
+
+func parsecWS() parsec.Parser {
+	return parsec.TokenExact(`\s+`, "WS")
+}

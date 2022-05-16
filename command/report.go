@@ -7,32 +7,32 @@ import (
 	parsec "github.com/prataprc/goparsec"
 )
 
-type AttackUnitReport struct {
+type DamageUnitReport struct {
 	Player string
 	Target string
 	Damage int32
 }
 
-func (*AttackUnitReport) New(...any) Command {
-	return new(AttackUnitReport)
+func (*DamageUnitReport) New(...any) Command {
+	return new(DamageUnitReport)
 }
 
-func (*AttackUnitReport) Name() string {
+func (*DamageUnitReport) Name() string {
 	return "ATTACK_UNIT"
 }
 
-func (c *AttackUnitReport) Parser(ast *parsec.AST) parsec.Parser {
+func (c *DamageUnitReport) Parser(ast *parsec.AST) parsec.Parser {
 	return ast.And(c.Name(), nil,
-		parsec.AtomExact(`report-attack-unit`, "OP"),
-		parsec.TokenExact(`\s+`, "WS"),
+		parsec.AtomExact(`report-damage-unit`, "OP"),
+		parsecWS(),
 		parsec.TokenExact(`[^\s]+`, "PLAYER"),
-		parsec.TokenExact(`\s+`, "WS"),
-		parsec.TokenExact(`[^\s]+`, "PLAYER"),
-		parsec.TokenExact(`\s+`, "WS"),
-		parsec.TokenExact(`[0-9]{1,10}`, "DAMAGE"))
+		parsecWS(),
+		parsec.TokenExact(`[^\s]+`, "TARGET"),
+		parsecWS(),
+		parsec.TokenExact(`[0-9]+`, "DAMAGE"))
 }
 
-func (c *AttackUnitReport) Init(_ Context, query parsec.Queryable) error {
+func (c *DamageUnitReport) Init(_ Context, query parsec.Queryable) error {
 	player := query.GetChildren()[2].GetValue()
 	target := query.GetChildren()[4].GetValue()
 	damage, err := strconv.ParseInt(query.GetChildren()[6].GetValue(), 10, 32)
@@ -45,13 +45,14 @@ func (c *AttackUnitReport) Init(_ Context, query parsec.Queryable) error {
 	return nil
 }
 
-func (c *AttackUnitReport) String() string {
-	return fmt.Sprintf(`report-attack-unit %s %s %d`, c.Player, c.Target, c.Damage)
+func (c *DamageUnitReport) String() string {
+	return fmt.Sprintf(`report-damage-unit %s %s %d`, c.Player, c.Target, c.Damage)
 }
 
 type KillUnitReport struct {
 	Player string
 	Target string
+	Unit   string
 }
 
 func (*KillUnitReport) New(...any) Command {
@@ -65,20 +66,23 @@ func (*KillUnitReport) Name() string {
 func (c *KillUnitReport) Parser(ast *parsec.AST) parsec.Parser {
 	return ast.And(c.Name(), nil,
 		parsec.AtomExact(`report-kill-unit`, "OP"),
-		parsec.TokenExact(`\s+`, "WS"),
+		parsecWS(),
 		parsec.TokenExact(`[^\s]+`, "PLAYER"),
-		parsec.TokenExact(`\s+`, "WS"),
-		parsec.TokenExact(`[^\s]+`, "PLAYER"))
+		parsecWS(),
+		parsec.TokenExact(`[^\s]+`, "TARGET"),
+		parsecWS(),
+		parsec.TokenExact(`[a-z0-9-]+`, "UNIT"))
 }
 
 func (c *KillUnitReport) Init(_ Context, query parsec.Queryable) error {
 	c.Player = query.GetChildren()[2].GetValue()
 	c.Target = query.GetChildren()[4].GetValue()
+	c.Unit = query.GetChildren()[6].GetValue()
 	return nil
 }
 
 func (c *KillUnitReport) String() string {
-	return fmt.Sprintf(`report-kill-unit %s %s`, c.Player, c.Target)
+	return fmt.Sprintf(`report-kill-unit %s %s %s`, c.Player, c.Target, c.Unit)
 }
 
 type VictoryReport struct {

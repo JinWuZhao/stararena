@@ -101,7 +101,7 @@ func (m *Game) GetRankedPlayers() []*Player {
 		players = append(players, p)
 	}
 	sort.SliceStable(players, func(i, j int) bool {
-		return players[i].GetPoints() > players[j].GetPoints()
+		return players[i].GetScore() > players[j].GetScore()
 	})
 	return players
 }

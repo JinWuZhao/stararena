@@ -27,17 +27,12 @@ func main() {
 		return
 	}
 
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)
+	defer cancel()
+
 	cmdQueue := msq.NewQueue[command.Command](cfg.CmdQueueCap)
 	msgQueue := msq.NewQueue[string](cfg.MsgQueueCap)
 	gameState := state.NewGame(cfg.PlayerCap, cfg.JoinCap)
-	director := game.NewDirector(&game.Services{
-		CmdQueue:  cmdQueue,
-		GameState: gameState,
-	})
-	audience := game.NewAudience(msgQueue)
-
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)
-	defer cancel()
 
 	controller, err := control.NewController(cfg, &control.Services{
 		CmdQueue:  cmdQueue,
@@ -54,6 +49,14 @@ func main() {
 		log.Println("controller.Start() error:", err)
 		return
 	}
+
+	director := game.NewDirector(
+		cfg,
+		&game.Services{
+			CmdQueue:  cmdQueue,
+			GameState: gameState,
+		})
+	audience := game.NewAudience(msgQueue)
 
 	err = sc2client.RunGame(ctx,
 		cfg.GameMap,

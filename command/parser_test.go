@@ -149,12 +149,12 @@ func TestParseReport(t *testing.T) {
 		Want string
 	}{
 		{
-			Text: `report-attack-unit attacker target 100`,
-			Want: `report-attack-unit attacker target 100`,
+			Text: `report-damage-unit attacker target 100`,
+			Want: `report-damage-unit attacker target 100`,
 		},
 		{
-			Text: `report-kill-unit attacker target`,
-			Want: `report-kill-unit attacker target`,
+			Text: `report-kill-unit attacker target siege-tank`,
+			Want: `report-kill-unit attacker target siege-tank`,
 		},
 		{
 			Text: "report-victory 3",
