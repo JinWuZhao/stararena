@@ -62,9 +62,7 @@ chatLoop:
 			if chat.GetPlayerId() == m.playerId {
 				log.Println("receive command:", chat.GetMessage())
 				report, err := command.ParseReport(command.Context{}, chat.GetMessage())
-				if err != nil {
-					log.Println("command.ParseReport()", chat.GetMessage(), "error:", err)
-				} else {
+				if err == nil {
 					if err := m.handleReport(report); err != nil {
 						log.Println("m.handleReport()", report.String(), "error:", err)
 					}

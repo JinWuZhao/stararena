@@ -20,11 +20,12 @@ func (m *Queue[T]) Push(data T) bool {
 }
 
 func (m *Queue[T]) Pop() (T, bool) {
+	var empty T
 	select {
 	case data := <-m.ch:
 		return data, true
 	default:
-		return nil, false
+		return empty, false
 	}
 }
 

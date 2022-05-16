@@ -72,7 +72,7 @@ joinLoop:
 		case player := <-m.joinQueue:
 			m.m.Lock()
 			m.players[player.GetName()] = player
-			delete(m.players, player.GetName())
+			delete(m.joinSet, player.GetName())
 			m.m.Unlock()
 		default:
 			break joinLoop
