@@ -1,0 +1,277 @@
+// Trigger Declarations
+static trigger gt_gameplay_init;
+static trigger gt_gameplay_Victory;
+static trigger gt_gameplay_DestroyCenters;
+static trigger gt_gameplay_EndGame;
+static trigger gt_gameplay_DamageUnit;
+static trigger gt_gameplay_KillUnit;
+
+// Variable Declarations
+static int gv_gameplay_winnerPlayer;
+
+// Function Declarations
+void InitGamePlay();
+
+static bool gameplay_initMap_Func(bool testConds, bool runActions);
+static void gameplay_initMap_Init();
+static bool gameplay_Victory_Func(bool testConds, bool runActions);
+static void gameplay_Victory_Init();
+static bool gameplay_DestroyCenters_Func(bool testConds, bool runActions);
+static void gameplay_DestroyCenters_Init();
+static bool gameplay_EndGame_Func(bool testConds, bool runActions);
+static void gameplay_EndGame_Init();
+static bool gameplay_DamageUnit_Func(bool testConds, bool runActions);
+static void gameplay_DamageUnit_Init();
+static bool gameplay_KillUnit_Func(bool testConds, bool runActions);
+static void gameplay_KillUnit_Init();
+
+// Functions
+void InitGamePlay() {
+    gameplay_initMap_Init();
+    gameplay_Victory_Init();
+    gameplay_DestroyCenters_Init();
+    gameplay_EndGame_Init();
+    gameplay_DamageUnit_Init();
+    gameplay_KillUnit_Init();
+}
+
+bool gameplay_initMap_Func(bool testConds, bool runActions) {
+    unitgroup unitGroup1;
+    int unitGroup1Count;
+    unit unitGroup1Unit;
+    unitgroup unitGroup2;
+    int unitGroup2Count;
+    unit unitGroup2Unit;
+    unitgroup unitGroup3;
+    int unitGroup3Count;
+    unit unitGroup3Unit;
+    unitgroup unitGroup4;
+    int unitGroup4Count;
+    unit unitGroup4Unit;
+
+    if (!runActions) {
+        return true;
+    }
+
+    lib1_gv_directorPlayer = 1;
+    lib1_gv_audiencePlayer = 2;
+    lib1_gf_InitbaseMap(CameraInfoFromId(2107835186));
+    unitGroup1 = UnitGroupFromId(1);
+    unitGroup1Count = UnitGroupCount(unitGroup1, c_unitCountAll);
+    for (;; unitGroup1Count -= 1) {
+        unitGroup1Unit = UnitGroupUnitFromEnd(unitGroup1, unitGroup1Count);
+        if (unitGroup1Unit == null) { break; }
+        libNtve_gf_MakeUnitInvulnerable(unitGroup1Unit, true);
+    }
+    unitGroup2 = UnitGroupFromId(2);
+    unitGroup2Count = UnitGroupCount(unitGroup2, c_unitCountAll);
+    for (;; unitGroup2Count -= 1) {
+        unitGroup2Unit = UnitGroupUnitFromEnd(unitGroup2, unitGroup2Count);
+        if (unitGroup2Unit == null) { break; }
+        libNtve_gf_MakeUnitInvulnerable(unitGroup2Unit, true);
+        UnitSetScale(unitGroup2Unit, 200.0, 200.0, 200.0);
+        libNtve_gf_ChangeUnitDamage(unitGroup2Unit, libNtve_ge_UnitDamageTakenDealt_Damage_Deal, libNtve_ge_UnitDamageChangeOption_Mega);
+    }
+    unitGroup3 = UnitGroupFromId(3);
+    unitGroup3Count = UnitGroupCount(unitGroup3, c_unitCountAll);
+    for (;; unitGroup3Count -= 1) {
+        unitGroup3Unit = UnitGroupUnitFromEnd(unitGroup3, unitGroup3Count);
+        if (unitGroup3Unit == null) { break; }
+        if ((UnitGetType(unitGroup3Unit) == "AutoTurret")) {
+            UnitSetScale(unitGroup3Unit, 200.0, 200.0, 200.0);
+            libNtve_gf_ChangeUnitDamage(unitGroup3Unit, libNtve_ge_UnitDamageTakenDealt_Damage_Deal, libNtve_ge_UnitDamageChangeOption_Mega2);
+        }
+
+    }
+    unitGroup4 = UnitGroupFromId(4);
+    unitGroup4Count = UnitGroupCount(unitGroup4, c_unitCountAll);
+    for (;; unitGroup4Count -= 1) {
+        unitGroup4Unit = UnitGroupUnitFromEnd(unitGroup4, unitGroup4Count);
+        if (unitGroup4Unit == null) { break; }
+        if ((UnitGetType(unitGroup4Unit) == "AutoTurret")) {
+            UnitSetScale(unitGroup4Unit, 200.0, 200.0, 200.0);
+            libNtve_gf_ChangeUnitDamage(unitGroup4Unit, libNtve_ge_UnitDamageTakenDealt_Damage_Deal, libNtve_ge_UnitDamageChangeOption_Mega2);
+        }
+
+    }
+    TechTreeRequirementsEnable(1, false);
+    TechTreeRequirementsEnable(2, false);
+    TechTreeRequirementsEnable(3, false);
+    TechTreeRequirementsEnable(4, false);
+    return true;
+}
+
+void gameplay_initMap_Init() {
+    gt_gameplay_init = TriggerCreate("gameplay_initMap_Func");
+    TriggerAddEventMapInit(gt_gameplay_init);
+}
+
+bool gameplay_Victory_Func(bool testConds, bool runActions) {
+    text lv_winText;
+
+    if (testConds) {
+        if (gv_gameplay_winnerPlayer == 3 || gv_gameplay_winnerPlayer == 4) {
+            return false;
+        }
+
+        if (!UnitGroupHasUnit(UnitGroupFromId(5), EventUnit()) && !UnitGroupHasUnit(UnitGroupFromId(6), EventUnit())) {
+            return false;
+        }
+    }
+
+    if (!runActions) {
+        return true;
+    }
+
+    if ((UnitGroupCount(UnitGroupFromId(5), c_unitCountAlive) == 0)) {
+        gv_gameplay_winnerPlayer = 4;
+        lv_winText = StringExternal("Param/Value/1CF2F4A4");
+    }
+    else if ((UnitGroupCount(UnitGroupFromId(6), c_unitCountAlive) == 0)) {
+        gv_gameplay_winnerPlayer = 3;
+        lv_winText = StringExternal("Param/Value/6A0F2AB2");
+    }
+    if (((lv_winText != null) == true)) {
+        DialogCreate(500, 400, c_anchorCenter, 0, 0, true);
+        libNtve_gf_CreateDialogItemLabel(DialogLastCreated(), 400, 50, c_anchorCenter, 70, 0, lv_winText, libNtve_gf_ConvertPlayerColorToColor(PlayerGetColorIndex(gv_gameplay_winnerPlayer, false)), false, 2.0);
+        DialogSetVisible(DialogLastCreated(), PlayerGroupAll(), true);
+    }
+
+    return true;
+}
+
+void gameplay_Victory_Init() {
+    gt_gameplay_Victory = TriggerCreate("gameplay_Victory_Func");
+    TriggerAddEventUnitDied(gt_gameplay_Victory, null);
+}
+
+bool gameplay_DestroyCenters_Func(bool testConds, bool runActions) {
+    string lv_side;
+    unitgroup unitGroup5;
+    int unitGroup5Count;
+    unit unitGroup5Unit;
+    unitgroup unitGroup6;
+    int unitGroup6Count;
+    unit unitGroup6Unit;
+
+    lv_side = lib1_gf_CurrentCommandArgument(1);
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (lv_side == "left") {
+        unitGroup5 = UnitGroupFromId(5);
+        unitGroup5Count = UnitGroupCount(unitGroup5, c_unitCountAll);
+        for (;; unitGroup5Count -= 1) {
+            unitGroup5Unit = UnitGroupUnitFromEnd(unitGroup5, unitGroup5Count);
+            if (unitGroup5Unit == null) { break; }
+            UnitKill(unitGroup5Unit);
+        }
+
+    }
+    else if (lv_side == "right") {
+        unitGroup6 = UnitGroupFromId(6);
+        unitGroup6Count = UnitGroupCount(unitGroup6, c_unitCountAll);
+        for (;; unitGroup6Count -= 1) {
+            unitGroup6Unit = UnitGroupUnitFromEnd(unitGroup6, unitGroup6Count);
+            if (unitGroup6Unit == null) { break; }
+            UnitKill(unitGroup6Unit);
+        }
+
+    }
+    else {
+
+    }
+    return true;
+}
+
+void gameplay_DestroyCenters_Init() {
+    gt_gameplay_DestroyCenters = TriggerCreate("gameplay_DestroyCenters_Func");
+    TriggerAddEventGeneric(gt_gameplay_DestroyCenters, (lib1_gv_commandPrefix + "destroy-centers"));
+}
+
+bool gameplay_EndGame_Func(bool testConds, bool runActions) {
+    if (!runActions) {
+        return true;
+    }
+
+    GameOver(lib1_gv_audiencePlayer, c_gameOverVictory, false, false);
+    GameOver(lib1_gv_directorPlayer, c_gameOverVictory, false, false);
+    return true;
+}
+
+void gameplay_EndGame_Init() {
+    gt_gameplay_EndGame = TriggerCreate("gameplay_EndGame_Func");
+    TriggerAddEventGeneric(gt_gameplay_EndGame, (lib1_gv_commandPrefix + "end-game"));
+}
+
+static bool gameplay_DamageUnit_Func(bool testConds, bool runActions) {
+    string lv_attacker;
+    string lv_target;
+    int lv_damage;
+    UnitPlayer lv_player;
+
+    lv_attacker = DataTableGetString(true, (lib1_gv_unitTagPrefix + IntToString(UnitGetTag(EventUnitDamageSourceUnit()))));
+    lv_target = DataTableGetString(true, (lib1_gv_unitTagPrefix + IntToString(UnitGetTag(EventUnit()))));
+    lv_damage = FixedToInt(EventUnitDamageAmount());
+
+    if (testConds) {
+        if (lv_attacker == "") {
+            return false;
+        }
+    }
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (!UnitPlayerFromName(lv_attacker, lv_player)) {
+        return false;
+    }
+
+    lv_player.score += lv_damage;
+    SaveUnitPlayer(lv_player);
+
+    return true;
+}
+
+static void gameplay_DamageUnit_Init() {
+    gt_gameplay_DamageUnit = TriggerCreate("gameplay_DamageUnit_Func");
+    TriggerAddEventUnitDamaged(gt_gameplay_DamageUnit, null, c_unitDamageTypeAny, c_unitDamageEither, null);
+}
+
+static bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
+    string lv_attacker;
+    string lv_target;
+    string lv_unitType;
+    UnitPlayer lv_player;
+
+    lv_attacker = DataTableGetString(true, (lib1_gv_unitTagPrefix + IntToString(UnitGetTag(libNtve_gf_KillingUnit()))));
+    lv_target = DataTableGetString(true, (lib1_gv_unitTagPrefix + IntToString(UnitGetTag(EventUnit()))));
+    lv_unitType = UnitGetType(EventUnit());
+
+    if (testConds) {
+        if (lv_attacker == "" || lv_unitType == "") {
+            return false;
+        }
+    }
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (!UnitPlayerFromName(lv_attacker, lv_player)) {
+        return false;
+    }
+
+    lv_player.points += RewardPointsFromUnitType(lv_unitType);
+    SaveUnitPlayer(lv_player);
+
+    return true;
+}
+
+static void gameplay_KillUnit_Init() {
+    gt_gameplay_KillUnit = TriggerCreate("gameplay_KillUnit_Func");
+    TriggerAddEventUnitDied(gt_gameplay_KillUnit, null);
+}

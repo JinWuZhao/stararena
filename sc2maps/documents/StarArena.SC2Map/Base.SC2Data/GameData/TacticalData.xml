@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Catalog>
+    <!--<CTacticalSet id="Raven">-->
+    <!--        <Array value="CastAutoTurret"/>    -->
+    <!--    </CTacticalSet>-->
+    <!--    <CTacticalOrder id="CastAutoTurret">-->
+    <!--        <Abil value="AutoTurret"/>-->
+    <!--        <TargetFind value="TacticalAutoTurret"/>-->
+    <!--    </CTacticalOrder>-->
+    <!--<CTacticalSet id="Overlord">-->
+    <!--        <Array value="OverlordCreepStart"/>-->
+    <!--        <Array value="OverlordCreepStop"/>-->
+    <!--    </CTacticalSet>-->
+    <!--    <CTacticalOrder id="OverlordCreepStart">-->
+    <!--        <Abil value="GenerateCreep"/>-->
+    <!--        <Validator value="TacticalGenerateCreepStart"/>-->
+    <!--    </CTacticalOrder>-->
+    <!--    <CTacticalOrder id="OverlordCreepStop">-->
+    <!--        <Abil value="GenerateCreep"/>-->
+    <!--        <AbilCmdIndex value="1"/>-->
+    <!--        <Validator value="TacticalGenerateCreepStop"/>-->
+    <!--    </CTacticalOrder>-->
+    <CTacticalOrder id="SiegeTank">
+        <Abil value=""/>
+        <Validator value=""/>
+    </CTacticalOrder>
+    <CTacticalOrder id="SiegeTankSieged">
+        <Abil value=""/>
+        <Validator value=""/>
+    </CTacticalOrder>
+</Catalog>

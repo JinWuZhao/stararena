@@ -1,0 +1,3 @@
+﻿Trigger/Name/1966E4C9=无标题的触发器 001
+Trigger/Name/45A5DAC1=对战初始化
+Variable/Name/C0FC9E54=Win Text

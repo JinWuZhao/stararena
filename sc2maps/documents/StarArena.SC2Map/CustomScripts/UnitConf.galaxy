@@ -1,0 +1,65 @@
+// Variable Declarations
+static int gv_unitdata_costPointsOfUnitType;
+static int gv_unitdata_rewardPointsOfUnitType;
+static int gv_unitdata_unitTypeOfTypeName;
+
+// Function Declarations
+int CostPointsFromUnitType(string unitType);
+int RewardPointsFromUnitType(string unitType);
+string UnitTypeFromTypeName(string typeName);
+void InitUnitData();
+
+static void unitdata_InitCostPointsOfUnitType();
+static void unitdata_InitRewardPointsOfUnitType();
+static void unitdata_InitUnitTypeOfTypeName();
+
+// Functions
+int CostPointsFromUnitType(string unitType) {
+    return DataTableInstanceGetInt(gv_unitdata_costPointsOfUnitType, unitType);
+}
+
+int RewardPointsFromUnitType(string unitType) {
+    return DataTableInstanceGetInt(gv_unitdata_rewardPointsOfUnitType, unitType);
+}
+
+string UnitTypeFromTypeName(string typeName) {
+    return DataTableInstanceGetString(gv_unitdata_unitTypeOfTypeName, typeName);
+}
+
+void InitUnitData() {
+    unitdata_InitCostPointsOfUnitType();
+    unitdata_InitRewardPointsOfUnitType();
+    unitdata_InitUnitTypeOfTypeName();
+}
+
+static void unitdata_InitCostPointsOfUnitType() {
+    DataTableInstanceCreate();
+    gv_unitdata_costPointsOfUnitType = DataTableInstanceLastCreated();
+    
+    DataTableInstanceSetInt(gv_unitdata_costPointsOfUnitType, "MengskHellion", 0);
+    DataTableInstanceSetInt(gv_unitdata_costPointsOfUnitType, "SiegeTank", 100);
+    DataTableInstanceSetInt(gv_unitdata_costPointsOfUnitType, "ThorAP", 300);
+    DataTableInstanceSetInt(gv_unitdata_costPointsOfUnitType, "Battlecruiser", 500);
+}
+
+static void unitdata_InitRewardPointsOfUnitType() {
+
+    DataTableInstanceCreate();
+    gv_unitdata_rewardPointsOfUnitType = DataTableInstanceLastCreated();
+    
+    DataTableInstanceSetInt(gv_unitdata_rewardPointsOfUnitType, "MengskHellion", 100);
+    DataTableInstanceSetInt(gv_unitdata_rewardPointsOfUnitType, "SiegeTank", 150);
+    DataTableInstanceSetInt(gv_unitdata_rewardPointsOfUnitType, "ThorAP", 200);
+    DataTableInstanceSetInt(gv_unitdata_rewardPointsOfUnitType, "Battlecruiser", 300);
+}
+
+static void unitdata_InitUnitTypeOfTypeName() {
+
+    DataTableInstanceCreate();
+    gv_unitdata_unitTypeOfTypeName = DataTableInstanceLastCreated();
+    
+    DataTableInstanceSetString(gv_unitdata_unitTypeOfTypeName, "hellion", "MengskHellion");
+    DataTableInstanceSetString(gv_unitdata_unitTypeOfTypeName, "siege-tank", "SiegeTank");
+    DataTableInstanceSetString(gv_unitdata_unitTypeOfTypeName, "thor", "ThorAP");
+    DataTableInstanceSetString(gv_unitdata_unitTypeOfTypeName, "battlecruiser", "Battlecruiser");
+}

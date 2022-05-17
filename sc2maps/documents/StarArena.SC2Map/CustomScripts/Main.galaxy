@@ -1,0 +1,13 @@
+include "CustomScripts/ArenaLib"
+include "CustomScripts/UnitConf"
+include "CustomScripts/GameState"
+include "CustomScripts/GamePlay"
+include "CustomScripts/UnitControl"
+
+void InitCustomScripts() {
+    InitArenaLib();
+    InitUnitData();
+    InitGameState();
+    InitGamePlay();
+    InitUnitControl();
+}

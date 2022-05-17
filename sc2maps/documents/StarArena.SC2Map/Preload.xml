@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Preload>
+<Actor id="SYSTEM_ActorConfig"/>
+<Terrain id="Zerus"/>
+<Unit id="MissileTurret"/>
+<Unit id="AutoTurret"/>
+<Unit id="SiegeTank"/>
+<Unit id="Battlecruiser"/>
+<Unit id="Beacon_Terran"/>
+<Unit id="ThorAP"/>
+<Unit id="MengskHellion"/>
+<Unit id="KorhalBaseDoor"/>
+<Unit id="XelNagaDestructibleBlocker8S"/>
+<Unit id="XelNagaDestructibleBlocker8E"/>
+<Unit id="XelNagaDestructibleBlocker8N"/>
+<Unit id="ShadowShieldGenerator"/>
+</Preload>

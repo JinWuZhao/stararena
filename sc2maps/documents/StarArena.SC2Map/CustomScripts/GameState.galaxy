@@ -1,0 +1,97 @@
+// Type Declarations
+struct UnitPlayer {
+    string name;
+    string unitType;
+    int playerId;
+    int score;
+    int points;
+};
+
+typedef structref<UnitPlayer> UnitPlayerRef;
+
+// Variable Declarations
+static const int gv_gamestate_unitPlayersCap = 20;
+static UnitPlayer[gv_gamestate_unitPlayersCap] gv_gamestate_unitPlayers;
+static int gv_gamestate_unitPlayerIndexOfName;
+
+// Function Declarations
+bool AddUnitPlayer(UnitPlayerRef player);
+bool SaveUnitPlayer(UnitPlayerRef player);
+bool UnitPlayerFromName(string name, UnitPlayerRef player);
+void InitGameState();
+
+static void gamestate_InitUnitPlayerIndexOfName();
+static int gamestate_PickAvailableUnitPlayerIndex();
+static void gamestate_SaveUnitPlayerByIndex(int index, UnitPlayerRef player);
+
+// Functions
+static void gamestate_InitUnitPlayerIndexOfName() {
+    DataTableInstanceCreate();
+    gv_gamestate_unitPlayerIndexOfName = DataTableInstanceLastCreated();
+}
+
+static int gamestate_PickAvailableUnitPlayerIndex() {
+    int index = 0;
+    UnitPlayer emptyPlayer;
+
+    for (; index < gv_gamestate_unitPlayersCap; index += 1) {
+        if (gv_gamestate_unitPlayers[index] == emptyPlayer) {
+            break;
+        }
+    }
+    return index;
+}
+
+static void gamestate_SaveUnitPlayerByIndex(int index, UnitPlayerRef player) {
+    gv_gamestate_unitPlayers[index].name = player.name;
+    gv_gamestate_unitPlayers[index].playerId = player.playerId;
+    gv_gamestate_unitPlayers[index].points = player.points;
+    gv_gamestate_unitPlayers[index].score = player.score;
+    gv_gamestate_unitPlayers[index].unitType = player.unitType;
+    DataTableInstanceSetInt(gv_gamestate_unitPlayerIndexOfName, player.name, index);
+}
+
+bool AddUnitPlayer(UnitPlayerRef player) {
+    int index = gamestate_PickAvailableUnitPlayerIndex();
+    if (index == gv_gamestate_unitPlayersCap) {
+        return false;
+    }
+    gamestate_SaveUnitPlayerByIndex(index, player);
+    return true;
+}
+
+bool SaveUnitPlayer(UnitPlayerRef player) {
+    UnitPlayerRef lv_player;
+
+    if (!DataTableInstanceValueExists(gv_gamestate_unitPlayerIndexOfName, player.name)) {
+        return false;
+    }
+
+    lv_player = gv_gamestate_unitPlayers[DataTableInstanceGetInt(gv_gamestate_unitPlayerIndexOfName, player.name)];
+    lv_player.name = player.name;
+    lv_player.playerId = player.playerId;
+    lv_player.points = player.points;
+    lv_player.score = player.score;
+    lv_player.unitType = player.unitType;
+    return true;
+}
+
+bool UnitPlayerFromName(string name, UnitPlayerRef player) {
+    UnitPlayerRef lv_player;
+
+    if (!DataTableInstanceValueExists(gv_gamestate_unitPlayerIndexOfName, name)) {
+        return false;
+    }
+
+    lv_player = gv_gamestate_unitPlayers[DataTableInstanceGetInt(gv_gamestate_unitPlayerIndexOfName, name)];
+    player.name = lv_player.name;
+    player.playerId = lv_player.playerId;
+    player.points = lv_player.points;
+    player.score = lv_player.score;
+    player.unitType = lv_player.unitType;
+    return true;
+}
+
+void InitGameState() {
+    gamestate_InitUnitPlayerIndexOfName();
+}

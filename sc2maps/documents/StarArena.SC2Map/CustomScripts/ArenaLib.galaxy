@@ -1,0 +1,466 @@
+//--------------------------------------------------------------------------------------------------
+// Library: Arena Library
+//--------------------------------------------------------------------------------------------------
+include "TriggerLibs/NativeLib"
+
+// Constants
+const string lib1_gv_commandPrefix = "cmd-";
+const string lib1_gv_unitNamePrefix = "unit-name-";
+const string lib1_gv_unitTagPrefix = "unit-tag-";
+const string lib1_gv_unitBehaviorModePrefix = "unit-behavior-mode-";
+
+// Variable Declarations
+int lib1_gv_directorPlayer;
+int lib1_gv_audiencePlayer;
+unitgroup lib1_gv_playerUnitGroup;
+
+// Function Declarations
+void lib1_gf_InitbaseMap (camerainfo lp_mainCamera);
+string lib1_gf_CommandArgument (string lp_commandName, int lp_argumentIndex);
+string lib1_gf_CurrentCommandArgument (int lp_argumentIndex);
+void lib1_gf_DebugLog (string lp_message);
+void lib1_gf_ErrorLog (string lp_message);
+void lib1_gf_InfoLog (string lp_message);
+void lib1_gf_ReportData (string lp_command, string lp_arguments);
+void lib1_gf_ProcessCommand (string lp_commandMessage);
+void lib1_gf_DispatchCommand (string lp_name, string lp_arguments);
+void lib1_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed lp_angle, fixed lp_scale, string lp_textTag, fixed lp_tagHeight);
+void lib1_gf_CreatePlayerUnit (int lp_player, string lp_type, string lp_textTag, fixed lp_scale, fixed lp_tagHeight);
+unit lib1_gf_UnitFromName (string lp_name);
+string lib1_gf_NameFromUnit (unit lp_unit);
+void lib1_gf_SetBehaviorMode (unit lp_unit, string lp_mode);
+
+// Trigger Declarations
+trigger lib1_gt_ProcessCommand;
+trigger lib1_gt_MoveToward;
+trigger lib1_gt_SetBehaviorMode;
+trigger lib1_gt_KillUnit;
+trigger lib1_gt_BehaviorModeAction;
+trigger lib1_gt_CleanDeadUnit;
+
+// Library Initialization
+void lib1_InitVariables ();
+
+//--------------------------------------------------------------------------------------------------
+// Library: Arena Library
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void lib1_InitLibraries () {
+    libNtve_InitVariables();
+}
+
+// Variable Initialization
+bool lib1_InitVariables_completed = false;
+
+void lib1_InitVariables () {
+    if (lib1_InitVariables_completed) {
+        return;
+    }
+
+    lib1_InitVariables_completed = true;
+
+    lib1_gv_directorPlayer = 1;
+    lib1_gv_audiencePlayer = 2;
+    lib1_gv_playerUnitGroup = UnitGroupEmpty();
+}
+
+// Functions
+void lib1_gf_InitbaseMap (camerainfo lp_mainCamera) {
+    // Automatic Variable Declarations
+    // Implementation
+    VisEnable(c_visTypeMask, false);
+    VisEnable(c_visTypeFog, false);
+    libNtve_gf_HideGameUI(false, PlayerGroupSingle(lib1_gv_audiencePlayer));
+    UISetFrameVisible(PlayerGroupAll(), c_syncFrameTypeTextTag, true);
+    CameraApplyInfo(lib1_gv_audiencePlayer, lp_mainCamera, 0.0, -1, 10.0, true);
+    CameraApplyInfo(lib1_gv_directorPlayer, lp_mainCamera, 0.0, -1, 10.0, true);
+}
+
+string lib1_gf_CommandArgument (string lp_commandName, int lp_argumentIndex) {
+    // Automatic Variable Declarations
+    // Implementation
+    return DataTableGetString(false, TriggerEventParamName(lp_commandName, IntToString(lp_argumentIndex)));
+}
+
+string lib1_gf_CurrentCommandArgument (int lp_argumentIndex) {
+    // Automatic Variable Declarations
+    // Implementation
+    return DataTableGetString(false, TriggerEventParamName(EventGenericName(), IntToString(lp_argumentIndex)));
+}
+
+void lib1_gf_DebugLog (string lp_message) {
+    // Automatic Variable Declarations
+    // Implementation
+    UIDisplayMessage(PlayerGroupSingle(lib1_gv_directorPlayer), c_messageAreaDebug, StringToText(lp_message));
+}
+
+void lib1_gf_ErrorLog (string lp_message) {
+    // Automatic Variable Declarations
+    // Implementation
+    UIDisplayMessage(PlayerGroupSingle(lib1_gv_directorPlayer), c_messageAreaError, StringToText(lp_message));
+}
+
+void lib1_gf_InfoLog (string lp_message) {
+    // Automatic Variable Declarations
+    // Implementation
+    UIDisplayMessage(PlayerGroupSingle(lib1_gv_directorPlayer), c_messageAreaSubtitle, StringToText(lp_message));
+}
+
+void lib1_gf_ReportData (string lp_command, string lp_arguments) {
+    // Automatic Variable Declarations
+    // Implementation
+    UIDisplayMessage(PlayerGroupSingle(lib1_gv_directorPlayer), c_messageAreaChat, StringToText(("report-" + lp_command + " " + lp_arguments)));
+}
+
+void lib1_gf_ProcessCommand (string lp_commandMessage) {
+    // Variable Declarations
+    string lv_commandName;
+    string lv_commandArguments;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_commandName = StringWord(lp_commandMessage, 1);
+    lv_commandArguments = StringReplaceWord(lp_commandMessage, lv_commandName, "", 1, c_stringCase);
+
+    // Implementation
+    if ((lv_commandName != StringReplaceWord(lv_commandName, lib1_gv_commandPrefix, "", 1, c_stringCase))) {
+        lv_commandArguments = StringReplaceWord(lv_commandArguments, " ", "", 1, c_stringCase);
+        lib1_gf_DebugLog(("Process Command: " + lv_commandName + " " + lv_commandArguments));
+        lib1_gf_DispatchCommand(lv_commandName, lv_commandArguments);
+    }
+
+}
+
+void lib1_gf_DispatchCommand (string lp_name, string lp_arguments) {
+    // Variable Declarations
+    const string lv_dispatchEvent = "Execute Command";
+    int lv_lastArgumentIndex;
+    string lv_lastArgument;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_lastArgumentIndex = 1;
+    lv_lastArgument = "";
+
+    // Implementation
+    lib1_gf_DebugLog(("Dispatch Command: " + lp_name + " " + lp_arguments));
+    do {
+        lv_lastArgument = StringWord(lp_arguments, lv_lastArgumentIndex);
+        if ((lv_lastArgument != "")) {
+            DataTableSetString(false, TriggerEventParamName(lp_name, IntToString(lv_lastArgumentIndex)), lv_lastArgument);
+            lib1_gf_DebugLog(("Dispatch Command Argument: " + IntToString(lv_lastArgumentIndex) + ": " + lv_lastArgument));
+            lv_lastArgumentIndex = (lv_lastArgumentIndex+1);
+        }
+
+    }while ((lv_lastArgument != ""));
+    DataTableSetString(false, TriggerEventParamName(lp_name, "Argument Count"), IntToString(lv_lastArgumentIndex));
+    TriggerSendEvent(lp_name);
+}
+
+void lib1_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed lp_angle, fixed lp_scale, string lp_textTag, fixed lp_tagHeight) {
+    // Variable Declarations
+    fixed lv_realTagHeight;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Implementation
+    UnitCreate(1, lp_type, 0, lp_player, lp_point, lp_angle);
+    UnitGroupAdd(lib1_gv_playerUnitGroup, UnitLastCreated());
+    UnitSetScale(UnitLastCreated(), (lp_scale * 100.0), (lp_scale * 100.0), (lp_scale * 100.0));
+    UnitSetTeamColorIndex(UnitLastCreated(), PlayerGetColorIndex(lp_player, false));
+    if ((lp_textTag != "")) {
+        lv_realTagHeight = (UnitGetHeight(UnitLastCreated()) + (lp_scale * lp_tagHeight));
+        TextTagCreate(StringToText(lp_textTag), 22, UnitGetPosition(UnitLastCreated()), lv_realTagHeight, true, false, PlayerGroupAll());
+        TextTagAttachToUnit(TextTagLastCreated(), UnitLastCreated(), lv_realTagHeight);
+        DataTableSetUnit(true, (lib1_gv_unitNamePrefix + lp_textTag), UnitLastCreated());
+        DataTableSetString(true, (lib1_gv_unitTagPrefix + IntToString(UnitGetTag(UnitLastCreated()))), lp_textTag);
+    }
+
+}
+
+void lib1_gf_CreatePlayerUnit (int lp_player, string lp_type, string lp_textTag, fixed lp_scale, fixed lp_tagHeight) {
+    // Variable Declarations
+    point lv_startLocation;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+
+    // Implementation
+    lv_startLocation = PlayerStartLocation(lp_player);
+    lib1_gf_CreateUnit(lp_player, lv_startLocation, lp_type, PointGetFacing(lv_startLocation), lp_scale, lp_textTag, lp_tagHeight);
+}
+
+unit lib1_gf_UnitFromName (string lp_name) {
+    // Automatic Variable Declarations
+    // Implementation
+    return DataTableGetUnit(true, (lib1_gv_unitNamePrefix + lp_name));
+}
+
+string lib1_gf_NameFromUnit (unit lp_unit) {
+    // Automatic Variable Declarations
+    // Implementation
+    return DataTableGetString(true, (lib1_gv_unitTagPrefix + IntToString(UnitGetTag(lp_unit))));
+}
+
+void lib1_gf_SetBehaviorMode (unit lp_unit, string lp_mode) {
+    // Automatic Variable Declarations
+    // Implementation
+    DataTableSetString(true, (lib1_gv_unitBehaviorModePrefix + IntToString(UnitGetTag(lp_unit))), lp_mode);
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: Process Command
+//--------------------------------------------------------------------------------------------------
+bool lib1_gt_ProcessCommand_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    string lv_message;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_message = EventChatMessage(false);
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lib1_gf_ProcessCommand(lv_message);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib1_gt_ProcessCommand_Init () {
+    lib1_gt_ProcessCommand = TriggerCreate("lib1_gt_ProcessCommand_Func");
+    TriggerAddEventChatMessage(lib1_gt_ProcessCommand, (lib1_gv_directorPlayer), lib1_gv_commandPrefix, false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Move Toward
+//--------------------------------------------------------------------------------------------------
+bool lib1_gt_MoveToward_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    string lv_unitName;
+    string lv_angle;
+    string lv_distance;
+    unit lv_unit;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_unitName = lib1_gf_CurrentCommandArgument(1);
+    lv_angle = lib1_gf_CurrentCommandArgument(2);
+    lv_distance = lib1_gf_CurrentCommandArgument(3);
+    lv_unit = DataTableGetUnit(true, (lib1_gv_unitNamePrefix + lv_unitName));
+
+    // Conditions
+    if (testConds) {
+        if (!((lv_unit != null))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitIssueOrder(lv_unit, OrderTargetingPoint(AbilityCommand("move", 0), PointWithOffsetPolar(UnitGetPosition(lv_unit), StringToFixed(lv_distance), StringToFixed(lv_angle))), c_orderQueueReplace);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib1_gt_MoveToward_Init () {
+    lib1_gt_MoveToward = TriggerCreate("lib1_gt_MoveToward_Func");
+    TriggerAddEventGeneric(lib1_gt_MoveToward, (lib1_gv_commandPrefix + "move-toward"));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Set Behavior Mode
+//--------------------------------------------------------------------------------------------------
+bool lib1_gt_SetBehaviorMode_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    string lv_unitName;
+    string lv_behaviorMode;
+    unit lv_unit;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_unitName = lib1_gf_CurrentCommandArgument(1);
+    lv_behaviorMode = lib1_gf_CurrentCommandArgument(2);
+    lv_unit = DataTableGetUnit(true, (lib1_gv_unitNamePrefix + lv_unitName));
+
+    // Conditions
+    if (testConds) {
+        if (!((lv_unit != null))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lib1_gf_DebugLog(("Set Behavior Mode:" + (lib1_gv_unitBehaviorModePrefix + IntToString(UnitGetTag(lv_unit))) + " " + lv_behaviorMode));
+    DataTableSetString(true, (lib1_gv_unitBehaviorModePrefix + IntToString(UnitGetTag(lv_unit))), lv_behaviorMode);
+    UnitIssueOrder(lv_unit, Order(AbilityCommand("move", 2)), c_orderQueueReplace);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib1_gt_SetBehaviorMode_Init () {
+    lib1_gt_SetBehaviorMode = TriggerCreate("lib1_gt_SetBehaviorMode_Func");
+    TriggerAddEventGeneric(lib1_gt_SetBehaviorMode, (lib1_gv_commandPrefix + "set-behavior-mode"));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Kill Unit
+//--------------------------------------------------------------------------------------------------
+bool lib1_gt_KillUnit_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    string lv_unitName;
+    unit lv_unit;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_unitName = lib1_gf_CurrentCommandArgument(1);
+    lv_unit = DataTableGetUnit(true, (lib1_gv_unitNamePrefix + lv_unitName));
+
+    // Conditions
+    if (testConds) {
+        if (!((lv_unit != null))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lib1_gf_DebugLog(("Kill Unit: " + lv_unitName));
+    UnitKill(lv_unit);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib1_gt_KillUnit_Init () {
+    lib1_gt_KillUnit = TriggerCreate("lib1_gt_KillUnit_Func");
+    TriggerAddEventGeneric(lib1_gt_KillUnit, (lib1_gv_commandPrefix + "kill-unit"));
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Behavior Mode Action
+//--------------------------------------------------------------------------------------------------
+bool lib1_gt_BehaviorModeAction_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    string lv_behaviorMode;
+
+    // Automatic Variable Declarations
+    string auto49C3A6FF_val;
+
+    // Variable Initialization
+    lv_behaviorMode = DataTableGetString(true, (lib1_gv_unitBehaviorModePrefix + IntToString(UnitGetTag(EventUnit()))));
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitGroupHasUnit(lib1_gv_playerUnitGroup, EventUnit()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lib1_gf_DebugLog(("Behavior Mode:" + (lib1_gv_unitBehaviorModePrefix + IntToString(UnitGetTag(EventUnit()))) + " " + lv_behaviorMode));
+    auto49C3A6FF_val = lv_behaviorMode;
+    if (auto49C3A6FF_val == "attack") {
+        UnitIssueOrder(EventUnit(), OrderTargetingUnit(AbilityCommand("attack", 0), libNtve_gf_AcquiredTarget()), c_orderQueueReplace);
+
+    }
+    else if (auto49C3A6FF_val == "defence") {
+        UnitIssueOrder(EventUnit(), Order(AbilityCommand("move", 2)), c_orderQueueReplace);
+
+    }
+    else if (auto49C3A6FF_val == "retreat") {
+        UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("move", 0), PointWithOffsetPolar(UnitGetPosition(EventUnit()), 10.0, UnitGetFacing(libNtve_gf_AcquiredTarget()))), c_orderQueueReplace);
+
+    }
+    else {
+        UnitIssueOrder(EventUnit(), Order(AbilityCommand("move", 2)), c_orderQueueReplace);
+
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib1_gt_BehaviorModeAction_Init () {
+    lib1_gt_BehaviorModeAction = TriggerCreate("lib1_gt_BehaviorModeAction_Func");
+    TriggerAddEventUnitAcquiredTarget(lib1_gt_BehaviorModeAction, null);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Clean Dead Unit
+//--------------------------------------------------------------------------------------------------
+bool lib1_gt_CleanDeadUnit_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_unitTag;
+    string lv_unitName;
+
+    // Automatic Variable Declarations
+    // Variable Initialization
+    lv_unitTag = UnitGetTag(EventUnit());
+    lv_unitName = DataTableGetString(true, (lib1_gv_unitTagPrefix + IntToString(lv_unitTag)));
+
+    // Conditions
+    if (testConds) {
+        if (!((UnitGroupHasUnit(lib1_gv_playerUnitGroup, EventUnit()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lib1_gf_DebugLog(("Unit Died: " + IntToString(lv_unitTag) + " " + lv_unitName));
+    DataTableValueRemove(true, (lib1_gv_unitBehaviorModePrefix + IntToString(lv_unitTag)));
+    DataTableValueRemove(true, (lib1_gv_unitTagPrefix + IntToString(lv_unitTag)));
+    DataTableValueRemove(true, (lib1_gv_unitNamePrefix + lv_unitName));
+    UnitGroupRemove(lib1_gv_playerUnitGroup, EventUnit());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void lib1_gt_CleanDeadUnit_Init () {
+    lib1_gt_CleanDeadUnit = TriggerCreate("lib1_gt_CleanDeadUnit_Func");
+    TriggerAddEventUnitDied(lib1_gt_CleanDeadUnit, null);
+}
+
+void lib1_InitTriggers () {
+    lib1_gt_ProcessCommand_Init();
+    lib1_gt_MoveToward_Init();
+    lib1_gt_SetBehaviorMode_Init();
+    lib1_gt_KillUnit_Init();
+    lib1_gt_BehaviorModeAction_Init();
+    lib1_gt_CleanDeadUnit_Init();
+}
+
+bool lib1_InitLib_completed = false;
+
+void InitArenaLib() {
+    if (lib1_InitLib_completed) {
+        return;
+    }
+
+    lib1_InitLib_completed = true;
+
+    libNtve_InitLib();
+    lib1_InitLibraries();
+    lib1_InitVariables();
+    lib1_InitTriggers();
+}
