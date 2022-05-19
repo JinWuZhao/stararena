@@ -4,11 +4,7 @@
 <Terrain id="Zerus"/>
 <Unit id="MissileTurret"/>
 <Unit id="AutoTurret"/>
-<Unit id="SiegeTank"/>
-<Unit id="Battlecruiser"/>
 <Unit id="Beacon_Terran"/>
-<Unit id="ThorAP"/>
-<Unit id="MengskHellion"/>
 <Unit id="KorhalBaseDoor"/>
 <Unit id="XelNagaDestructibleBlocker8S"/>
 <Unit id="XelNagaDestructibleBlocker8E"/>

@@ -10,19 +10,12 @@ static trigger gt_unitctrl_IssueAbilitySiegeTank;
 // Function Declarations
 void InitUnitControl();
 
-static bool unitctrl_CreateThor_Func(bool testConds, bool runActions);
 static void unitctrl_CreateThor_Init();
-static bool unitctrl_CreateBattlecruiser_Func(bool testConds, bool runActions);
 static void unitctrl_CreateBattlecruiser_Init();
-static bool unitctrl_CreateSiegeTank_Func(bool testConds, bool runActions);
 static void unitctrl_CreateSiegeTank_Init();
-static bool unitctrl_CreateHellion_Func(bool testConds, bool runActions);
 static void unitctrl_CreateHellion_Init();
-static bool unitctrl_IssueAbilityThor_Func(bool testConds, bool runActions);
 static void unitctrl_IssueAbilityThor_Init();
-static bool unitctrl_IssueAbilityBattlecruiser_Func(bool testConds, bool runActions);
 static void unitctrl_IssueAbilityBattlecruiser_Init();
-static bool unitctrl_IssueAbilitySiegeTank_Func(bool testConds, bool runActions);
 static void unitctrl_IssueAbilitySiegeTank_Init();
 
 // Functions
@@ -37,13 +30,13 @@ void InitUnitControl() {
 }
 
 bool unitctrl_CreateThor_Func(bool testConds, bool runActions) {
-    string lv_player;
     string lv_textTag;
     UnitPlayer lv_unitPlayer;
+    unit lv_unit;
     int lv_costPoints;
+    const string lv_unitType = "ThorAP";
 
-    lv_player = lib1_gf_CurrentCommandArgument(1);
-    lv_textTag = lib1_gf_CurrentCommandArgument(2);
+    lv_textTag = arena_gf_CurrentCommandArgument(1);
 
     if (!runActions) {
         return true;
@@ -52,28 +45,35 @@ bool unitctrl_CreateThor_Func(bool testConds, bool runActions) {
     if (!UnitPlayerFromName(lv_textTag, lv_unitPlayer)) {
         return false;
     }
-    lv_costPoints = CostPointsFromUnitType("ThorAP");
+    lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_textTag);
+    if (lv_unit != null) {
+        return false;
+    }
+    lv_costPoints = CostPointsFromUnitType(lv_unitType);
     if (lv_unitPlayer.points < lv_costPoints) {
         return false;
     }
+    lv_unitPlayer.points -= lv_costPoints;
+    lv_unitPlayer.unitType = lv_unitType;
+    SaveUnitPlayer(lv_unitPlayer);
 
-    lib1_gf_CreatePlayerUnit(StringToInt(lv_player), "ThorAP", lv_textTag, 1.5, 3.5);
+    arena_gf_CreatePlayerUnit(lv_unitPlayer.playerId, lv_unitType, lv_textTag, 1.5, 3.5);
     return true;
 }
 
-void unitctrl_CreateThor_Init () {
+static void unitctrl_CreateThor_Init () {
     gt_unitctrl_CreateThor = TriggerCreate("unitctrl_CreateThor_Func");
-    TriggerAddEventGeneric(gt_unitctrl_CreateThor, (lib1_gv_commandPrefix + "create-thor"));
+    TriggerAddEventGeneric(gt_unitctrl_CreateThor, (arena_gv_commandPrefix + "create-thor"));
 }
 
 bool unitctrl_CreateBattlecruiser_Func(bool testConds, bool runActions) {
-    string lv_player;
     string lv_textTag;
     UnitPlayer lv_unitPlayer;
+    unit lv_unit;
     int lv_costPoints;
+    const string lv_unitType = "Battlecruiser";
 
-    lv_player = lib1_gf_CurrentCommandArgument(1);
-    lv_textTag = lib1_gf_CurrentCommandArgument(2);
+    lv_textTag = arena_gf_CurrentCommandArgument(1);
 
     if (!runActions) {
         return true;
@@ -82,29 +82,36 @@ bool unitctrl_CreateBattlecruiser_Func(bool testConds, bool runActions) {
     if (!UnitPlayerFromName(lv_textTag, lv_unitPlayer)) {
         return false;
     }
-    lv_costPoints = CostPointsFromUnitType("Battlecruiser");
+    lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_textTag);
+    if (lv_unit != null) {
+        return false;
+    }
+    lv_costPoints = CostPointsFromUnitType(lv_unitType);
     if (lv_unitPlayer.points < lv_costPoints) {
         return false;
     }
+    lv_unitPlayer.points -= lv_costPoints;
+    lv_unitPlayer.unitType = lv_unitType;
+    SaveUnitPlayer(lv_unitPlayer);
 
-    lib1_gf_CreatePlayerUnit(StringToInt(lv_player), "Battlecruiser", lv_textTag, 1.5, 2.0);
+    arena_gf_CreatePlayerUnit(lv_unitPlayer.playerId, lv_unitType, lv_textTag, 1.5, 2.0);
     UnitSetPropertyFixed(UnitLastCreated(), c_unitPropEnergyPercent, 100.0);
     return true;
 }
 
-void unitctrl_CreateBattlecruiser_Init() {
+static void unitctrl_CreateBattlecruiser_Init() {
     gt_unitctrl_CreateBattlecruiser = TriggerCreate("unitctrl_CreateBattlecruiser_Func");
-    TriggerAddEventGeneric(gt_unitctrl_CreateBattlecruiser, (lib1_gv_commandPrefix + "create-battlecruiser"));
+    TriggerAddEventGeneric(gt_unitctrl_CreateBattlecruiser, (arena_gv_commandPrefix + "create-battlecruiser"));
 }
 
 bool unitctrl_CreateSiegeTank_Func(bool testConds, bool runActions) {
-    string lv_player;
     string lv_textTag;
     UnitPlayer lv_unitPlayer;
+    unit lv_unit;
     int lv_costPoints;
+    const string lv_unitType = "SiegeTank";
 
-    lv_player = lib1_gf_CurrentCommandArgument(1);
-    lv_textTag = lib1_gf_CurrentCommandArgument(2);
+    lv_textTag = arena_gf_CurrentCommandArgument(1);
 
     if (!runActions) {
         return true;
@@ -113,28 +120,35 @@ bool unitctrl_CreateSiegeTank_Func(bool testConds, bool runActions) {
     if (!UnitPlayerFromName(lv_textTag, lv_unitPlayer)) {
         return false;
     }
-    lv_costPoints = CostPointsFromUnitType("SiegeTank");
+    lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_textTag);
+    if (lv_unit != null) {
+        return false;
+    }
+    lv_costPoints = CostPointsFromUnitType(lv_unitType);
     if (lv_unitPlayer.points < lv_costPoints) {
         return false;
     }
+    lv_unitPlayer.points -= lv_costPoints;
+    lv_unitPlayer.unitType = lv_unitType;
+    SaveUnitPlayer(lv_unitPlayer);
 
-    lib1_gf_CreatePlayerUnit(StringToInt(lv_player), "SiegeTank", lv_textTag, 1.5, 2.5);
+    arena_gf_CreatePlayerUnit(lv_unitPlayer.playerId, lv_unitType, lv_textTag, 1.5, 2.5);
     return true;
 }
 
-void unitctrl_CreateSiegeTank_Init() {
+static void unitctrl_CreateSiegeTank_Init() {
     gt_unitctrl_CreateSiegeTank = TriggerCreate("unitctrl_CreateSiegeTank_Func");
-    TriggerAddEventGeneric(gt_unitctrl_CreateSiegeTank, (lib1_gv_commandPrefix + "create-siege-tank"));
+    TriggerAddEventGeneric(gt_unitctrl_CreateSiegeTank, (arena_gv_commandPrefix + "create-siege-tank"));
 }
 
 bool unitctrl_CreateHellion_Func(bool testConds, bool runActions) {
-    string lv_player;
     string lv_textTag;
     UnitPlayer lv_unitPlayer;
+    unit lv_unit;
     int lv_costPoints;
+    const string lv_unitType = "MengskHellion";
 
-    lv_player = lib1_gf_CurrentCommandArgument(1);
-    lv_textTag = lib1_gf_CurrentCommandArgument(2);
+    lv_textTag = arena_gf_CurrentCommandArgument(1);
 
     if (!runActions) {
         return true;
@@ -143,38 +157,50 @@ bool unitctrl_CreateHellion_Func(bool testConds, bool runActions) {
     if (!UnitPlayerFromName(lv_textTag, lv_unitPlayer)) {
         return false;
     }
-    lv_costPoints = CostPointsFromUnitType("MengskHellion");
+    lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_textTag);
+    if (lv_unit != null) {
+        return false;
+    }
+    lv_costPoints = CostPointsFromUnitType(lv_unitType);
     if (lv_unitPlayer.points < lv_costPoints) {
         return false;
     }
+    lv_unitPlayer.points -= lv_costPoints;
+    lv_unitPlayer.unitType = lv_unitType;
+    SaveUnitPlayer(lv_unitPlayer);
 
-
-    lib1_gf_CreatePlayerUnit(StringToInt(lv_player), "MengskHellion", lv_textTag, 1.5, 2.0);
+    arena_gf_CreatePlayerUnit(lv_unitPlayer.playerId, lv_unitType, lv_textTag, 1.5, 2.0);
     return true;
 }
 
-void unitctrl_CreateHellion_Init() {
+static void unitctrl_CreateHellion_Init() {
     gt_unitctrl_CreateHellion = TriggerCreate("unitctrl_CreateHellion_Func");
-    TriggerAddEventGeneric(gt_unitctrl_CreateHellion, (lib1_gv_commandPrefix + "create-hellion"));
+    TriggerAddEventGeneric(gt_unitctrl_CreateHellion, (arena_gv_commandPrefix + "create-hellion"));
 }
 
 bool unitctrl_IssueAbilityThor_Func(bool testConds, bool runActions) {
     string lv_unitName;
     string lv_unitAbility;
     unit lv_unit;
+    UnitPlayerRef unitPlayer;
 
-    lv_unitName = lib1_gf_CurrentCommandArgument(1);
-    lv_unitAbility = lib1_gf_CurrentCommandArgument(2);
-    lv_unit = DataTableGetUnit(true, (lib1_gv_unitNamePrefix + lv_unitName));
+    lv_unitName = arena_gf_CurrentCommandArgument(1);
+    lv_unitAbility = arena_gf_CurrentCommandArgument(2);
+    lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_unitName));
 
-    if (testConds) {
-        if (lv_unit == null) {
-            return false;
-        }
+    if (lv_unit == null) {
+        return false;
     }
 
     if (!runActions) {
         return true;
+    }
+
+    if (!UnitPlayerFromName(lv_unitName, unitPlayer)) {
+        return false;
+    }
+    if (unitPlayer.unitType != UnitGetType(lv_unit)) {
+        return false;
     }
 
     if (lv_unitAbility == "explosive-payload") {
@@ -191,9 +217,9 @@ bool unitctrl_IssueAbilityThor_Func(bool testConds, bool runActions) {
     return true;
 }
 
-void unitctrl_IssueAbilityThor_Init() {
+static void unitctrl_IssueAbilityThor_Init() {
     gt_unitctrl_IssueAbilityThor = TriggerCreate("unitctrl_IssueAbilityThor_Func");
-    TriggerAddEventGeneric(gt_unitctrl_IssueAbilityThor, (lib1_gv_commandPrefix + "issue-ability-thor"));
+    TriggerAddEventGeneric(gt_unitctrl_IssueAbilityThor, (arena_gv_commandPrefix + "issue-ability-thor"));
 }
 
 bool unitctrl_IssueAbilityBattlecruiser_Func(bool testConds, bool runActions) {
@@ -202,21 +228,27 @@ bool unitctrl_IssueAbilityBattlecruiser_Func(bool testConds, bool runActions) {
     string lv_angle;
     string lv_distance;
     unit lv_unit;
+    UnitPlayerRef unitPlayer;
 
-    lv_unitName = lib1_gf_CurrentCommandArgument(1);
-    lv_unitAbility = lib1_gf_CurrentCommandArgument(2);
-    lv_angle = lib1_gf_CurrentCommandArgument(3);
-    lv_distance = lib1_gf_CurrentCommandArgument(4);
-    lv_unit = DataTableGetUnit(true, (lib1_gv_unitNamePrefix + lv_unitName));
+    lv_unitName = arena_gf_CurrentCommandArgument(1);
+    lv_unitAbility = arena_gf_CurrentCommandArgument(2);
+    lv_angle = arena_gf_CurrentCommandArgument(3);
+    lv_distance = arena_gf_CurrentCommandArgument(4);
+    lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_unitName));
 
-    if (testConds) {
-        if (lv_unit == null) {
-            return false;
-        }
+    if (lv_unit == null) {
+        return false;
     }
 
     if (!runActions) {
         return true;
+    }
+
+    if (!UnitPlayerFromName(lv_unitName, unitPlayer)) {
+        return false;
+    }
+    if (unitPlayer.unitType != UnitGetType(lv_unit)) {
+        return false;
     }
 
     if (lv_unitAbility == "yamato-cannon") {
@@ -233,19 +265,20 @@ bool unitctrl_IssueAbilityBattlecruiser_Func(bool testConds, bool runActions) {
     return true;
 }
 
-void unitctrl_IssueAbilityBattlecruiser_Init() {
+static void unitctrl_IssueAbilityBattlecruiser_Init() {
     gt_unitctrl_IssueAbilityBattlecruiser = TriggerCreate("unitctrl_IssueAbilityBattlecruiser_Func");
-    TriggerAddEventGeneric(gt_unitctrl_IssueAbilityBattlecruiser, (lib1_gv_commandPrefix + "issue-ability-battlecruiser"));
+    TriggerAddEventGeneric(gt_unitctrl_IssueAbilityBattlecruiser, (arena_gv_commandPrefix + "issue-ability-battlecruiser"));
 }
 
 bool unitctrl_IssueAbilitySiegeTank_Func(bool testConds, bool runActions) {
     string lv_unitName;
     string lv_unitAbility;
     unit lv_unit;
+    UnitPlayerRef unitPlayer;
 
-    lv_unitName = lib1_gf_CurrentCommandArgument(1);
-    lv_unitAbility = lib1_gf_CurrentCommandArgument(2);
-    lv_unit = DataTableGetUnit(true, (lib1_gv_unitNamePrefix + lv_unitName));
+    lv_unitName = arena_gf_CurrentCommandArgument(1);
+    lv_unitAbility = arena_gf_CurrentCommandArgument(2);
+    lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_unitName));
 
     if (testConds) {
         if (lv_unit == null) {
@@ -255,6 +288,13 @@ bool unitctrl_IssueAbilitySiegeTank_Func(bool testConds, bool runActions) {
 
     if (!runActions) {
         return true;
+    }
+
+    if (!UnitPlayerFromName(lv_unitName, unitPlayer)) {
+        return false;
+    }
+    if (unitPlayer.unitType != UnitGetType(lv_unit)) {
+        return false;
     }
 
     if (lv_unitAbility == "siege-mode") {
@@ -271,7 +311,7 @@ bool unitctrl_IssueAbilitySiegeTank_Func(bool testConds, bool runActions) {
     return true;
 }
 
-void unitctrl_IssueAbilitySiegeTank_Init() {
+static void unitctrl_IssueAbilitySiegeTank_Init() {
     gt_unitctrl_IssueAbilitySiegeTank = TriggerCreate("unitctrl_IssueAbilitySiegeTank_Func");
-    TriggerAddEventGeneric(gt_unitctrl_IssueAbilitySiegeTank, (lib1_gv_commandPrefix + "issue-ability-siege-tank"));
+    TriggerAddEventGeneric(gt_unitctrl_IssueAbilitySiegeTank, (arena_gv_commandPrefix + "issue-ability-siege-tank"));
 }
