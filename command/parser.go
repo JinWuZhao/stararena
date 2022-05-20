@@ -28,16 +28,16 @@ type Command interface {
 	String() string
 }
 
-type commandConstructor func() Command
+type Constructor func() Command
 
-func makeCmdCtor[T Command]() commandConstructor {
+func MakeCmdCtor[T Command](args ...any) Constructor {
 	return func() Command {
 		var skill T
-		return skill.New()
+		return skill.New(args)
 	}
 }
 
-func makeCmdParsers(commands []commandConstructor, ast *parsec.AST) []interface{} {
+func makeCmdParsers(commands []Constructor, ast *parsec.AST) []interface{} {
 	parsers := make([]interface{}, 0, len(commands))
 	for _, cmd := range commands {
 		parsers = append(parsers, cmd().Parser(ast))
@@ -62,7 +62,7 @@ func parseText(ast *parsec.AST, parser parsec.Parser, text string) parsec.Querya
 	return query
 }
 
-func makeCommand(ctors []commandConstructor, ctx Context, query parsec.Queryable) (Command, error) {
+func makeCommand(ctors []Constructor, ctx Context, query parsec.Queryable) (Command, error) {
 	if len(query.GetChildren()) != 1 {
 		return nil, fmt.Errorf("invalid command")
 	}
@@ -83,7 +83,7 @@ func makeCommand(ctors []commandConstructor, ctx Context, query parsec.Queryable
 	return cmd, err
 }
 
-func parseCommand(ctors []commandConstructor, ast *parsec.AST, parser parsec.Parser, ctx Context, text string) (Command, error) {
+func parseCommand(ctors []Constructor, ast *parsec.AST, parser parsec.Parser, ctx Context, text string) (Command, error) {
 	query := parseText(ast, parser, text)
 	cmd, err := makeCommand(ctors, ctx, query)
 	if err != nil {
@@ -96,14 +96,14 @@ func ParseCommand(ctx Context, text string) (Command, error) {
 	return parseCommand(cmdCtors, cmdAST, cmdParser, ctx, text)
 }
 
-func makeSkillCtor[T Command](op string) commandConstructor {
+func makeSkillCtor[T Command](op string) Constructor {
 	return func() Command {
 		var skill T
 		return skill.New(op)
 	}
 }
 
-func makeUnitSkillParsers(commands []commandConstructor, ast *parsec.AST) []interface{} {
+func makeUnitSkillParsers(commands []Constructor, ast *parsec.AST) []interface{} {
 	parsers := make([]interface{}, 0, len(commands))
 	for _, cmd := range commands {
 		parsers = append(parsers, cmd().Parser(ast))

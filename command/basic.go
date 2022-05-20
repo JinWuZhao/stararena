@@ -20,7 +20,18 @@ func (c *JoinGameCmd) SC2PlayerId() uint32 {
 	return c.sc2PlayerId
 }
 
-func (*JoinGameCmd) New(...any) Command {
+func JoinGameCmdOpts(player string, sc2PlayerId uint32) func(*JoinGameCmd) {
+	return func(cmd *JoinGameCmd) {
+		cmd.player = player
+		cmd.sc2PlayerId = sc2PlayerId
+	}
+}
+
+func (*JoinGameCmd) New(args ...any) Command {
+	if len(args) == 1 {
+		cmd := new(JoinGameCmd)
+		args[0].(func(*JoinGameCmd))(cmd)
+	}
 	return new(JoinGameCmd)
 }
 

@@ -40,7 +40,6 @@ func (m *Director) OnStart(playerId uint32, rpc *sc2client.RpcClient) {
 	log.Println("Director.OnStart():", playerId)
 	m.playerId = playerId
 	m.sc2rpc = rpc
-	m.gameState.Prepare()
 	m.gameState.Start()
 }
 
@@ -74,12 +73,21 @@ cmdLoop:
 			break cmdLoop
 		}
 	}
-	_, err := m.sc2rpc.Action(ctx, &sc2proto.RequestAction{
-		Actions: sc2Actions,
-	})
-	if err != nil {
-		log.Println("Director.OnStep(): m.sc2rpc.Action() error:", err)
-		return
+
+	m.gameState.Step()
+	for _, player := range m.gameState.GetNewPlayers() {
+		sc2Actions = append(sc2Actions, m.makeJoinAction(player))
+	}
+	defer m.gameState.ClearNewPlayers()
+
+	if len(sc2Actions) > 0 {
+		_, err := m.sc2rpc.Action(ctx, &sc2proto.RequestAction{
+			Actions: sc2Actions,
+		})
+		if err != nil {
+			log.Println("Director.OnStep(): m.sc2rpc.Action() error:", err)
+			return
+		}
 	}
 }
 
@@ -92,9 +100,8 @@ func (m *Director) handleCommand(cmd command.Command) *sc2proto.Action {
 	case *command.JoinGameCmd:
 		if m.gameState.Join(state.NewPlayer(cmd.Player(), cmd.SC2PlayerId())) {
 			log.Println(cmd.Player(), "joined game player", cmd.SC2PlayerId())
-		} else {
-			return nil
 		}
+		return nil
 	case *command.CreateUnitCmd:
 		player := m.gameState.GetPlayer(cmd.Player())
 		if player != nil {
@@ -104,6 +111,18 @@ func (m *Director) handleCommand(cmd command.Command) *sc2proto.Action {
 		}
 	default:
 	}
+	return &sc2proto.Action{
+		ActionChat: &sc2proto.ActionChat{
+			Channel: sc2proto.ActionChat_Team.Enum(),
+			Message: proto.String(cmd.String()),
+		},
+	}
+}
+
+func (m *Director) makeJoinAction(player *state.Player) *sc2proto.Action {
+	cmd := command.MakeCmdCtor[*command.JoinGameCmd](
+		command.JoinGameCmdOpts(player.GetName(), player.GetSC2PlayerId()),
+	)()
 	return &sc2proto.Action{
 		ActionChat: &sc2proto.ActionChat{
 			Channel: sc2proto.ActionChat_Team.Enum(),

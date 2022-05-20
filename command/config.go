@@ -2,13 +2,13 @@ package command
 
 import "github.com/jinwuzhao/stararena/data"
 
-var cmdCtors = []commandConstructor{
-	makeCmdCtor[*CreateUnitCmd](),
-	makeCmdCtor[*IssueSkillCmd](),
-	makeCmdCtor[*MoveCmd](),
-	makeCmdCtor[*MoveXCmd](),
-	makeCmdCtor[*ChangeModeCmd](),
-	makeCmdCtor[*JoinGameCmd](),
+var cmdCtors = []Constructor{
+	MakeCmdCtor[*CreateUnitCmd](),
+	MakeCmdCtor[*IssueSkillCmd](),
+	MakeCmdCtor[*MoveCmd](),
+	MakeCmdCtor[*MoveXCmd](),
+	MakeCmdCtor[*ChangeModeCmd](),
+	MakeCmdCtor[*JoinGameCmd](),
 }
 
 var unitDataAcc = map[string]data.Unit{
@@ -18,7 +18,7 @@ var unitDataAcc = map[string]data.Unit{
 	"4": data.UnitBattlecruiser,
 }
 
-var unitSkillCtors = map[string][]commandConstructor{
+var unitSkillCtors = map[string][]Constructor{
 	data.UnitSiegeTank.Name: {
 		makeSkillCtor[*SiegeMode]("1"),
 		makeSkillCtor[*TankMode]("2"),
