@@ -1,7 +1,6 @@
 package state
 
 import (
-	"sort"
 	"sync"
 
 	"go.uber.org/atomic"
@@ -13,7 +12,6 @@ const (
 	GameProgressIdle = iota
 	GameProgressPreparing
 	GameProgressStarted
-	GameProgressRanking
 )
 
 type Game struct {
@@ -84,26 +82,8 @@ func (m *Game) Start() {
 	m.setProgress(GameProgressStarted)
 }
 
-func (m *Game) Rank() {
-	m.setProgress(GameProgressRanking)
-}
-
 func (m *Game) Reset() {
 	m.setProgress(GameProgressIdle)
-}
-
-func (m *Game) GetRankedPlayers() []*Player {
-	m.m.RLock()
-	defer m.m.RUnlock()
-
-	players := make([]*Player, 0, m.playerCap)
-	for _, p := range m.players {
-		players = append(players, p)
-	}
-	sort.SliceStable(players, func(i, j int) bool {
-		return players[i].GetScore() > players[j].GetScore()
-	})
-	return players
 }
 
 func (m *Game) GetPlayer(name string) *Player {

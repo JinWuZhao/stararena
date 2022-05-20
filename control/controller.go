@@ -15,7 +15,6 @@ import (
 
 type Services struct {
 	CmdQueue  *msq.Queue[command.Command]
-	MsgQueue  *msq.Queue[string]
 	GameState *state.Game
 }
 
@@ -23,7 +22,6 @@ type Controller struct {
 	config    *conf.Conf
 	client    *bilidanmu.Client
 	cmdQueue  *msq.Queue[command.Command]
-	msgQueue  *msq.Queue[string]
 	gameState *state.Game
 }
 
@@ -36,7 +34,6 @@ func NewController(cfg *conf.Conf, svc *Services) (*Controller, error) {
 		config:    cfg,
 		client:    client,
 		cmdQueue:  svc.CmdQueue,
-		msgQueue:  svc.MsgQueue,
 		gameState: svc.GameState,
 	}, nil
 }
@@ -60,9 +57,7 @@ func (s *Controller) ReceiveMessage(message bilidanmu.Message) {
 		}
 		player := s.gameState.GetPlayer(m.Uname)
 		if player != nil {
-			ctx.SC2PlayerId = player.GetSC2PlayerId()
 			ctx.Unit = player.GetUnit()
-			ctx.Points = player.GetPoints()
 		}
 		cmd, err := command.ParseCommand(ctx, m.Text)
 		if err == nil {

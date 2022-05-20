@@ -13,11 +13,11 @@ func TestParseCommand(t *testing.T) {
 	}{
 		{
 			Text: "j r",
-			Want: "fake-cmd-join-game player 3",
+			Want: "cmd-add-player player 3",
 		},
 		{
 			Text: "j b",
-			Want: "fake-cmd-join-game player 4",
+			Want: "cmd-add-player player 4",
 		},
 		{
 			Text: "g 10 180",
@@ -52,32 +52,20 @@ func TestParseCommand(t *testing.T) {
 			Want: "cmd-set-behavior-mode player retreat",
 		},
 		{
-			Context: Context{
-				Points: 0,
-			},
 			Text: "u 1",
-			Want: "cmd-create-hellion 3 player",
+			Want: "cmd-create-hellion player",
 		},
 		{
-			Context: Context{
-				Points: 100,
-			},
 			Text: "u 2",
-			Want: "cmd-create-siege-tank 3 player",
+			Want: "cmd-create-siege-tank player",
 		},
 		{
-			Context: Context{
-				Points: 300,
-			},
 			Text: "u 3",
-			Want: "cmd-create-thor 3 player",
+			Want: "cmd-create-thor player",
 		},
 		{
-			Context: Context{
-				Points: 500,
-			},
 			Text: "u 4",
-			Want: "cmd-create-battlecruiser 3 player",
+			Want: "cmd-create-battlecruiser player",
 		},
 		{
 			Context: Context{
@@ -124,7 +112,6 @@ func TestParseCommand(t *testing.T) {
 	}
 	for _, p := range tests {
 		p.Player = "player"
-		p.SC2PlayerId = 3
 		p.SC2RedPlayer = 3
 		p.SC2BluePlayer = 4
 		t.Run(p.Text, func(t *testing.T) {
@@ -139,41 +126,6 @@ func TestParseCommand(t *testing.T) {
 				return
 			}
 			fmt.Println(command.String())
-		})
-	}
-}
-
-func TestParseReport(t *testing.T) {
-	tests := []struct {
-		Text string
-		Want string
-	}{
-		{
-			Text: `report-damage-unit attacker target 100`,
-			Want: `report-damage-unit attacker target 100`,
-		},
-		{
-			Text: `report-kill-unit attacker target siege-tank`,
-			Want: `report-kill-unit attacker target siege-tank`,
-		},
-		{
-			Text: "report-victory 3",
-			Want: "report-victory 3",
-		},
-	}
-	for _, p := range tests {
-		t.Run(p.Text, func(t *testing.T) {
-			report, err := ParseReport(Context{}, p.Text)
-			if err != nil {
-				t.Error("ParseReport() error:", err)
-				return
-			}
-			result := report.String()
-			if p.Want != result {
-				t.Error("incorrect report string:", result, "want:", p.Want)
-				return
-			}
-			fmt.Println(report.String())
 		})
 	}
 }

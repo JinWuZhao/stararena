@@ -11,7 +11,6 @@ import (
 var (
 	cmdAST, cmdParser       = makeParser()
 	skillASTs, skillParsers = makeSkillParsers()
-	reportAST, reportParser = makeReport()
 )
 
 type Context struct {
@@ -19,8 +18,6 @@ type Context struct {
 	SC2BluePlayer uint32
 	Player        string
 	Unit          string
-	SC2PlayerId   uint32
-	Points        int64
 }
 
 type Command interface {
@@ -54,15 +51,6 @@ func makeParser() (*parsec.AST, parsec.Parser) {
 		ast.Kleene("TEXT", nil,
 			ast.OrdChoice("COMMAND", nil,
 				makeCmdParsers(cmdCtors, ast)...),
-			ast.End("END"))
-}
-
-func makeReport() (*parsec.AST, parsec.Parser) {
-	ast := parsec.NewAST("REPORT", 20)
-	return ast,
-		ast.Kleene("TEXT", nil,
-			ast.OrdChoice("REPORT", nil,
-				makeCmdParsers(reportCtors, ast)...),
 			ast.End("END"))
 }
 
@@ -106,10 +94,6 @@ func parseCommand(ctors []commandConstructor, ast *parsec.AST, parser parsec.Par
 
 func ParseCommand(ctx Context, text string) (Command, error) {
 	return parseCommand(cmdCtors, cmdAST, cmdParser, ctx, text)
-}
-
-func ParseReport(ctx Context, text string) (Command, error) {
-	return parseCommand(reportCtors, reportAST, reportParser, ctx, text)
 }
 
 func makeSkillCtor[T Command](op string) commandConstructor {

@@ -48,7 +48,7 @@ func (c *JoinGameCmd) Init(ctx Context, query parsec.Queryable) error {
 }
 
 func (c *JoinGameCmd) String() string {
-	return fmt.Sprintf("fake-cmd-join-game %s %d", c.player, c.sc2PlayerId)
+	return fmt.Sprintf("cmd-add-player %s %d", c.player, c.sc2PlayerId)
 }
 
 type MoveCmd struct {
@@ -194,9 +194,8 @@ func (c *ChangeModeCmd) String() string {
 }
 
 type CreateUnitCmd struct {
-	sc2PlayerId uint32
-	player      string
-	unit        string
+	player string
+	unit   string
 }
 
 func (*CreateUnitCmd) New(...any) Command {
@@ -205,6 +204,14 @@ func (*CreateUnitCmd) New(...any) Command {
 
 func (*CreateUnitCmd) Name() string {
 	return "CREATE_UNIT"
+}
+
+func (c *CreateUnitCmd) Player() string {
+	return c.player
+}
+
+func (c *CreateUnitCmd) Unit() string {
+	return c.unit
 }
 
 func (c *CreateUnitCmd) Parser(ast *parsec.AST) parsec.Parser {
@@ -219,23 +226,16 @@ func (c *CreateUnitCmd) Init(ctx Context, query parsec.Queryable) error {
 	if !ok {
 		return fmt.Errorf("invalid unit name: %s", unitName)
 	}
-	if ctx.SC2PlayerId != ctx.SC2RedPlayer && ctx.SC2PlayerId != ctx.SC2BluePlayer {
-		return fmt.Errorf("invalid sc2 player: %d", ctx.SC2PlayerId)
-	}
-	if ctx.Points-unit.Cost < 0 {
-		return fmt.Errorf("not enough score: %d, need: %d", ctx.Points, unit.Cost)
-	}
 	if ctx.Unit != "" {
 		return fmt.Errorf("unit exists: %s", ctx.Unit)
 	}
 	c.unit = unit.Name
 	c.player = ctx.Player
-	c.sc2PlayerId = ctx.SC2PlayerId
 	return nil
 }
 
 func (c *CreateUnitCmd) String() string {
-	return fmt.Sprintf("cmd-create-%s %d %s", c.unit, c.sc2PlayerId, c.player)
+	return fmt.Sprintf("cmd-create-%s %s", c.unit, c.player)
 }
 
 type IssueSkillCmd struct {

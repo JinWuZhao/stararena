@@ -28,16 +28,11 @@ type State struct {
 	JoinCap   int `toml:"join_cap"`
 }
 
-type Game struct {
-	RankingSteps uint32 `toml:"ranking_steps"`
-}
-
 type Conf struct {
 	BiliDanMu `toml:"bilidanmu"`
 	SC2Client `toml:"sc2client"`
 	Msq       `toml:"msq"`
 	State     `toml:"state"`
-	Game      `toml:"game"`
 }
 
 func NewConf(file string) (*Conf, error) {

@@ -11,12 +11,6 @@ var cmdCtors = []commandConstructor{
 	makeCmdCtor[*JoinGameCmd](),
 }
 
-var reportCtors = []commandConstructor{
-	makeCmdCtor[*DamageUnitReport](),
-	makeCmdCtor[*KillUnitReport](),
-	makeCmdCtor[*VictoryReport](),
-}
-
 var unitDataAcc = map[string]data.Unit{
 	"1": data.UnitHellion,
 	"2": data.UnitSiegeTank,

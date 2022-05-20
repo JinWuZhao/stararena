@@ -36,7 +36,6 @@ func main() {
 
 	controller, err := control.NewController(cfg, &control.Services{
 		CmdQueue:  cmdQueue,
-		MsgQueue:  msgQueue,
 		GameState: gameState,
 	})
 	if err != nil {
