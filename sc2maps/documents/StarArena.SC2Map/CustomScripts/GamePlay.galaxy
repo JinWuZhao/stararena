@@ -5,6 +5,7 @@ static trigger gt_gameplay_DestroyCenters;
 static trigger gt_gameplay_EndGame;
 static trigger gt_gameplay_AddUnitPlayer;
 static trigger gt_gameplay_RemoveUnitPlayer;
+static trigger gt_gameplay_ShowUnitPlayerPoints;
 static trigger gt_gameplay_DamageUnit;
 static trigger gt_gameplay_KillUnit;
 
@@ -20,6 +21,7 @@ static void gameplay_DestroyCenters_Init();
 static void gameplay_EndGame_Init();
 static void gameplay_AddUnitPlayer_Init();
 static void gameplay_RemoveUnitPlayer_Init();
+static void gameplay_ShowUnitPlayerPoints();
 static void gameplay_DamageUnit_Init();
 static void gameplay_KillUnit_Init();
 
@@ -31,6 +33,7 @@ void InitGamePlay() {
     gameplay_EndGame_Init();
     gameplay_AddUnitPlayer_Init();
     gameplay_RemoveUnitPlayer_Init();
+    gameplay_ShowUnitPlayerPoints();
     gameplay_DamageUnit_Init();
     gameplay_KillUnit_Init();
 }
@@ -137,13 +140,13 @@ bool gameplay_Victory_Func(bool testConds, bool runActions) {
         libNtve_gf_CreateDialogItemLabel(DialogLastCreated(), 400, 50, c_anchorCenter, 70, 0, lv_winText, libNtve_gf_ConvertPlayerColorToColor(PlayerGetColorIndex(gv_gameplay_winnerPlayer, false)), false, 2.0);
         DialogSetVisible(DialogLastCreated(), PlayerGroupAll(), true);
 
-        arena_gf_ShowMessage("Ranking:");
+        arena_gf_ShowMessage("排行榜:");
         UnitPlayersOfRanked(rankedUnitPlayers);
         scoreTimer = TimerCreate();
         for (index = 0; index < UnitPlayersCount(); index += 1) {
             TimerStart(scoreTimer, 1.0, false, c_timeReal);
             libNtve_gf_WaitForTimer(scoreTimer, 0.0, false);
-            arena_gf_ShowMessage(IntToString(index+1) + ". " + rankedUnitPlayers[index].name + " ---------------------------- " + IntToString(rankedUnitPlayers[index].score));
+            arena_gf_ShowMessage("第" + IntToString(index+1) + "名：" + rankedUnitPlayers[index].name + " ---------------------------- " + IntToString(rankedUnitPlayers[index].score));
         }
 
         // arena_gf_ShowMessage("Game is ending after 5 seconds");
@@ -272,6 +275,43 @@ static void gameplay_RemoveUnitPlayer_Init() {
     TriggerAddEventGeneric(gt_gameplay_RemoveUnitPlayer, (arena_gv_commandPrefix + "remove-player"));
 }
 
+bool gameplay_ShowUnitPlayerPoints_Func(bool testConds, bool runActions) {
+    string lv_name;
+    UnitPlayer lv_player;
+    unit lv_unit;
+    int lv_pointsText;
+    timer lv_pointsTimer;
+
+    lv_name = arena_gf_CurrentCommandArgument(1);
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (!UnitPlayerFromName(lv_name, lv_player)) {
+        return false;
+    }
+
+    lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_name);
+    if (lv_unit == null) {
+        return false;
+    }
+
+    lv_pointsText = TextTagCreate(StringToText(IntToString(lv_player.points)), 24, UnitGetPosition(lv_unit), 5.0, true, false, PlayerGroupAll());
+    TextTagSetColor(lv_pointsText, c_textTagColorText, Color(0, 255, 0));
+    lv_pointsTimer = TimerCreate();
+    TimerStart(lv_pointsTimer, 2.0, false, c_timeReal);
+    libNtve_gf_WaitForTimer(lv_pointsTimer, 0.0, false);
+    TextTagDestroy(lv_pointsText);
+
+    return true;
+}
+
+static void gameplay_ShowUnitPlayerPoints() {
+    gt_gameplay_ShowUnitPlayerPoints = TriggerCreate("gameplay_ShowUnitPlayerPoints_Func");
+    TriggerAddEventGeneric(gt_gameplay_ShowUnitPlayerPoints, (arena_gv_commandPrefix + "show-points"));
+}
+
 bool gameplay_DamageUnit_Func(bool testConds, bool runActions) {
     string lv_attacker;
     string lv_target;
@@ -282,10 +322,8 @@ bool gameplay_DamageUnit_Func(bool testConds, bool runActions) {
     lv_target = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(EventUnit()))));
     lv_damage = FixedToInt(EventUnitDamageAmount());
 
-    if (testConds) {
-        if (lv_attacker == "") {
-            return false;
-        }
+    if (lv_attacker == "") {
+        return false;
     }
 
     if (!runActions) {
@@ -312,15 +350,16 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
     string lv_target;
     string lv_unitType;
     UnitPlayer lv_player;
+    int lv_rewardPoints;
+    int lv_rewardText;
+    timer lv_rewardTimer;
 
     lv_attacker = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(libNtve_gf_KillingUnit()))));
     lv_target = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(EventUnit()))));
     lv_unitType = UnitGetType(EventUnit());
 
-    if (testConds) {
-        if (lv_attacker == "" || lv_unitType == "") {
-            return false;
-        }
+    if (lv_attacker == "" || lv_unitType == "") {
+        return false;
     }
 
     if (!runActions) {
@@ -331,8 +370,17 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
         return false;
     }
 
-    lv_player.points += RewardPointsFromUnitType(lv_unitType);
+    lv_rewardPoints = RewardPointsFromUnitType(lv_unitType);
+    lv_player.points += lv_rewardPoints;
     SaveUnitPlayer(lv_player);
+
+    lv_rewardText = TextTagCreate(StringToText("+"+IntToString(lv_rewardPoints)), 24, UnitGetPosition(libNtve_gf_KillingUnit()), 3.0, true, false, PlayerGroupAll());
+    TextTagSetColor(lv_rewardText, c_textTagColorText, Color(0, 255, 0));
+    TextTagSetGravity(lv_rewardText, 2.0);
+    lv_rewardTimer = TimerCreate();
+    TimerStart(lv_rewardTimer, 2.0, false, c_timeReal);
+    libNtve_gf_WaitForTimer(lv_rewardTimer, 0.0, false);
+    TextTagDestroy(lv_rewardText);
 
     return true;
 }

@@ -182,7 +182,7 @@ bool unitctrl_IssueAbilityThor_Func(bool testConds, bool runActions) {
     string lv_unitName;
     string lv_unitAbility;
     unit lv_unit;
-    UnitPlayerRef unitPlayer;
+    UnitPlayer unitPlayer;
 
     lv_unitName = arena_gf_CurrentCommandArgument(1);
     lv_unitAbility = arena_gf_CurrentCommandArgument(2);
@@ -228,7 +228,7 @@ bool unitctrl_IssueAbilityBattlecruiser_Func(bool testConds, bool runActions) {
     string lv_angle;
     string lv_distance;
     unit lv_unit;
-    UnitPlayerRef unitPlayer;
+    UnitPlayer unitPlayer;
 
     lv_unitName = arena_gf_CurrentCommandArgument(1);
     lv_unitAbility = arena_gf_CurrentCommandArgument(2);
@@ -274,7 +274,7 @@ bool unitctrl_IssueAbilitySiegeTank_Func(bool testConds, bool runActions) {
     string lv_unitName;
     string lv_unitAbility;
     unit lv_unit;
-    UnitPlayerRef unitPlayer;
+    UnitPlayer unitPlayer;
 
     lv_unitName = arena_gf_CurrentCommandArgument(1);
     lv_unitAbility = arena_gf_CurrentCommandArgument(2);
