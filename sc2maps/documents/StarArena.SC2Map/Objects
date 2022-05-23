@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PlacedObjects Version="27">
     <ObjectPoint Id="1341440731" Position="18.5,47.5,0" Rotation="1.5705" Scale="1,1,1" Type="StartLoc" Name="Start Location 001" Color="0,0,0,0"/>
-    <ObjectPoint Id="1962770220" Position="56.5,9.5,0" Scale="1,1,1" Type="StartLoc" Name="Start Location 003" Color="0,0,0,0"/>
+    <ObjectPoint Id="1738434129" Position="63.5,46.5,0" Scale="1,1,1" Type="StartLoc" Name="Start Location 003" Color="0,0,0,0"/>
     <ObjectPoint Id="1994784925" Position="109.5,47.5,0" Rotation="4.7121" Scale="1,1,1" Type="StartLoc" Name="Start Location 002" Color="0,0,0,0"/>
-    <ObjectPoint Id="1114007871" Position="71.5,9.5,0" Scale="1,1,1" Type="StartLoc" Name="Start Location 004" Color="0,0,0,0"/>
-    <ObjectCamera Id="2107835186" Position="64,44,0" Rotation="3.1406" Scale="1,1,1" Name="Camera 001" Color="0,0,0,0" CameraTarget="64,44">
+    <ObjectCamera Id="2107835186" Position="64,44,0" Rotation="3.1403" Scale="1,1,1" Name="Camera 001" Color="0,0,0,0" CameraTarget="64,44">
         <Flag Index="CameraHidden" Value="1"/>
         <CameraValue Index="FieldOfView" Value="22"/>
         <CameraValue Index="NearClip" Value="0.0998"/>
@@ -12,7 +11,7 @@
         <CameraValue Index="ShadowClip" Value="75"/>
         <CameraValue Index="Distance" Value="160"/>
         <CameraValue Index="Pitch" Value="60"/>
-        <CameraValue Index="Yaw" Value="179.9584"/>
+        <CameraValue Index="Yaw" Value="179.9443"/>
         <CameraValue Index="FocalDepth" Value="8"/>
         <CameraValue Index="FalloffStart" Value="0.0002"/>
         <CameraValue Index="FalloffEnd" Value="8"/>
@@ -22,133 +21,133 @@
         <CameraValue Index="BokehMaxCoC" Value="1"/>
     </ObjectCamera>
     <ObjectUnit Id="1994704143" Position="4,87,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="698635601" Position="123,24,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1462641706" Position="13,41,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="698635601" Position="123,24,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="273820629" Position="115,76,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="1579146521" Position="76,11,0" Rotation="2.5971" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="688201933" Position="5,18,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1567924976" Position="123,67,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="688201933" Position="5,18,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1110438602" Position="19,11,0" Rotation="4.882" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1520938910" Position="123,54,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="396004802" Position="5,80,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1293313903" Position="82.5,59.5,0" Rotation="1.5705" Scale="1,1,1" UnitType="KorhalBaseDoor" Player="4"/>
     <ObjectUnit Id="300270073" Position="11,6,0" Rotation="4.3547" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="2038352669" Position="79,68,0" Rotation="2.2531" Scale="1,1,1" UnitType="AutoTurret" Player="4"/>
-    <ObjectUnit Id="2028310332" Position="125,7,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1560852648" Position="68,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
+    <ObjectUnit Id="2028310332" Position="125,7,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="2038352669" Position="79,68,0" Rotation="2.2531" Scale="1,1,1" UnitType="AutoTurret" Player="4"/>
     <ObjectUnit Id="274152933" Position="27,11,0" Rotation="2.5727" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1329655060" Position="25,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
     <ObjectUnit Id="80620264" Position="103,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
-    <ObjectUnit Id="915346222" Position="110.5,75.5,0" Rotation="5.4975" Scale="1,1,1" UnitType="ShadowShieldGenerator" Player="4"/>
     <ObjectUnit Id="1379749896" Position="60,11,0" Rotation="2.9091" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="915346222" Position="110.5,75.5,0" Rotation="5.4975" Scale="1,1,1" UnitType="ShadowShieldGenerator" Player="4"/>
     <ObjectUnit Id="664657153" Position="52,93,0" Rotation="3.6857" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1091798832" Position="53,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
     <ObjectUnit Id="1908253163" Position="19,87,0" Rotation="4.882" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="2101411617" Position="5,74,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1557398235" Position="3,7,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="2144822920" Position="60,87,0" Rotation="2.9091" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="2101411617" Position="5,74,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="490024109" Position="115,62,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
-    <ObjectUnit Id="1403411023" Position="19,6,0" Rotation="4.882" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="2144822920" Position="60,87,0" Rotation="2.9091" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="375923104" Position="115,20,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="1403411023" Position="19,6,0" Rotation="4.882" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1957420924" Position="115,69,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="1819294470" Position="101,6,0" Rotation="3.7106" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="9373335" Position="82.5,37.5,0" Rotation="1.5705" Scale="1,1,1" UnitType="KorhalBaseDoor" Player="4"/>
-    <ObjectUnit Id="1895006504" Position="5,67,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1806402569" Position="11,87,0" Rotation="4.3547" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="1895006504" Position="5,67,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1636926893" Position="11,11,0" Rotation="4.355" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1797848962" Position="39,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
     <ObjectUnit Id="1155317105" Position="18,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
-    <ObjectUnit Id="1245545250" Position="109,6,0" Rotation="1.4023" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1587027227" Position="25,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
+    <ObjectUnit Id="1245545250" Position="109,6,0" Rotation="1.4023" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="103260458" Position="115,48,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
-    <ObjectUnit Id="452809536" Position="76,93,0" Rotation="2.598" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="401193908" Position="52,6,0" Rotation="3.6857" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1394673277" Position="101,87,0" Rotation="3.7106" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="401193908" Position="52,6,0" Rotation="3.6857" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="452809536" Position="76,93,0" Rotation="2.598" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1876799093" Position="52,87,0" Rotation="3.6857" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1266893120" Position="123,61,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="1068668633" Position="49,29,0" Rotation="3.6086" Scale="1,1,1" UnitType="AutoTurret" Player="3"/>
     <ObjectUnit Id="169764512" Position="52,11,0" Rotation="3.6857" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="1068668633" Position="49,29,0" Rotation="3.6086" Scale="1,1,1" UnitType="AutoTurret" Player="3"/>
     <ObjectUnit Id="117372303" Position="115,34,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="247932684" Position="49,43,0" Rotation="3.2131" Scale="1,1,1" UnitType="AutoTurret" Player="3"/>
     <ObjectUnit Id="1494543820" Position="27,93,0" Rotation="2.5727" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="364321823" Position="45.5,25.5,0" Rotation="1.5705" Scale="1,1,1" UnitType="KorhalBaseDoor" Player="3"/>
     <ObjectUnit Id="1973242150" Position="32,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
+    <ObjectUnit Id="364321823" Position="45.5,25.5,0" Rotation="1.5705" Scale="1,1,1" UnitType="KorhalBaseDoor" Player="3"/>
     <ObjectUnit Id="2012353108" Position="89,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
     <ObjectUnit Id="1597900550" Position="123,74,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="2074083284" Position="117,93,0" Rotation="1.9291" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="294275045" Position="101,93,0" Rotation="3.7106" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="58294942" Position="13,76,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="789528626" Position="115,27,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="58294942" Position="13,76,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="294275045" Position="101,93,0" Rotation="3.7106" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="237534729" Position="5,36,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1516472049" Position="82,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
     <ObjectUnit Id="246903630" Position="17.5,21.5,0" Rotation="5.4975" Scale="1,1,1" UnitType="ShadowShieldGenerator" Player="3"/>
     <ObjectUnit Id="1674251475" Position="123,48,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="708085345" Position="123,18,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1385769104" Position="101,11,0" Rotation="3.7102" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="2037834550" Position="18,48,0" Scale="1,1,1" UnitType="Beacon_Terran" Player="3"/>
     <ObjectUnit Id="2133075332" Position="35,93,0" Rotation="4.108" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="2037834550" Position="18,48,0" Scale="1,1,1" UnitType="Beacon_Terran" Player="3"/>
     <ObjectUnit Id="1718528209" Position="49,54,0" Rotation="3.2131" Scale="1,1,1" UnitType="AutoTurret" Player="3"/>
     <ObjectUnit Id="1306088270" Position="46,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
-    <ObjectUnit Id="2053839100" Position="44,87,0" Rotation="2.3735" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="1856547835" Position="13,48,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="1229445737" Position="13,34,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="1856547835" Position="13,48,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="2053839100" Position="44,87,0" Rotation="2.3735" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1223293425" Position="123,42,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1561759866" Position="93,11,0" Rotation="2.1748" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="1566453065" Position="124,87,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1926033433" Position="68,11,0" Rotation="3.3737" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="1566453065" Position="124,87,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="362760711" Position="84,87,0" Rotation="3.91" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="164921043" Position="17.5,75.5,0" Rotation="5.4975" Scale="1,1,1" UnitType="ShadowShieldGenerator" Player="3"/>
     <ObjectUnit Id="1178334304" Position="124,93,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="164921043" Position="17.5,75.5,0" Rotation="5.4975" Scale="1,1,1" UnitType="ShadowShieldGenerator" Player="3"/>
     <ObjectUnit Id="681220710" Position="110.5,21.5,0" Rotation="5.4975" Scale="1,1,1" UnitType="ShadowShieldGenerator" Player="4"/>
-    <ObjectUnit Id="695467662" Position="5,24,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1481699042" Position="35,11,0" Rotation="4.108" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="695467662" Position="5,24,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="477444458" Position="75,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
-    <ObjectUnit Id="997671178" Position="79,54,0" Rotation="3.0698" Scale="1,1,1" UnitType="AutoTurret" Player="4"/>
-    <ObjectUnit Id="1692971022" Position="45.5,37.5,0" Rotation="4.7121" Scale="1,1,1" UnitType="KorhalBaseDoor" Player="3"/>
-    <ObjectUnit Id="283918043" Position="5,48,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="1632845683" Position="125,12,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="649701348" Position="109,93,0" Rotation="1.4023" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="1465509549" Position="5,61,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="1930093812" Position="84,6,0" Rotation="3.91" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="1632845683" Position="125,12,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="283918043" Position="5,48,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="1692971022" Position="45.5,37.5,0" Rotation="4.7121" Scale="1,1,1" UnitType="KorhalBaseDoor" Player="3"/>
+    <ObjectUnit Id="997671178" Position="79,54,0" Rotation="3.0698" Scale="1,1,1" UnitType="AutoTurret" Player="4"/>
     <ObjectUnit Id="1894467976" Position="13,55,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="1930093812" Position="84,6,0" Rotation="3.91" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="1465509549" Position="5,61,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="2006543305" Position="96,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
     <ObjectUnit Id="205996411" Position="84,93,0" Rotation="3.91" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1800459491" Position="93,87,0" Rotation="2.176" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1313971664" Position="82.5,72.5,0" Rotation="4.7121" Scale="1,1,1" UnitType="KorhalBaseDoor" Player="4"/>
     <ObjectUnit Id="1836665118" Position="75,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
     <ObjectUnit Id="157945579" Position="19,93,0" Rotation="4.882" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="322702259" Position="44,93,0" Rotation="2.3735" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1079499150" Position="60,93,0" Rotation="2.9091" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="322702259" Position="44,93,0" Rotation="2.3735" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="835406745" Position="46,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
-    <ObjectUnit Id="372151970" Position="79,29,0" Rotation="2.6743" Scale="1,1,1" UnitType="AutoTurret" Player="4"/>
     <ObjectUnit Id="849652292" Position="35,87,0" Rotation="4.108" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="1814022151" Position="13,27,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="372151970" Position="79,29,0" Rotation="2.6743" Scale="1,1,1" UnitType="AutoTurret" Player="4"/>
     <ObjectUnit Id="65584521" Position="89,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
+    <ObjectUnit Id="1814022151" Position="13,27,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="1480968876" Position="76,6,0" Rotation="2.598" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="906009075" Position="84,11,0" Rotation="3.9094" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="228278863" Position="79,43,0" Rotation="3.0698" Scale="1,1,1" UnitType="AutoTurret" Player="4"/>
     <ObjectUnit Id="1914858509" Position="76,87,0" Rotation="2.598" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="315594141" Position="110,48,0" Scale="1,1,1" UnitType="Beacon_Terran" Player="4"/>
+    <ObjectUnit Id="228278863" Position="79,43,0" Rotation="3.0698" Scale="1,1,1" UnitType="AutoTurret" Player="4"/>
     <ObjectUnit Id="1909958052" Position="115,41,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
-    <ObjectUnit Id="2135425615" Position="96,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
+    <ObjectUnit Id="315594141" Position="110,48,0" Scale="1,1,1" UnitType="Beacon_Terran" Player="4"/>
     <ObjectUnit Id="1432153117" Position="39,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
-    <ObjectUnit Id="381605944" Position="27,6,0" Rotation="2.5727" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="2044230416" Position="13,62,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="2135425615" Position="96,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
     <ObjectUnit Id="754948729" Position="115,55,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="2044230416" Position="13,62,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="381605944" Position="27,6,0" Rotation="2.5727" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="2140769046" Position="123,36,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="118784181" Position="11,93,0" Rotation="4.3547" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="857518377" Position="49,68,0" Rotation="4.0297" Scale="1,1,1" UnitType="AutoTurret" Player="3"/>
     <ObjectUnit Id="926220255" Position="93,6,0" Rotation="2.176" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="882830025" Position="5,54,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="376524351" Position="53,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
+    <ObjectUnit Id="882830025" Position="5,54,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="2126693575" Position="68,87,0" Rotation="3.3742" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="608062084" Position="45.5,59.5,0" Rotation="4.7121" Scale="1,1,1" UnitType="KorhalBaseDoor" Player="3"/>
-    <ObjectUnit Id="2031850618" Position="44,11,0" Rotation="2.3735" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1983902532" Position="82,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
+    <ObjectUnit Id="2031850618" Position="44,11,0" Rotation="2.3735" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="608062084" Position="45.5,59.5,0" Rotation="4.7121" Scale="1,1,1" UnitType="KorhalBaseDoor" Player="3"/>
     <ObjectUnit Id="1501785405" Position="117,11,0" Rotation="1.928" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1921962190" Position="3,12,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="1404805052" Position="123,30,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="279574195" Position="68,93,0" Rotation="3.3742" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="1404805052" Position="123,30,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="300984882" Position="110,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
     <ObjectUnit Id="414776336" Position="27,87,0" Rotation="2.5727" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1214665589" Position="32,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
@@ -167,13 +166,13 @@
     <ObjectUnit Id="1568038838" Position="110,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
     <ObjectUnit Id="185926231" Position="13,20,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="787978711" Position="123,80,0" Rotation="1.9296" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
-    <ObjectUnit Id="1729649726" Position="109,87,0" Rotation="1.4023" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="146413911" Position="18,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
+    <ObjectUnit Id="1729649726" Position="109,87,0" Rotation="1.4023" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1717076385" Position="5,30,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="1377697748" Position="13,69,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="1899910532" Position="103,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
-    <ObjectUnit Id="690098005" Position="4,93,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="108138531" Position="117,6,0" Rotation="1.9291" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
+    <ObjectUnit Id="690098005" Position="4,93,0" Rotation="4.3544" Scale="1,1,1" UnitType="MissileTurret" Player="1"/>
     <ObjectUnit Id="2043301957" Position="60,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
     <Group Type="ObjectUnit" Name="BoundWall" Id="1">
         <GroupObject Id="58294942"/>

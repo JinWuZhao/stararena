@@ -37,6 +37,7 @@ trigger arena_gt_SetBehaviorMode;
 trigger arena_gt_KillUnit;
 trigger arena_gt_BehaviorModeAction;
 trigger arena_gt_CleanDeadUnit;
+trigger arena_gt_UnitLifeChange;
 
 // Library Initialization
 void arena_InitVariables ();
@@ -157,21 +158,28 @@ void arena_gf_DispatchCommand (string lp_name, string lp_arguments) {
 void arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed lp_angle, fixed lp_scale, string lp_textTag, fixed lp_tagHeight) {
     // Variable Declarations
     fixed lv_realTagHeight;
+    fixed lv_unitHealth;
+    unit lv_createdUnit;
+    int lv_textTag;
 
     // Automatic Variable Declarations
     // Variable Initialization
 
     // Implementation
     UnitCreate(1, lp_type, 0, lp_player, lp_point, lp_angle);
-    UnitGroupAdd(arena_gv_playerUnitGroup, UnitLastCreated());
-    UnitSetScale(UnitLastCreated(), (lp_scale * 100.0), (lp_scale * 100.0), (lp_scale * 100.0));
-    UnitSetTeamColorIndex(UnitLastCreated(), PlayerGetColorIndex(lp_player, false));
+    lv_createdUnit = UnitLastCreated();
+    UnitGroupAdd(arena_gv_playerUnitGroup, lv_createdUnit);
+    UnitSetScale(lv_createdUnit, (lp_scale * 100.0), (lp_scale * 100.0), (lp_scale * 100.0));
+    UnitSetTeamColorIndex(lv_createdUnit, PlayerGetColorIndex(lp_player, false));
     if ((lp_textTag != "")) {
-        lv_realTagHeight = (UnitGetHeight(UnitLastCreated()) + (lp_scale * lp_tagHeight));
-        TextTagCreate(StringToText(lp_textTag), 22, UnitGetPosition(UnitLastCreated()), lv_realTagHeight, true, false, PlayerGroupAll());
-        TextTagAttachToUnit(TextTagLastCreated(), UnitLastCreated(), lv_realTagHeight);
-        DataTableSetUnit(true, (arena_gv_unitNamePrefix + lp_textTag), UnitLastCreated());
-        DataTableSetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(UnitLastCreated()))), lp_textTag);
+        lv_realTagHeight = (UnitGetHeight(lv_createdUnit) + (lp_scale * lp_tagHeight));
+        lv_unitHealth = UnitGetPropertyFixed(lv_createdUnit, c_unitPropLifePercent, c_unitPropCurrent);
+        lv_textTag = TextTagCreate(StringToText(lp_textTag + " " + FixedToString(lv_unitHealth, 0) + "%"), 22, UnitGetPosition(lv_createdUnit), lv_realTagHeight, true, false, PlayerGroupAll());
+        TextTagSetColor(lv_textTag, c_textTagColorText, libNtve_gf_ConvertPlayerColorToColor(PlayerGetColorIndex(lp_player, false)));
+        TextTagAttachToUnit(lv_textTag, lv_createdUnit, lv_realTagHeight);
+        DataTableSetUnit(true, (arena_gv_unitNamePrefix + lp_textTag), lv_createdUnit);
+        DataTableSetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_createdUnit))), lp_textTag);
+        UnitSetCustomValue(lv_createdUnit, 0, IntToFixed(lv_textTag));
     }
 
 }
@@ -438,6 +446,30 @@ void arena_gt_CleanDeadUnit_Init () {
     TriggerAddEventUnitDied(arena_gt_CleanDeadUnit, null);
 }
 
+bool arena_gt_UnitLifeChange_Func(bool testConds, bool runActions) {
+    string lv_target;
+    fixed lv_unitHealth;
+    int lv_textTag;
+
+    if (!runActions) {
+        return true;
+    }
+
+    lv_target = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(EventUnit()))));
+    lv_unitHealth = UnitGetPropertyFixed(EventUnit(), c_unitPropLifePercent, c_unitPropCurrent);
+    lv_textTag = FixedToInt(UnitGetCustomValue(EventUnit(), 0));
+    if (lv_textTag > 0) {
+        TextTagSetText(lv_textTag, StringToText(lv_target + " " + FixedToString(lv_unitHealth, 0) + "%"));
+    }
+
+    return true;
+}
+
+void arena_gt_UnitLifeChange_Init() {
+    arena_gt_UnitLifeChange = TriggerCreate("arena_gt_UnitLifeChange_Func");
+    TriggerAddEventUnitProperty(arena_gt_UnitLifeChange, null, c_unitPropLife);
+}
+
 void arena_InitTriggers () {
     arena_gt_ProcessCommand_Init();
     arena_gt_MoveToward_Init();
@@ -445,6 +477,7 @@ void arena_InitTriggers () {
     arena_gt_KillUnit_Init();
     arena_gt_BehaviorModeAction_Init();
     arena_gt_CleanDeadUnit_Init();
+    arena_gt_UnitLifeChange_Init();
 }
 
 bool arena_InitLib_completed = false;
