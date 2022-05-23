@@ -31,6 +31,7 @@ func (*JoinGameCmd) New(args ...any) Command {
 	if len(args) == 1 {
 		cmd := new(JoinGameCmd)
 		(args[0]).(func(*JoinGameCmd))(cmd)
+		return cmd
 	}
 	return new(JoinGameCmd)
 }
@@ -236,9 +237,6 @@ func (c *CreateUnitCmd) Init(ctx Context, query parsec.Queryable) error {
 	unit, ok := unitDataAcc[unitName]
 	if !ok {
 		return fmt.Errorf("invalid unit name: %s", unitName)
-	}
-	if ctx.Unit != "" {
-		return fmt.Errorf("unit exists: %s", ctx.Unit)
 	}
 	c.unit = unit.Name
 	c.player = ctx.Player
