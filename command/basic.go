@@ -30,7 +30,7 @@ func JoinGameCmdOpts(player string, sc2PlayerId uint32) func(*JoinGameCmd) {
 func (*JoinGameCmd) New(args ...any) Command {
 	if len(args) == 1 {
 		cmd := new(JoinGameCmd)
-		args[0].(func(*JoinGameCmd))(cmd)
+		(args[0]).(func(*JoinGameCmd))(cmd)
 	}
 	return new(JoinGameCmd)
 }

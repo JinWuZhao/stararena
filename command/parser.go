@@ -33,7 +33,7 @@ type Constructor func() Command
 func MakeCmdCtor[T Command](args ...any) Constructor {
 	return func() Command {
 		var skill T
-		return skill.New(args)
+		return skill.New(args...)
 	}
 }
 
