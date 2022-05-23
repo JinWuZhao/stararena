@@ -9,6 +9,7 @@ var cmdCtors = []Constructor{
 	MakeCmdCtor[*MoveXCmd](),
 	MakeCmdCtor[*ChangeModeCmd](),
 	MakeCmdCtor[*JoinGameCmd](),
+	MakeCmdCtor[*ShowPointsCmd](),
 }
 
 var unitDataAcc = map[string]data.Unit{

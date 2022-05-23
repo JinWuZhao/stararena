@@ -288,6 +288,32 @@ func (c *IssueSkillCmd) String() string {
 	return fmt.Sprintf("cmd-issue-ability-%s %s %s", c.unit, c.player, c.skill.String())
 }
 
+type ShowPointsCmd struct {
+	player string
+}
+
+func (c *ShowPointsCmd) New(...any) Command {
+	return new(ShowPointsCmd)
+}
+
+func (c *ShowPointsCmd) Name() string {
+	return "SHOW_POINTS"
+}
+
+func (c *ShowPointsCmd) Parser(ast *parsec.AST) parsec.Parser {
+	return ast.And(c.Name(), nil,
+		parsec.AtomExact(`pt`, "OP"))
+}
+
+func (c *ShowPointsCmd) Init(ctx Context, query parsec.Queryable) error {
+	c.player = ctx.Player
+	return nil
+}
+
+func (c *ShowPointsCmd) String() string {
+	return fmt.Sprintf("cmd-show-points %s", c.player)
+}
+
 type EndGameCmd struct {
 }
 

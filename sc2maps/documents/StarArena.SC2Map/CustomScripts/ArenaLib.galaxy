@@ -414,17 +414,15 @@ bool arena_gt_CleanDeadUnit_Func (bool testConds, bool runActions) {
     // Variable Declarations
     int lv_unitTag;
     string lv_unitName;
+    int lv_textTag;
 
     // Automatic Variable Declarations
     // Variable Initialization
     lv_unitTag = UnitGetTag(EventUnit());
     lv_unitName = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(lv_unitTag)));
 
-    // Conditions
-    if (testConds) {
-        if (!((UnitGroupHasUnit(arena_gv_playerUnitGroup, EventUnit()) == true))) {
-            return false;
-        }
+    if (!UnitGroupHasUnit(arena_gv_playerUnitGroup, EventUnit())) {
+        return false;
     }
 
     // Actions
@@ -437,6 +435,10 @@ bool arena_gt_CleanDeadUnit_Func (bool testConds, bool runActions) {
     DataTableValueRemove(true, (arena_gv_unitTagPrefix + IntToString(lv_unitTag)));
     DataTableValueRemove(true, (arena_gv_unitNamePrefix + lv_unitName));
     UnitGroupRemove(arena_gv_playerUnitGroup, EventUnit());
+    lv_textTag = FixedToInt(UnitGetCustomValue(EventUnit(), 0));
+    if (lv_textTag > 0) {
+        TextTagDestroy(lv_textTag);
+    }
     return true;
 }
 

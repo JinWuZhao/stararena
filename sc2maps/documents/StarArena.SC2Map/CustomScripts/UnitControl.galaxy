@@ -199,20 +199,15 @@ bool unitctrl_IssueAbilityThor_Func(bool testConds, bool runActions) {
     if (!UnitPlayerFromName(lv_unitName, unitPlayer)) {
         return false;
     }
-    if (unitPlayer.unitType != UnitGetType(lv_unit)) {
+    if (unitPlayer.unitType != UnitGetType(lv_unit) && UnitGetType(lv_unit) != "Thor" && UnitGetType(lv_unit) != "ThorAP") {
         return false;
     }
 
     if (lv_unitAbility == "explosive-payload") {
         UnitIssueOrder(lv_unit, Order(AbilityCommand("ThorNormalMode", 0)), c_orderQueueReplace);
-
     }
     else if (lv_unitAbility == "high-impact-payload") {
         UnitIssueOrder(lv_unit, Order(AbilityCommand("ThorAPMode", 0)), c_orderQueueReplace);
-
-    }
-    else {
-
     }
     return true;
 }
@@ -253,14 +248,9 @@ bool unitctrl_IssueAbilityBattlecruiser_Func(bool testConds, bool runActions) {
 
     if (lv_unitAbility == "yamato-cannon") {
         UnitIssueOrder(lv_unit, OrderTargetingUnit(AbilityCommand("Yamato", 0), OrderGetTargetUnit(UnitOrder(lv_unit, 0))), c_orderQueueReplace);
-
     }
     else if (lv_unitAbility == "tactical-jump") {
         UnitIssueOrder(lv_unit, OrderTargetingPoint(AbilityCommand("Hyperjump", 0), PointWithOffsetPolar(UnitGetPosition(lv_unit), StringToFixed(lv_distance), StringToFixed(lv_angle))), c_orderQueueReplace);
-
-    }
-    else {
-
     }
     return true;
 }
@@ -280,10 +270,8 @@ bool unitctrl_IssueAbilitySiegeTank_Func(bool testConds, bool runActions) {
     lv_unitAbility = arena_gf_CurrentCommandArgument(2);
     lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_unitName));
 
-    if (testConds) {
-        if (lv_unit == null) {
-            return false;
-        }
+    if (lv_unit == null) {
+        return false;
     }
 
     if (!runActions) {
@@ -293,20 +281,15 @@ bool unitctrl_IssueAbilitySiegeTank_Func(bool testConds, bool runActions) {
     if (!UnitPlayerFromName(lv_unitName, unitPlayer)) {
         return false;
     }
-    if (unitPlayer.unitType != UnitGetType(lv_unit)) {
+    if (unitPlayer.unitType != UnitGetType(lv_unit) && UnitGetType(lv_unit) != "SiegeTankSieged") {
         return false;
     }
 
     if (lv_unitAbility == "siege-mode") {
         UnitIssueOrder(lv_unit, Order(AbilityCommand("SiegeMode", 0)), c_orderQueueReplace);
-
     }
     else if (lv_unitAbility == "tank-mode") {
         UnitIssueOrder(lv_unit, Order(AbilityCommand("Unsiege", 0)), c_orderQueueReplace);
-
-    }
-    else {
-
     }
     return true;
 }
