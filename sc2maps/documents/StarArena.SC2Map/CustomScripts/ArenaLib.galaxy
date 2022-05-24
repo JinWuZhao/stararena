@@ -421,20 +421,19 @@ bool arena_gt_CleanDeadUnit_Func (bool testConds, bool runActions) {
     lv_unitTag = UnitGetTag(EventUnit());
     lv_unitName = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(lv_unitTag)));
 
-    if (!UnitGroupHasUnit(arena_gv_playerUnitGroup, EventUnit())) {
-        return false;
-    }
-
     // Actions
     if (!runActions) {
         return true;
     }
 
     arena_gf_DebugLog(("Unit Died: " + IntToString(lv_unitTag) + " " + lv_unitName));
-    DataTableValueRemove(true, (arena_gv_unitBehaviorModePrefix + IntToString(lv_unitTag)));
-    DataTableValueRemove(true, (arena_gv_unitTagPrefix + IntToString(lv_unitTag)));
-    DataTableValueRemove(true, (arena_gv_unitNamePrefix + lv_unitName));
-    UnitGroupRemove(arena_gv_playerUnitGroup, EventUnit());
+
+    if (UnitGroupHasUnit(arena_gv_playerUnitGroup, EventUnit())) {
+        DataTableValueRemove(true, (arena_gv_unitBehaviorModePrefix + IntToString(lv_unitTag)));
+        DataTableValueRemove(true, (arena_gv_unitTagPrefix + IntToString(lv_unitTag)));
+        DataTableValueRemove(true, (arena_gv_unitNamePrefix + lv_unitName));
+        UnitGroupRemove(arena_gv_playerUnitGroup, EventUnit());
+    }
     lv_textTag = FixedToInt(UnitGetCustomValue(EventUnit(), 0));
     if (lv_textTag > 0) {
         TextTagDestroy(lv_textTag);
@@ -452,16 +451,29 @@ bool arena_gt_UnitLifeChange_Func(bool testConds, bool runActions) {
     string lv_target;
     fixed lv_unitHealth;
     int lv_textTag;
+    unit lv_unit;
+    string lv_text;
 
     if (!runActions) {
         return true;
     }
 
-    lv_target = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(EventUnit()))));
-    lv_unitHealth = UnitGetPropertyFixed(EventUnit(), c_unitPropLifePercent, c_unitPropCurrent);
-    lv_textTag = FixedToInt(UnitGetCustomValue(EventUnit(), 0));
+    lv_unit = EventUnit();
+    lv_target = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_unit))));
+    lv_unitHealth = UnitGetPropertyFixed(lv_unit, c_unitPropLifePercent, c_unitPropCurrent);
+    lv_textTag = FixedToInt(UnitGetCustomValue(lv_unit, 0));
     if (lv_textTag > 0) {
-        TextTagSetText(lv_textTag, StringToText(lv_target + " " + FixedToString(lv_unitHealth, 0) + "%"));
+        if (lv_target != "") {
+            lv_text = lv_target + " " + FixedToString(lv_unitHealth, 0) + "%";
+        } else {
+            lv_text = FixedToString(lv_unitHealth, 0) + "%";
+        }
+        TextTagSetText(lv_textTag, StringToText(lv_text));
+    } else {
+        lv_unitHealth = UnitGetPropertyFixed(lv_unit, c_unitPropLifePercent, c_unitPropCurrent);
+        lv_textTag = TextTagCreate(StringToText(FixedToString(lv_unitHealth, 0) + "%"), 22, UnitGetPosition(lv_unit), 4, true, false, PlayerGroupAll());
+        TextTagAttachToUnit(lv_textTag, lv_unit, 4);
+        UnitSetCustomValue(lv_unit, 0, IntToFixed(lv_textTag));
     }
 
     return true;
