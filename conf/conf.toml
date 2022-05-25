@@ -2,8 +2,8 @@
 room_id = 23891811
 
 [sc2client]
-red_player = 3
-blue_player = 4
+red_player = 4
+blue_player = 3
 game_map = "Custom/StarArena.SC2Map"
 director_name = "GM"
 audience_name = "SYSTEM"

@@ -362,7 +362,7 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
     lv_target = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(EventUnit()))));
     lv_unitType = UnitGetType(EventUnit());
 
-    if (lv_attacker == "" || lv_unitType == "") {
+    if (lv_attacker == "" || lv_target == "" || lv_attacker == lv_target || lv_unitType == "") {
         return false;
     }
 
