@@ -1,0 +1,14 @@
+// Player AI Mode
+const int c_AIModeNone = 0;
+const int c_AIModeAttack = 1;
+const int c_AIModeDefence = 2;
+const int c_AIModeRetreat = 3;
+
+
+void aimode_RunAttack() {
+
+}
+
+void aimode_Run() {
+
+}

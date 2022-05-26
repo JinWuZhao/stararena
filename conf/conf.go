@@ -7,6 +7,7 @@ import (
 )
 
 type BiliDanMu struct {
+	Enable bool   `toml:"enable"`
 	RoomId uint32 `toml:"room_id"`
 }
 

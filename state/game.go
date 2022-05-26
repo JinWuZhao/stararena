@@ -1,9 +1,13 @@
 package state
 
 import (
+	"math/rand"
 	"sync"
 
+	"github.com/bwmarrin/snowflake"
 	"go.uber.org/atomic"
+
+	"github.com/jinwuzhao/stararena/conf"
 )
 
 type GameProgress int32
@@ -14,21 +18,26 @@ const (
 )
 
 type Game struct {
-	progress   atomic.Int32
-	playerCap  int
-	players    map[string]*Player
-	newPlayers []string
-	joinQueue  chan *Player
-	joinSet    map[string]struct{}
-	m          sync.RWMutex
+	config         *conf.Conf
+	progress       atomic.Int32
+	players        map[string]*Player
+	redPlayersNum  int
+	bluePlayersNum int
+	newPlayers     []string
+	joinQueue      chan *Player
+	joinSet        map[string]struct{}
+	m              sync.RWMutex
+	botIdGen       *snowflake.Node
 }
 
-func NewGame(playerCap int, joinCap int) *Game {
+func NewGame(config *conf.Conf) *Game {
+	node, _ := snowflake.NewNode(1)
 	return &Game{
-		playerCap: playerCap,
+		config:    config,
 		players:   make(map[string]*Player, 0),
-		joinQueue: make(chan *Player, joinCap),
+		joinQueue: make(chan *Player, config.JoinCap),
 		joinSet:   make(map[string]struct{}),
+		botIdGen:  node,
 	}
 }
 
@@ -66,40 +75,64 @@ func (m *Game) Start() {
 		return
 	}
 
-	m.setProgress(GameProgressStarted)
-
 	m.m.Lock()
 	for name := range m.players {
 		delete(m.joinSet, name)
 	}
 	m.players = make(map[string]*Player, 0)
+	m.redPlayersNum = 0
+	m.bluePlayersNum = 0
 	m.newPlayers = nil
 	m.m.Unlock()
+
+	m.setProgress(GameProgressStarted)
 }
 
-func (m *Game) Step() {
-	for i := 0; i < 10; i++ {
+func (m *Game) HandleJoinPlayers() {
+	for i := 0; i < 1; i++ {
 		if m.GetProgress() != GameProgressStarted {
 			break
 		}
 
 		m.m.RLock()
-		if len(m.players) >= m.playerCap {
+		if len(m.players) >= m.config.PlayerCap {
 			m.m.RUnlock()
 			break
 		}
 		m.m.RUnlock()
 
+		var player *Player
 		select {
-		case player := <-m.joinQueue:
-			m.m.Lock()
-			if len(m.players) < m.playerCap {
-				m.players[player.GetName()] = player
-				m.newPlayers = append(m.newPlayers, player.GetName())
-			}
-			m.m.Unlock()
+		case player = <-m.joinQueue:
 		default:
+			if rand.Intn(100)%20 == 0 {
+				randSC2PlayerId := []uint32{
+					m.config.RedPlayer,
+					m.config.BluePlayer,
+				}[rand.Intn(2)]
+				player = NewBotPlayer(m.botIdGen.Generate().String(), randSC2PlayerId)
+			}
 		}
+		if player == nil {
+			break
+		}
+
+		m.m.Lock()
+		if len(m.players) < m.config.PlayerCap {
+			if m.redPlayersNum >= m.config.PlayerCap/2 && player.GetSC2PlayerId() == m.config.RedPlayer {
+				player.SetSC2PlayerId(m.config.BluePlayer)
+			} else if m.bluePlayersNum >= m.config.PlayerCap/2 && player.GetSC2PlayerId() == m.config.BluePlayer {
+				player.SetSC2PlayerId(m.config.RedPlayer)
+			}
+			m.players[player.GetName()] = player
+			m.newPlayers = append(m.newPlayers, player.GetName())
+			if player.GetSC2PlayerId() == m.config.RedPlayer {
+				m.redPlayersNum++
+			} else if player.GetSC2PlayerId() == m.config.BluePlayer {
+				m.bluePlayersNum++
+			}
+		}
+		m.m.Unlock()
 	}
 }
 
@@ -121,6 +154,11 @@ func (m *Game) RemovePlayer(name string) *Player {
 	player := m.players[name]
 	delete(m.players, name)
 	delete(m.joinSet, name)
+	if player.GetSC2PlayerId() == m.config.RedPlayer {
+		m.redPlayersNum--
+	} else if player.GetSC2PlayerId() == m.config.BluePlayer {
+		m.bluePlayersNum--
+	}
 	return player
 }
 
@@ -142,4 +180,17 @@ func (m *Game) ClearNewPlayers() {
 	defer m.m.Unlock()
 
 	m.newPlayers = nil
+}
+
+func (m *Game) GetBotPlayers() []*Player {
+	m.m.RLock()
+	defer m.m.RUnlock()
+
+	var players []*Player
+	for _, p := range m.players {
+		if p.IsBot() {
+			players = append(players, p)
+		}
+	}
+	return players
 }

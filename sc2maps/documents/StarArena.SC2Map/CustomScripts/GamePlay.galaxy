@@ -350,19 +350,21 @@ static void gameplay_DamageUnit_Init() {
 }
 
 bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
+    unit lv_attackerUnit;
     string lv_attacker;
-    string lv_target;
+    unit lv_targetUnit;
     string lv_unitType;
     UnitPlayer lv_player;
     int lv_rewardPoints;
     int lv_rewardText;
     timer lv_rewardTimer;
 
-    lv_attacker = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(libNtve_gf_KillingUnit()))));
-    lv_target = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(EventUnit()))));
-    lv_unitType = UnitGetType(EventUnit());
+    lv_attackerUnit = EventUnitDamageSourceUnit();
+    lv_attacker = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_attackerUnit))));
+    lv_targetUnit = EventUnit();
+    lv_unitType = UnitGetType(lv_targetUnit);
 
-    if (lv_attacker == "" || lv_target == "" || lv_attacker == lv_target || lv_unitType == "") {
+    if (lv_attacker == "" || !UnitGroupHasUnit(arena_gv_playerUnitGroup, lv_targetUnit)) {
         return false;
     }
 

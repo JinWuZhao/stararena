@@ -3,6 +3,7 @@ package game
 import (
 	"context"
 	"log"
+	"math/rand"
 
 	"github.com/JinWuZhao/sc2client"
 	"github.com/JinWuZhao/sc2client/sc2proto"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/jinwuzhao/stararena/command"
 	"github.com/jinwuzhao/stararena/conf"
+	"github.com/jinwuzhao/stararena/data"
 	"github.com/jinwuzhao/stararena/msq"
 	"github.com/jinwuzhao/stararena/state"
 )
@@ -21,6 +23,7 @@ type Services struct {
 }
 
 type Director struct {
+	config    *conf.Conf
 	playerId  uint32
 	sc2rpc    *sc2client.RpcClient
 	cmdQueue  *msq.Queue[command.Command]
@@ -30,6 +33,7 @@ type Director struct {
 
 func NewDirector(cfg *conf.Conf, svc *Services) *Director {
 	return &Director{
+		config:    cfg,
 		cmdQueue:  svc.CmdQueue,
 		msgQueue:  svc.MsgQueue,
 		gameState: svc.GameState,
@@ -44,6 +48,7 @@ func (m *Director) OnStart(playerId uint32, rpc *sc2client.RpcClient) {
 }
 
 func (m *Director) OnStep(ctx context.Context, st *sc2client.StepState) {
+
 chatLoop:
 	for {
 		select {
@@ -74,11 +79,16 @@ cmdLoop:
 		}
 	}
 
-	m.gameState.Step()
-	for _, player := range m.gameState.GetNewPlayers() {
-		sc2Actions = append(sc2Actions, m.makeJoinAction(player))
+	if st.Steps%20 == 0 {
+		m.gameState.HandleJoinPlayers()
+		for _, player := range m.gameState.GetNewPlayers() {
+			sc2Actions = append(sc2Actions, m.makeJoinAction(player))
+			if player.IsBot() {
+				sc2Actions = append(sc2Actions, m.makeBotStartActions(player)...)
+			}
+		}
+		m.gameState.ClearNewPlayers()
 	}
-	defer m.gameState.ClearNewPlayers()
 
 	if len(sc2Actions) > 0 {
 		_, err := m.sc2rpc.Action(ctx, &sc2proto.RequestAction{
@@ -129,4 +139,36 @@ func (m *Director) makeJoinAction(player *state.Player) *sc2proto.Action {
 			Message: proto.String(cmd.String()),
 		},
 	}
+}
+
+func (m *Director) makeBotStartActions(player *state.Player) []*sc2proto.Action {
+	var actions []*sc2proto.Action
+
+	createUnitCmd := command.MakeCmdCtor[*command.CreateUnitCmd](
+		command.CreateUnitCmdOpts(player.GetName(), data.UnitHellion.Name),
+	)()
+	actions = append(actions, &sc2proto.Action{
+		ActionChat: &sc2proto.ActionChat{
+			Channel: sc2proto.ActionChat_Team.Enum(),
+			Message: proto.String(createUnitCmd.String()),
+		},
+	})
+
+	var angle int32
+	if player.GetSC2PlayerId() == m.config.BluePlayer {
+		angle = rand.Int31n(60) - 30
+	} else if player.GetSC2PlayerId() == m.config.RedPlayer {
+		angle = rand.Int31n(60) + 150
+	}
+	moveCmd := command.MakeCmdCtor[*command.MoveCmd](
+		command.MoveCmdOpts(player.GetName(), rand.Int31n(30)+40, angle),
+	)()
+	actions = append(actions, &sc2proto.Action{
+		ActionChat: &sc2proto.ActionChat{
+			Channel: sc2proto.ActionChat_Team.Enum(),
+			Message: proto.String(moveCmd.String()),
+		},
+	})
+
+	return actions
 }

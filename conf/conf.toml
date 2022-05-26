@@ -1,4 +1,5 @@
 [bilidanmu]
+enable = true
 room_id = 23891811
 
 [sc2client]

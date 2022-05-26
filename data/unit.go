@@ -1,9 +1,7 @@
 package data
 
 type Unit struct {
-	Name   string
-	Cost   int64
-	Reward int64
+	Name string
 }
 
 var unitByName = map[string]Unit{
@@ -20,23 +18,15 @@ func GetUnitByName(name string) (unit Unit, ok bool) {
 
 var (
 	UnitHellion = Unit{
-		Name:   "hellion",
-		Cost:   0,
-		Reward: 100,
+		Name: "hellion",
 	}
 	UnitSiegeTank = Unit{
-		Name:   "siege-tank",
-		Cost:   100,
-		Reward: 150,
+		Name: "siege-tank",
 	}
 	UnitThor = Unit{
-		Name:   "thor",
-		Cost:   300,
-		Reward: 200,
+		Name: "thor",
 	}
 	UnitBattlecruiser = Unit{
-		Name:   "battlecruiser",
-		Cost:   500,
-		Reward: 300,
+		Name: "battlecruiser",
 	}
 )

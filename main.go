@@ -32,21 +32,24 @@ func main() {
 
 	cmdQueue := msq.NewQueue[command.Command](cfg.CmdQueueCap)
 	msgQueue := msq.NewQueue[string](cfg.MsgQueueCap)
-	gameState := state.NewGame(cfg.PlayerCap, cfg.JoinCap)
+	gameState := state.NewGame(cfg)
 
-	controller, err := control.NewController(cfg, &control.Services{
-		CmdQueue:  cmdQueue,
-		GameState: gameState,
-	})
-	if err != nil {
-		log.Println("control.NewController() error:", err)
-		return
-	}
+	if cfg.BiliDanMu.Enable {
+		controller, err := control.NewController(cfg, &control.Services{
+			CmdQueue:  cmdQueue,
+			GameState: gameState,
+		})
+		if err != nil {
+			log.Println("control.NewController() error:", err)
+			return
+		}
 
-	err = controller.Start(ctx)
-	if err != nil {
-		log.Println("controller.Start() error:", err)
-		return
+		err = controller.Start(ctx)
+		if err != nil {
+			log.Println("controller.Start() error:", err)
+			return
+		}
+		defer controller.WaitForStop()
 	}
 
 	director := game.NewDirector(
@@ -81,6 +84,4 @@ func main() {
 		log.Println("sc2client.RunGame() error:", err)
 		return
 	}
-
-	controller.WaitForStop()
 }

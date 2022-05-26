@@ -69,7 +69,20 @@ type MoveCmd struct {
 	angle    int32
 }
 
-func (*MoveCmd) New(...any) Command {
+func MoveCmdOpts(player string, distance int32, angle int32) func(*MoveCmd) {
+	return func(cmd *MoveCmd) {
+		cmd.player = player
+		cmd.distance = distance
+		cmd.angle = angle
+	}
+}
+
+func (*MoveCmd) New(args ...any) Command {
+	if len(args) == 1 {
+		cmd := new(MoveCmd)
+		(args[0]).(func(*MoveCmd))(cmd)
+		return cmd
+	}
 	return new(MoveCmd)
 }
 
@@ -210,7 +223,19 @@ type CreateUnitCmd struct {
 	unit   string
 }
 
-func (*CreateUnitCmd) New(...any) Command {
+func CreateUnitCmdOpts(player string, unit string) func(*CreateUnitCmd) {
+	return func(cmd *CreateUnitCmd) {
+		cmd.player = player
+		cmd.unit = unit
+	}
+}
+
+func (*CreateUnitCmd) New(args ...any) Command {
+	if len(args) == 1 {
+		cmd := new(CreateUnitCmd)
+		(args[0]).(func(*CreateUnitCmd))(cmd)
+		return cmd
+	}
 	return new(CreateUnitCmd)
 }
 
