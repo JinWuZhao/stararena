@@ -8,6 +8,7 @@ const string arena_gv_commandPrefix = "cmd-";
 const string arena_gv_unitNamePrefix = "unit-name-";
 const string arena_gv_unitTagPrefix = "unit-tag-";
 const string arena_gv_unitBehaviorModePrefix = "unit-behavior-mode-";
+const int arena_gv_unitTextTagIndex = 0;
 
 // Variable Declarations
 int arena_gv_directorPlayer;
@@ -179,7 +180,7 @@ void arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed l
         TextTagAttachToUnit(lv_textTag, lv_createdUnit, lv_realTagHeight);
         DataTableSetUnit(true, (arena_gv_unitNamePrefix + lp_textTag), lv_createdUnit);
         DataTableSetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_createdUnit))), lp_textTag);
-        UnitSetCustomValue(lv_createdUnit, 0, IntToFixed(lv_textTag));
+        UnitSetCustomValue(lv_createdUnit, arena_gv_unitTextTagIndex, IntToFixed(lv_textTag));
     }
 
 }
@@ -434,7 +435,7 @@ bool arena_gt_CleanDeadUnit_Func (bool testConds, bool runActions) {
         DataTableValueRemove(true, (arena_gv_unitNamePrefix + lv_unitName));
         UnitGroupRemove(arena_gv_playerUnitGroup, EventUnit());
     }
-    lv_textTag = FixedToInt(UnitGetCustomValue(EventUnit(), 0));
+    lv_textTag = FixedToInt(UnitGetCustomValue(EventUnit(), arena_gv_unitTextTagIndex));
     if (lv_textTag > 0) {
         TextTagDestroy(lv_textTag);
     }
@@ -461,7 +462,7 @@ bool arena_gt_UnitLifeChange_Func(bool testConds, bool runActions) {
     lv_unit = EventUnit();
     lv_target = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_unit))));
     lv_unitHealth = UnitGetPropertyFixed(lv_unit, c_unitPropLifePercent, c_unitPropCurrent);
-    lv_textTag = FixedToInt(UnitGetCustomValue(lv_unit, 0));
+    lv_textTag = FixedToInt(UnitGetCustomValue(lv_unit, arena_gv_unitTextTagIndex));
     if (lv_textTag > 0) {
         if (lv_target != "") {
             lv_text = lv_target + " " + FixedToString(lv_unitHealth, 0) + "%";
@@ -473,7 +474,7 @@ bool arena_gt_UnitLifeChange_Func(bool testConds, bool runActions) {
         lv_unitHealth = UnitGetPropertyFixed(lv_unit, c_unitPropLifePercent, c_unitPropCurrent);
         lv_textTag = TextTagCreate(StringToText(FixedToString(lv_unitHealth, 0) + "%"), 22, UnitGetPosition(lv_unit), 4, true, false, PlayerGroupAll());
         TextTagAttachToUnit(lv_textTag, lv_unit, 4);
-        UnitSetCustomValue(lv_unit, 0, IntToFixed(lv_textTag));
+        UnitSetCustomValue(lv_unit, arena_gv_unitTextTagIndex, IntToFixed(lv_textTag));
     }
 
     return true;

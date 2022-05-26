@@ -1,5 +1,6 @@
 // Const Declarations
-static const int gv_gamestate_unitPlayersCap = 20;
+const int c_unitPlayerAIStatesCap = 10;
+static const int c_gamestate_unitPlayersCap = 20;
 
 // Type Declarations
 struct UnitPlayer {
@@ -8,11 +9,13 @@ struct UnitPlayer {
     int playerId;
     int score;
     int points;
+    int aiMode;
+    int[c_unitPlayerAIStatesCap] aiStates;
 };
 
 typedef structref<UnitPlayer> UnitPlayerRef;
 
-typedef UnitPlayer[gv_gamestate_unitPlayersCap] UnitPlayerArray;
+typedef UnitPlayer[c_gamestate_unitPlayersCap] UnitPlayerArray;
 typedef arrayref<UnitPlayerArray> UnitPlayerArrayRef;
 
 // Variable Declarations
@@ -41,17 +44,24 @@ static void gamestate_InitUnitPlayerIndexOfName() {
 }
 
 static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source) {
+    int lv_aiStatesIndex;
+
     dest.name = source.name;
     dest.playerId = source.playerId;
     dest.points = source.points;
     dest.score = source.score;
     dest.unitType = source.unitType;
+    dest.aiMode = source.aiMode;
+
+    for (lv_aiStatesIndex = 0; lv_aiStatesIndex < c_unitPlayerAIStatesCap; lv_aiStatesIndex += 1) {
+        dest.aiStates[lv_aiStatesIndex] = source.aiStates[lv_aiStatesIndex];
+    }
 }
 
 static int gamestate_PickAvailableUnitPlayerIndex() {
     int index;
 
-    for (index = 0; index < gv_gamestate_unitPlayersCap; index += 1) {
+    for (index = 0; index < c_gamestate_unitPlayersCap; index += 1) {
         if (gv_gamestate_unitPlayers[index].name == null) {
             break;
         }
@@ -66,7 +76,7 @@ static void gamestate_SaveUnitPlayerByIndex(int index, UnitPlayerRef player) {
 
 bool AddUnitPlayer(UnitPlayerRef player) {
     int index = gamestate_PickAvailableUnitPlayerIndex();
-    if (index == gv_gamestate_unitPlayersCap) {
+    if (index == c_gamestate_unitPlayersCap) {
         return false;
     }
     gamestate_SaveUnitPlayerByIndex(index, player);

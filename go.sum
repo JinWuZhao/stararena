@@ -2,10 +2,6 @@ github.com/BurntSushi/toml v1.1.0 h1:ksErzDEI1khOiGPgpwuI7x2ebx/uXQNw7xJpn9Eq1+I
 github.com/BurntSushi/toml v1.1.0/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
 github.com/JinWuZhao/bilidanmu v0.0.0-20220507054202-d5d89dcf88ea h1:kINq1l6sh/eCIMop263yQ5Xhxf09IX4MlFZVjDkvX28=
 github.com/JinWuZhao/bilidanmu v0.0.0-20220507054202-d5d89dcf88ea/go.mod h1:sLvXk6VOYeKSJ7B15DFjyOqsjXgMUpjp5vQbFwwVfiI=
-github.com/JinWuZhao/sc2client v0.0.0-20220512053154-6cc5c01e9b7f h1:QCUfxnvYREs82V8ndScHbo4JqXXkbu609k36vqUuPJI=
-github.com/JinWuZhao/sc2client v0.0.0-20220512053154-6cc5c01e9b7f/go.mod h1:C2Wq3hR3VIMvTHvDldTm9fIK/SHJmxJ4Rqhe6x01YmU=
-github.com/JinWuZhao/sc2client v0.0.0-20220512142018-b760770e746b h1:S3olFTrs4n4DmRwIaqnMKi561WISrdlEGmKa2/NgeAo=
-github.com/JinWuZhao/sc2client v0.0.0-20220512142018-b760770e746b/go.mod h1:C2Wq3hR3VIMvTHvDldTm9fIK/SHJmxJ4Rqhe6x01YmU=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

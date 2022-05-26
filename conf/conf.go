@@ -11,11 +11,11 @@ type BiliDanMu struct {
 }
 
 type SC2Client struct {
-	RedPlayer    uint32 `toml:"red_player"`
-	BluePlayer   uint32 `toml:"blue_player"`
-	GameMap      string `toml:"game_map"`
-	DirectorName string `toml:"director_name"`
-	AudienceName string `toml:"audience_name"`
+	RedPlayer    uint32   `toml:"red_player"`
+	BluePlayer   uint32   `toml:"blue_player"`
+	GameMaps     []string `toml:"game_maps"`
+	DirectorName string   `toml:"director_name"`
+	AudienceName string   `toml:"audience_name"`
 }
 
 type Msq struct {

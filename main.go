@@ -58,7 +58,7 @@ func main() {
 	audience := game.NewAudience(msgQueue)
 
 	err = sc2client.RunGame(ctx,
-		cfg.GameMap,
+		cfg.GameMaps,
 		[]*sc2client.PlayerSetup{
 			{
 				Type:       sc2proto.PlayerType_Participant,
