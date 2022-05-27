@@ -1,11 +1,13 @@
 // Const Declarations
 const int c_unitPlayerAIStatesCap = 10;
-static const int c_gamestate_unitPlayersCap = 20;
+static const int c_unitPlayersCap = 20;
+static const int c_gamestate_autoRewardPointsPerSecond = 10;
 
 // Type Declarations
 struct UnitPlayer {
     string name;
     string unitType;
+    datetime rewardTime;
     int playerId;
     int score;
     int points;
@@ -15,7 +17,7 @@ struct UnitPlayer {
 
 typedef structref<UnitPlayer> UnitPlayerRef;
 
-typedef UnitPlayer[c_gamestate_unitPlayersCap] UnitPlayerArray;
+typedef UnitPlayer[c_unitPlayersCap] UnitPlayerArray;
 typedef arrayref<UnitPlayerArray> UnitPlayerArrayRef;
 
 // Variable Declarations
@@ -28,6 +30,8 @@ bool AddUnitPlayer(UnitPlayerRef player);
 bool RemoveUnitPlayer(string name);
 bool SaveUnitPlayer(UnitPlayerRef player);
 bool UnitPlayerFromName(string name, UnitPlayerRef player);
+int UnitPlayerAutoRewardPoints(UnitPlayerRef player);
+void UnitPlayersGetAll(UnitPlayerArrayRef players);
 int UnitPlayersCount();
 void UnitPlayersOfRanked(UnitPlayerArrayRef players);
 void InitGameState();
@@ -51,6 +55,7 @@ static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source) {
     dest.points = source.points;
     dest.score = source.score;
     dest.unitType = source.unitType;
+    dest.rewardTime = source.rewardTime;
     dest.aiMode = source.aiMode;
 
     for (lv_aiStatesIndex = 0; lv_aiStatesIndex < c_unitPlayerAIStatesCap; lv_aiStatesIndex += 1) {
@@ -61,7 +66,7 @@ static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source) {
 static int gamestate_PickAvailableUnitPlayerIndex() {
     int index;
 
-    for (index = 0; index < c_gamestate_unitPlayersCap; index += 1) {
+    for (index = 0; index < c_unitPlayersCap; index += 1) {
         if (gv_gamestate_unitPlayers[index].name == null) {
             break;
         }
@@ -76,9 +81,10 @@ static void gamestate_SaveUnitPlayerByIndex(int index, UnitPlayerRef player) {
 
 bool AddUnitPlayer(UnitPlayerRef player) {
     int index = gamestate_PickAvailableUnitPlayerIndex();
-    if (index == c_gamestate_unitPlayersCap) {
+    if (index == c_unitPlayersCap) {
         return false;
     }
+    player.rewardTime = CurrentDateTimeGet();
     gamestate_SaveUnitPlayerByIndex(index, player);
     gv_gamestate_unitPlayersCount += 1;
     return true;
@@ -120,6 +126,22 @@ bool UnitPlayerFromName(string name, UnitPlayerRef player) {
     return true;
 }
 
+int UnitPlayerAutoRewardPoints(UnitPlayerRef player) {
+    datetime lv_currentTime;
+    int lv_duration;
+    int lv_reward;
+
+    lv_currentTime = CurrentDateTimeGet();
+    lv_duration = DateTimeToInt(lv_currentTime) - DateTimeToInt(player.rewardTime);
+    if (lv_duration > 0) {
+        lv_reward = lv_duration * c_gamestate_autoRewardPointsPerSecond;
+    }
+    player.points += lv_reward;
+    player.rewardTime = lv_currentTime;
+    SaveUnitPlayer(player);
+    return lv_reward;
+}
+
 int UnitPlayersCount() {
     return gv_gamestate_unitPlayersCount;
 }
@@ -142,6 +164,14 @@ void UnitPlayersOfRanked(UnitPlayerArrayRef players) {
                 gamestate_CopyUnitPlayer(players[j], tempPlayer);
             }
         } 
+    }
+}
+
+void UnitPlayersGetAll(UnitPlayerArrayRef players) {
+    int index;
+
+    for (index = 0; index < gv_gamestate_unitPlayersCount; index += 1) {
+        gamestate_CopyUnitPlayer(players[index], gv_gamestate_unitPlayers[index]);
     }
 }
 

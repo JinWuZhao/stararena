@@ -1,14 +1,11 @@
 // Player AI Mode
-const int c_AIModeNone = 0;
-const int c_AIModeAttack = 1;
-const int c_AIModeDefence = 2;
-const int c_AIModeRetreat = 3;
+const int c_AIModeNone = 0; // 手动模式，可执行各种指令
+const int c_AIModeAttack = 1; // 进攻模式，自动移动到前线发起攻击
+const int c_AIModeDefence = 2; // 防御模式，在城门处游走
+const int c_AIModeRetreat = 3; // 撤退模式，退回到家里方守
+const int c_AIModeHunter = 4; // 猎杀模式，寻找落单玩家攻击
+const int c_AIModeDestroy = 5; // 破坏模式，优先破坏建筑
 
-
-void aimode_RunAttack() {
-
-}
-
-void aimode_Run() {
+void InitAIMode() {
 
 }
