@@ -4,7 +4,7 @@
 
 - 安装SC2游戏客户端
 - 安装Go语言编译器1.18版本或以上
-- 访问https://goproxy.io/，按照提示配置GOPROXY
+- 访问[goproxy.io](https://goproxy.io/)，按照提示配置GOPROXY
 - 在项目根目录下执行命令`go mod tidy`，下载依赖
 - 编辑项目目录下的`conf/conf.toml`文件，修改`bilidanmu.room_id`为你的直播间ID，如果不需要测试弹幕，可以将`bilidanmu.enable`设置为`false`
 - 将项目目录下的`sc2maps/product/StarArena.SC2Map`文件复制到SC2游戏客户端安装目录下的`Maps/Custom`路径下（如：`D:\Blizzard\StarCraft II\Maps\Custom`，如果没有此路径可以手动创建）
