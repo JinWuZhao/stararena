@@ -18,6 +18,9 @@
 - 编写触发器
 打开`VSCode`编辑器，在插件商店中搜索安装`talv.sc2galaxy`和`talv.sc2layouts`这两个插件，然后用`VSCode`打开`sc2maps/documents/StarArena.SC2Map`文件夹，可以在`CustomScripts`目录中找到触发器脚本。
 
+- 导出地图文件测试
+在SC2地图编辑器中将地图另存为`SC2Map`文件格式到`sc2maps/product/StarArena.SC2Map`，并复制一份到SC2游戏客户端安装目录下的`Maps/Custom`目录中，即可开始测试。
+
 ## 实现机制
 
 服务启动了两个SC2客户端，相当于两个真人玩家，一个称为`导演(director)`，另一个为`观众(audience)`。  
