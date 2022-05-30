@@ -3,19 +3,20 @@ enable = true
 room_id = 23891811
 
 [sc2client]
-red_player = 4
-blue_player = 3
+red_player = 4 # SC2地图中红队玩家ID
+blue_player = 3 # SC2地图中蓝队玩家ID
+# SC2地图文件路径，每轮游戏按顺序循环自动选择地图
 game_maps = [
     "Custom/StarArena.SC2Map",
     "Custom/StarArena1.SC2Map",
 ]
-director_name = "GM"
-audience_name = "SYSTEM"
+director_name = "GM" # “导演”显示名称
+audience_name = "SYSTEM" # “观众”显示名称
 
 [msq]
-cmd_queue_cap = 100
-msg_queue_cap = 100
+cmd_queue_cap = 100 # 弹幕操作指令队列容量
+msg_queue_cap = 100 # “观众”消息队列容量
 
 [state]
-player_cap = 20
-join_cap = 100
+player_cap = 20 # 参与玩家人数上限
+join_cap = 100 # 加入游戏队列容量
