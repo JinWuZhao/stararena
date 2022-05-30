@@ -7,8 +7,7 @@ red_player = 4 # SC2地图中红队玩家ID
 blue_player = 3 # SC2地图中蓝队玩家ID
 # SC2地图文件路径，每轮游戏按顺序循环自动选择地图
 game_maps = [
-    "Custom/StarArena.SC2Map",
-    "Custom/StarArena1.SC2Map",
+    "StarArena.SC2Map",
 ]
 director_name = "GM" # “导演”显示名称
 audience_name = "SYSTEM" # “观众”显示名称
