@@ -2,8 +2,6 @@ github.com/BurntSushi/toml v1.1.0 h1:ksErzDEI1khOiGPgpwuI7x2ebx/uXQNw7xJpn9Eq1+I
 github.com/BurntSushi/toml v1.1.0/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
 github.com/JinWuZhao/bilidanmu v0.0.0-20220507054202-d5d89dcf88ea h1:kINq1l6sh/eCIMop263yQ5Xhxf09IX4MlFZVjDkvX28=
 github.com/JinWuZhao/bilidanmu v0.0.0-20220507054202-d5d89dcf88ea/go.mod h1:sLvXk6VOYeKSJ7B15DFjyOqsjXgMUpjp5vQbFwwVfiI=
-github.com/JinWuZhao/sc2client v0.0.0-20220526111633-fa3bbabaf60e h1:y4tpQobPmGAJO0sG0M8VkS51Dq0S63Uu+eyni+y1uyA=
-github.com/JinWuZhao/sc2client v0.0.0-20220526111633-fa3bbabaf60e/go.mod h1:C2Wq3hR3VIMvTHvDldTm9fIK/SHJmxJ4Rqhe6x01YmU=
 github.com/JinWuZhao/sc2client v0.0.0-20220530034918-b83fd289cbe1 h1:dMNgCqwuK4o+FvSfMjqn2Mp76uRKD9kZHoF4fdOWP7o=
 github.com/JinWuZhao/sc2client v0.0.0-20220530034918-b83fd289cbe1/go.mod h1:C2Wq3hR3VIMvTHvDldTm9fIK/SHJmxJ4Rqhe6x01YmU=
 github.com/bwmarrin/snowflake v0.3.0 h1:xm67bEhkKh6ij1790JB83OujPR5CzNe8QuQqAgISZN0=
@@ -42,8 +40,6 @@ github.com/json-iterator/go v1.1.9/go.mod h1:KdQUCv79m/52Kvf8AW2vK1V8akMuk1QjK/u
 github.com/json-iterator/go v1.1.12 h1:PV8peI4a0ysnczrg+LtxykD8LfKY9ML6u2jnxaEnrnM=
 github.com/json-iterator/go v1.1.12/go.mod h1:e30LSqwooZae/UwlEbR2852Gd8hjQvJoHmT4TnhNGBo=
 github.com/klauspost/compress v1.10.3/go.mod h1:aoV0uJVorq1K+umq18yTdKaF57EivdYsUV+/s2qKfXs=
-github.com/klauspost/compress v1.15.4 h1:1kn4/7MepF/CHmYub99/nNX8az0IJjfSOU/jbnTVfqQ=
-github.com/klauspost/compress v1.15.4/go.mod h1:PhcZ0MbTNciWF3rruxRgKxI5NkcHHrHUDtV4Yw2GlzU=
 github.com/klauspost/compress v1.15.5 h1:qyCLMz2JCrKADihKOh9FxnW3houKeNsp2h5OEz0QSEA=
 github.com/klauspost/compress v1.15.5/go.mod h1:PhcZ0MbTNciWF3rruxRgKxI5NkcHHrHUDtV4Yw2GlzU=
 github.com/leodido/go-urn v1.2.0 h1:hpXL4XnriNwQ/ABnpepYM/1vCLWNDfUNts8dX3xTG6Y=
