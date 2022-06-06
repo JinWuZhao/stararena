@@ -1,4 +1,5 @@
 // Trigger Declarations
+static trigger gt_unitctrl_SetAIMode;
 static trigger gt_unitctrl_CreateThor;
 static trigger gt_unitctrl_CreateBattlecruiser;
 static trigger gt_unitctrl_CreateSiegeTank;
@@ -10,6 +11,7 @@ static trigger gt_unitctrl_IssueAbilitySiegeTank;
 // Function Declarations
 void InitUnitControl();
 
+static void unitctrl_SetAIMode_Init();
 static void unitctrl_CreateThor_Init();
 static void unitctrl_CreateBattlecruiser_Init();
 static void unitctrl_CreateSiegeTank_Init();
@@ -20,6 +22,7 @@ static void unitctrl_IssueAbilitySiegeTank_Init();
 
 // Functions
 void InitUnitControl() {
+    unitctrl_SetAIMode_Init();
     unitctrl_CreateThor_Init();
     unitctrl_CreateBattlecruiser_Init();
     unitctrl_CreateSiegeTank_Init();
@@ -27,6 +30,41 @@ void InitUnitControl() {
     unitctrl_IssueAbilityThor_Init();
     unitctrl_IssueAbilityBattlecruiser_Init();
     unitctrl_IssueAbilitySiegeTank_Init();
+}
+
+bool unitctrl_SetAIMode_Func(bool testConds, bool runActions) {
+    string lv_textTag;
+    int lv_aiMode;
+    UnitPlayer lv_unitPlayer;
+    unit lv_unit;
+
+    lv_textTag = arena_gf_CurrentCommandArgument(1);
+    lv_aiMode = StringToInt(arena_gf_CurrentCommandArgument(2));
+    if (!AIModeValidMode(lv_aiMode)) {
+        return false;
+    }
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (!UnitPlayerFromName(lv_textTag, lv_unitPlayer)) {
+        return false;
+    }
+
+    lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_textTag);
+    if (lv_unit != null) {
+        UnitIssueOrder(lv_unit, Order(AbilityCommand("stop", 0)), c_orderQueueReplace);
+    }
+    lv_unitPlayer.aiMode = lv_aiMode;
+    SaveUnitPlayer(lv_unitPlayer);
+
+    return true;
+}
+
+static void unitctrl_SetAIMode_Init() {
+    gt_unitctrl_SetAIMode = TriggerCreate("unitctrl_SetAIMode_Func");
+    TriggerAddEventGeneric(gt_unitctrl_SetAIMode, (arena_gv_commandPrefix + "set-aimode"));
 }
 
 bool unitctrl_CreateThor_Func(bool testConds, bool runActions) {

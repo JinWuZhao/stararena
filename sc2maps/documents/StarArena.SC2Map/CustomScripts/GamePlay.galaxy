@@ -237,10 +237,14 @@ static void gameplay_EndGame_Init() {
 bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
     string lv_name;
     int lv_playerId;
+    bool lv_isBot;
     UnitPlayer lv_player;
 
     lv_name = arena_gf_CurrentCommandArgument(1);
     lv_playerId = StringToInt(arena_gf_CurrentCommandArgument(2));
+    if (arena_gf_CurrentCommandArgument(3) != "") {
+        lv_isBot = true;
+    }
 
     if (!runActions) {
         return true;
@@ -252,6 +256,8 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
 
     lv_player.name = lv_name;
     lv_player.playerId = lv_playerId;
+    lv_player.isBot = lv_isBot;
+    lv_player.aiMode = AIModeSelectMode();
     if (!AddUnitPlayer(lv_player)) {
         return false;
     }

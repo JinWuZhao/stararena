@@ -13,6 +13,7 @@ struct UnitPlayer {
     int points;
     int aiMode;
     int[c_unitPlayerAIStatesCap] aiStates;
+    bool isBot;
 };
 
 typedef structref<UnitPlayer> UnitPlayerRef;
@@ -31,9 +32,9 @@ bool RemoveUnitPlayer(string name);
 bool SaveUnitPlayer(UnitPlayerRef player);
 bool UnitPlayerFromName(string name, UnitPlayerRef player);
 int UnitPlayerAutoRewardPoints(UnitPlayerRef player);
-void UnitPlayersGetAll(UnitPlayerArrayRef players);
+void UnitPlayersGetAll(UnitPlayerArrayRef outPlayers);
 int UnitPlayersCount();
-void UnitPlayersOfRanked(UnitPlayerArrayRef players);
+void UnitPlayersOfRanked(UnitPlayerArrayRef outPlayers);
 void InitGameState();
 
 static void gamestate_InitUnitPlayerIndexOfName();
@@ -61,6 +62,8 @@ static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source) {
     for (lv_aiStatesIndex = 0; lv_aiStatesIndex < c_unitPlayerAIStatesCap; lv_aiStatesIndex += 1) {
         dest.aiStates[lv_aiStatesIndex] = source.aiStates[lv_aiStatesIndex];
     }
+
+    dest.isBot = source.isBot;
 }
 
 static int gamestate_PickAvailableUnitPlayerIndex() {
@@ -146,32 +149,40 @@ int UnitPlayersCount() {
     return gv_gamestate_unitPlayersCount;
 }
 
-void UnitPlayersOfRanked(UnitPlayerArrayRef players) {
+void UnitPlayersOfRanked(UnitPlayerArrayRef outPlayers) {
     int index;
+    int k = 0;
     int i;
     int j;
     UnitPlayer tempPlayer;
 
-    for (index = 0; index < gv_gamestate_unitPlayersCount; index += 1) {
-        gamestate_CopyUnitPlayer(players[index], gv_gamestate_unitPlayers[index]);
+    for (index = 0; index < c_unitPlayersCap; index += 1) {
+        if (gv_gamestate_unitPlayers[index].name != "") {
+            gamestate_CopyUnitPlayer(outPlayers[k], gv_gamestate_unitPlayers[index]);
+            k += 1;
+        }
     }
 
     for (i = 0; i < gv_gamestate_unitPlayersCount-1; i += 1) {
         for (j = i+1; j < gv_gamestate_unitPlayersCount; j += 1) {
-            if (players[i].score < players[j].score) {
-                gamestate_CopyUnitPlayer(tempPlayer, players[i]);
-                gamestate_CopyUnitPlayer(players[i], players[j]);
-                gamestate_CopyUnitPlayer(players[j], tempPlayer);
+            if (outPlayers[i].score < outPlayers[j].score) {
+                gamestate_CopyUnitPlayer(tempPlayer, outPlayers[i]);
+                gamestate_CopyUnitPlayer(outPlayers[i], outPlayers[j]);
+                gamestate_CopyUnitPlayer(outPlayers[j], tempPlayer);
             }
         } 
     }
 }
 
-void UnitPlayersGetAll(UnitPlayerArrayRef players) {
+void UnitPlayersGetAll(UnitPlayerArrayRef outPlayers) {
     int index;
+    int k = 0;
 
-    for (index = 0; index < gv_gamestate_unitPlayersCount; index += 1) {
-        gamestate_CopyUnitPlayer(players[index], gv_gamestate_unitPlayers[index]);
+    for (index = 0; index < c_unitPlayersCap; index += 1) {
+        if (gv_gamestate_unitPlayers[index].name != "") {
+            gamestate_CopyUnitPlayer(outPlayers[k], gv_gamestate_unitPlayers[index]);
+            k += 1;
+        }
     }
 }
 

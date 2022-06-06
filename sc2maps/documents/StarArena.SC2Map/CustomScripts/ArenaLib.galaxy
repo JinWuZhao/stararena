@@ -426,7 +426,7 @@ bool arena_gt_CleanDeadUnit_Func (bool testConds, bool runActions) {
         DataTableValueRemove(true, (arena_gv_unitBehaviorModePrefix + IntToString(lv_unitTag)));
         DataTableValueRemove(true, (arena_gv_unitTagPrefix + IntToString(lv_unitTag)));
         DataTableValueRemove(true, (arena_gv_unitNamePrefix + lv_unitName));
-        //UnitGroupRemove(arena_gv_playerUnitGroup, EventUnit());
+        UnitGroupRemove(arena_gv_playerUnitGroup, EventUnit());
     }
     lv_textTag = FixedToInt(UnitGetCustomValue(EventUnit(), arena_gv_unitTextTagIndex));
     if (lv_textTag > 0) {
