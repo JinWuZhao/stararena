@@ -12,15 +12,18 @@ static timer gv_aimode_loopTimer;
 
 static trigger gt_aimode_GameLoop;
 
-static int[c_AIModeEnd] gv_aimode_metrics;
+static const int c_aimode_metricsPlayers = 5;
+static int[c_aimode_metricsPlayers][c_AIModeEnd] gv_aimode_metrics;
 static int[c_AIModeEnd] gv_aimode_balance;
+
+static const int c_aimode_reviveInterval = 4;
 
 void InitAIMode();
 bool AIModeValidMode(int aiMode);
-int AIModeSelectMode();
+int AIModeSelectMode(int playerId);
 
 static void aimode_GameLoop_Init();
-static void aimode_BotStep(UnitPlayerRef inoutPlayer);
+static void aimode_BotStep(UnitPlayerRef inoutPlayer, unit inUnit);
 static void aimode_AttackStep(UnitPlayerRef inPlayer, unit inUnit);
 static void aimode_HunterStep(UnitPlayerRef inPlayer, unit inUnit);
 static void aimode_DefenceStep(UnitPlayerRef inPlayer, unit inUnit);
@@ -32,10 +35,10 @@ void InitAIMode() {
     gv_aimode_loopTimer = TimerCreate();
     TimerStart(gv_aimode_loopTimer, 1.0, true, c_timeReal);
 
-    gv_aimode_balance[c_AIModeAttack] = 3;
-    gv_aimode_balance[c_AIModeHunter] = 3;
-    gv_aimode_balance[c_AIModeDefence] = 2;
-    gv_aimode_balance[c_AIModeRetreat] = 2;
+    gv_aimode_balance[c_AIModeAttack] = 4 * c_unitPlayersCap / 10;
+    gv_aimode_balance[c_AIModeHunter] = 4 * c_unitPlayersCap / 10;
+    gv_aimode_balance[c_AIModeDefence] = 0;
+    gv_aimode_balance[c_AIModeRetreat] = 2 * c_unitPlayersCap / 10;
 
     aimode_GameLoop_Init();
 }
@@ -47,11 +50,11 @@ bool AIModeValidMode(int inMode) {
     return false;
 }
 
-int AIModeSelectMode() {
+int AIModeSelectMode(int playerId) {
     int lv_index;
 
-    for (lv_index = 1; lv_index < c_AIModeEnd; lv_index += 1) {
-        if (gv_aimode_metrics[lv_index] < gv_aimode_balance[lv_index]) {
+    for (lv_index = c_AIModeNone+1; lv_index < c_AIModeEnd-1; lv_index += 1) {
+        if (gv_aimode_metrics[playerId][lv_index] < gv_aimode_balance[lv_index]) {
             break;
         }
     }
@@ -60,6 +63,7 @@ int AIModeSelectMode() {
 
 bool aimode_GameLoop_Func(bool testConds, bool runActions) {
     UnitPlayerArray lv_players;
+    int k;
     int index;
     unit lv_unit;
     
@@ -67,8 +71,10 @@ bool aimode_GameLoop_Func(bool testConds, bool runActions) {
         return true;
     }
 
-    for (index = 0; index < c_AIModeEnd; index += 1) {
-        gv_aimode_metrics[index] = 0;
+    for (k = 0; k < c_aimode_metricsPlayers; k += 1) {
+        for (index = 0; index < c_AIModeEnd; index += 1) {
+            gv_aimode_metrics[k][index] = 0;
+        }
     }
 
     UnitPlayersGetAll(lv_players);
@@ -76,7 +82,7 @@ bool aimode_GameLoop_Func(bool testConds, bool runActions) {
         lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_players[index].name);
         if (lv_unit != null) {
 
-            gv_aimode_metrics[lv_players[index].aiMode] += 1;
+            gv_aimode_metrics[lv_players[index].playerId][lv_players[index].aiMode] += 1;
 
             if (lv_players[index].aiMode == c_AIModeAttack) {
                 aimode_AttackStep(lv_players[index], lv_unit);
@@ -86,8 +92,6 @@ bool aimode_GameLoop_Func(bool testConds, bool runActions) {
                 aimode_DefenceStep(lv_players[index], lv_unit);
             } else if (lv_players[index].aiMode == c_AIModeRetreat) {
                 aimode_RetreatStep(lv_players[index], lv_unit);
-            } else {
-    
             }
         } else {
             lv_players[index].aiMode = c_AIModeNone;
@@ -96,7 +100,8 @@ bool aimode_GameLoop_Func(bool testConds, bool runActions) {
 
     for (index = 0; index < UnitPlayersCount(); index += 1) {
         if (lv_players[index].isBot) {
-            aimode_BotStep(lv_players[index]);
+            lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_players[index].name);
+            aimode_BotStep(lv_players[index], lv_unit);
         }
     }
 
@@ -108,10 +113,28 @@ static void aimode_GameLoop_Init() {
     TriggerAddEventTimer(gt_aimode_GameLoop, gv_aimode_loopTimer);
 }
 
-static void aimode_BotStep(UnitPlayerRef inoutPlayer) {
+static void aimode_BotStep(UnitPlayerRef inoutPlayer, unit inUnit) {
+    int lv_index;
+    UnitData lv_unitData;
+
     if (inoutPlayer.aiMode == c_AIModeNone) {
-        inoutPlayer.aiMode = AIModeSelectMode();
+        inoutPlayer.aiMode = AIModeSelectMode(inoutPlayer.playerId);
         SaveUnitPlayer(inoutPlayer);
+    }
+
+    if (inUnit == null && DateTimeToInt(CurrentDateTimeGet()) - DateTimeToInt(inoutPlayer.reviveTime) >= c_aimode_reviveInterval) {
+        for (lv_index = c_UnitDataTypesCount-1; lv_index >= 0; lv_index -= 1) {
+            UnitDataGet(lv_index, lv_unitData);
+            if (inoutPlayer.points >= lv_unitData.costPoints) {
+                break;
+            }
+        }
+        inoutPlayer.points -= lv_unitData.costPoints;
+        inoutPlayer.unitType = lv_unitData.unitType;
+        inoutPlayer.reviveTime = CurrentDateTimeGet();
+        SaveUnitPlayer(inoutPlayer);
+    
+        arena_gf_CreatePlayerUnit(inoutPlayer.playerId, lv_unitData.unitType, inoutPlayer.name, 1.5, 3.5);
     }
 }
 
@@ -120,14 +143,14 @@ static void aimode_AttackStep(UnitPlayerRef inPlayer, unit inUnit) {
     unit lv_unit;
     unit lv_targetUnit;
     fixed lv_distance;
-    fixed lv_minDistance;
+    fixed lv_minDistance = -1;
     
     if (!UnitOrderHasAbil(inUnit, "attack")) {
-        for (lv_unitIndex = UnitGroupCount(gv_aimode_allStructures, c_unitCountAll); lv_unitIndex >= 0; lv_unitIndex -= 1) {
-            lv_unit = UnitGroupUnitFromEnd(gv_aimode_allStructures, lv_unitIndex);
+        for (lv_unitIndex = UnitGroupCount(gv_aimode_allStructures, c_unitCountAll)-1; lv_unitIndex >= 0; lv_unitIndex -= 1) {
+            lv_unit = UnitGroupUnit(gv_aimode_allStructures, lv_unitIndex);
             if (lv_unit != null && UnitIsAlive(lv_unit) && UnitGetOwner(lv_unit) != inPlayer.playerId) {
                 lv_distance = DistanceBetweenPoints(UnitGetPosition(lv_unit), UnitGetPosition(inUnit));
-                if (lv_minDistance == 0 || lv_distance < lv_minDistance) {
+                if (lv_minDistance == -1 || lv_distance < lv_minDistance) {
                     lv_minDistance = lv_distance;
                     lv_targetUnit = lv_unit;
                 }
@@ -148,11 +171,11 @@ static void aimode_HunterStep(UnitPlayerRef inPlayer, unit inUnit) {
     int lv_shields;
     int lv_health;
     fixed lv_weight;
-    fixed lv_minWeight;
+    fixed lv_minWeight = -1;
 
     if (!UnitOrderHasAbil(inUnit, "attack")) {
-        for (lv_unitIndex = UnitGroupCount(arena_gv_playerUnitGroup, c_unitCountAll); lv_unitIndex >= 0; lv_unitIndex -= 1) {
-            lv_unit = UnitGroupUnitFromEnd(arena_gv_playerUnitGroup, lv_unitIndex);
+        for (lv_unitIndex = UnitGroupCount(arena_gv_playerUnitGroup, c_unitCountAll)-1; lv_unitIndex >= 0; lv_unitIndex -= 1) {
+            lv_unit = UnitGroupUnit(arena_gv_playerUnitGroup, lv_unitIndex);
 
             if (lv_unit != null && UnitIsAlive(lv_unit) && UnitGetOwner(lv_unit) != inPlayer.playerId) {
 
@@ -161,7 +184,7 @@ static void aimode_HunterStep(UnitPlayerRef inPlayer, unit inUnit) {
                 lv_health = UnitGetPropertyInt(inUnit, c_unitPropLife, true);
                 lv_weight = lv_distance * 10 * (lv_shields + lv_health);
 
-                if (lv_minWeight == 0 || lv_weight < lv_minWeight) {
+                if (lv_minWeight == -1 || lv_weight < lv_minWeight) {
                     lv_minWeight = lv_weight;
                     lv_targetUnit = lv_unit;
                 }
@@ -179,22 +202,37 @@ static void aimode_DefenceStep(UnitPlayerRef inPlayer, unit inUnit) {
 }
 
 static void aimode_RetreatStep(UnitPlayerRef inPlayer, unit inUnit) {
-    int lv_unitIndex;
-    unit lv_unit;
-    unit lv_targetUnit;
+    int lv_index;
+    int lv_defenceUnits;
+    int lv_minDefenceUnits = -1;
+    unit lv_structure;
+    unit lv_targetStructure;
+    int defenceRadius = 10;
 
-    if (!UnitOrderHasAbil(inUnit, "move")) {
-        for (lv_unitIndex = UnitGroupCount(gv_aimode_allStructures, c_unitCountAll); lv_unitIndex >= 0; lv_unitIndex -= 1) {
-            lv_unit = UnitGroupUnitFromEnd(gv_aimode_allStructures, lv_unitIndex);
-            if (lv_unit != null && UnitIsAlive(lv_unit) && UnitGetOwner(lv_unit) == inPlayer.playerId) {
-                if (UnitGetType(lv_unit) == "ShadowShieldGenerator") {
-                    lv_targetUnit = lv_unit;
+    if (!UnitOrderHasAbil(inUnit, "move") && UnitGroupCount(UnitGroupSearch("ShadowShieldGenerator", inPlayer.playerId, UnitGetPosition(inUnit), defenceRadius, null, 2), c_unitCountAlive) <= 0) {
+        for (lv_index = UnitGroupCount(gv_aimode_allStructures, c_unitCountAll)-1; lv_index >= 0; lv_index -= 1) {
+            lv_structure = UnitGroupUnit(gv_aimode_allStructures, lv_index);
+            if (lv_structure != null && UnitIsAlive(lv_structure) && UnitGetOwner(lv_structure) == inPlayer.playerId) {
+                if (UnitGetType(lv_structure) == "ShadowShieldGenerator") {
+                    lv_defenceUnits = UnitGroupCount(
+                        UnitGroupFilterRegion(
+                            UnitGroupFilterPlayer(arena_gv_playerUnitGroup, inPlayer.playerId, c_unitPlayersCap / 2), 
+                            RegionCircle(UnitGetPosition(lv_structure), defenceRadius), 
+                            c_unitPlayersCap / 2),
+                        c_unitCountAlive);
+                    if (lv_minDefenceUnits == -1 || lv_defenceUnits < lv_minDefenceUnits) {
+                        lv_minDefenceUnits = lv_defenceUnits;
+                        lv_targetStructure = lv_structure;
+                    }
                 }
             }
         }
     
-        if (lv_targetUnit != null) {
-            UnitIssueOrder(inUnit, OrderTargetingPoint(AbilityCommand("move", 0), UnitGetPosition(lv_targetUnit)), c_orderQueueReplace);
+        if (lv_targetStructure != null) {
+            UnitIssueOrder(
+                inUnit, 
+                OrderTargetingPoint(AbilityCommand("move", 0), PointWithOffsetPolar(UnitGetPosition(lv_targetStructure), RandomInt(5, defenceRadius), RandomFixed(0, 360))), 
+                c_orderQueueReplace);
         }
     }
 }

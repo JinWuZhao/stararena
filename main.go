@@ -4,9 +4,11 @@ import (
 	"context"
 	"flag"
 	"log"
+	"math/rand"
 	"os"
 	"os/signal"
 	"path/filepath"
+	"time"
 
 	"github.com/JinWuZhao/sc2client"
 	"github.com/JinWuZhao/sc2client/sc2proto"
@@ -21,6 +23,10 @@ import (
 
 var confPath = flag.String("c", "conf/conf.toml", "config file path")
 var mapsPath = flag.String("m", "sc2maps/product", "map files path")
+
+func init() {
+	rand.Seed(time.Now().Unix())
+}
 
 func main() {
 	cfg, err := conf.NewConf(*confPath)

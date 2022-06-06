@@ -9,6 +9,7 @@ const string arena_gv_unitNamePrefix = "unit-name-";
 const string arena_gv_unitTagPrefix = "unit-tag-";
 const string arena_gv_unitBehaviorModePrefix = "unit-behavior-mode-";
 const int arena_gv_unitTextTagIndex = 0;
+static const int arena_c_maxUnitNameLength = 18;
 
 // Variable Declarations
 int arena_gv_directorPlayer;
@@ -162,6 +163,7 @@ void arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed l
     fixed lv_unitHealth;
     unit lv_createdUnit;
     int lv_textTag;
+    string lv_unitText;
 
     // Automatic Variable Declarations
     // Variable Initialization
@@ -175,7 +177,10 @@ void arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed l
     if ((lp_textTag != "")) {
         lv_realTagHeight = (UnitGetHeight(lv_createdUnit) + (lp_scale * lp_tagHeight));
         lv_unitHealth = UnitGetPropertyFixed(lv_createdUnit, c_unitPropLifePercent, c_unitPropCurrent);
-        lv_textTag = TextTagCreate(StringToText(lp_textTag + " " + FixedToString(lv_unitHealth, 0) + "%"), 22, UnitGetPosition(lv_createdUnit), lv_realTagHeight, true, false, PlayerGroupAll());
+        if (StringLength(lp_textTag) < arena_c_maxUnitNameLength) {
+            lv_unitText = lp_textTag + " " + FixedToString(lv_unitHealth, 0) + "%";
+        }
+        lv_textTag = TextTagCreate(StringToText(lv_unitText), 22, UnitGetPosition(lv_createdUnit), lv_realTagHeight, true, false, PlayerGroupAll());
         TextTagSetColor(lv_textTag, c_textTagColorText, libNtve_gf_ConvertPlayerColorToColor(PlayerGetColorIndex(lp_player, false)));
         TextTagAttachToUnit(lv_textTag, lv_createdUnit, lv_realTagHeight);
         DataTableSetUnit(true, (arena_gv_unitNamePrefix + lp_textTag), lv_createdUnit);
@@ -459,7 +464,9 @@ bool arena_gt_UnitLifeChange_Func(bool testConds, bool runActions) {
     lv_textTag = FixedToInt(UnitGetCustomValue(lv_unit, arena_gv_unitTextTagIndex));
     if (lv_textTag > 0) {
         if (lv_target != "") {
-            lv_text = lv_target + " " + FixedToString(lv_unitHealth, 0) + "%";
+            if (StringLength(lv_target) < arena_c_maxUnitNameLength) {
+                lv_text = lv_target + " " + FixedToString(lv_unitHealth, 0) + "%";
+            }
         } else {
             lv_text = FixedToString(lv_unitHealth, 0) + "%";
         }

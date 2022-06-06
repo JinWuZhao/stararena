@@ -1,65 +1,88 @@
 // Variable Declarations
-static int gv_unitdata_costPointsOfUnitType;
-static int gv_unitdata_rewardPointsOfUnitType;
-static int gv_unitdata_unitTypeOfTypeName;
+static int gv_unitdata_dataTypeOfUnitType;
+
+const int c_UnitDataTypeAliasCount = 5;
+struct UnitData {
+    string unitType;
+    string[c_UnitDataTypeAliasCount] typeAlias;
+    int costPoints;
+    int rewardPoints;
+};
+typedef structref<UnitData> UnitDataRef;
+
+const int c_UnitDataTypesMengskHellion = 0;
+const int c_UnitDataTypesSiegeTank = 1;
+const int c_UnitDataTypesThorAP = 2;
+const int c_UnitDataTypesBattlecruiser = 3;
+const int c_UnitDataTypesCount = 4;
+
+typedef UnitData[c_UnitDataTypesCount] UnitDataArray;
+typedef arrayref<UnitDataArray> UnitDataArrayRef;
+
+static UnitDataArray gv_unitdata_unitTypes;
 
 // Function Declarations
-int CostPointsFromUnitType(string unitType);
-int RewardPointsFromUnitType(string unitType);
-string UnitTypeFromTypeName(string typeName);
+void UnitDataGet(int unitDataType, UnitDataRef outData);
+bool UnitDataGetByUnitType(string unitType, UnitDataRef outData);
 void InitUnitData();
 
-static void unitdata_InitCostPointsOfUnitType();
-static void unitdata_InitRewardPointsOfUnitType();
-static void unitdata_InitUnitTypeOfTypeName();
+static void unitdata_CopyUnitData(UnitDataRef dest, UnitDataRef source);
 
 // Functions
-int CostPointsFromUnitType(string unitType) {
-    return DataTableInstanceGetInt(gv_unitdata_costPointsOfUnitType, unitType);
+void UnitDataGet(int unitDataType, UnitDataRef outData) {
+    unitdata_CopyUnitData(outData, gv_unitdata_unitTypes[unitDataType]);
 }
 
-int RewardPointsFromUnitType(string unitType) {
-    return DataTableInstanceGetInt(gv_unitdata_rewardPointsOfUnitType, unitType);
-}
-
-string UnitTypeFromTypeName(string typeName) {
-    return DataTableInstanceGetString(gv_unitdata_unitTypeOfTypeName, typeName);
+bool UnitDataGetByUnitType(string unitType, UnitDataRef outData) {
+    if (!DataTableInstanceValueExists(gv_unitdata_dataTypeOfUnitType, unitType)) {
+        return false;
+    }
+    unitdata_CopyUnitData(outData, gv_unitdata_unitTypes[DataTableInstanceGetInt(gv_unitdata_dataTypeOfUnitType, unitType)]);
+    return true;
 }
 
 void InitUnitData() {
-    unitdata_InitCostPointsOfUnitType();
-    unitdata_InitRewardPointsOfUnitType();
-    unitdata_InitUnitTypeOfTypeName();
-}
+    int lv_index;
+    int k;
 
-static void unitdata_InitCostPointsOfUnitType() {
-    DataTableInstanceCreate();
-    gv_unitdata_costPointsOfUnitType = DataTableInstanceLastCreated();
-    
-    DataTableInstanceSetInt(gv_unitdata_costPointsOfUnitType, "MengskHellion", 0);
-    DataTableInstanceSetInt(gv_unitdata_costPointsOfUnitType, "SiegeTank", 100);
-    DataTableInstanceSetInt(gv_unitdata_costPointsOfUnitType, "ThorAP", 300);
-    DataTableInstanceSetInt(gv_unitdata_costPointsOfUnitType, "Battlecruiser", 500);
-}
+    gv_unitdata_unitTypes[c_UnitDataTypesMengskHellion].unitType = "MengskHellion";
+    gv_unitdata_unitTypes[c_UnitDataTypesMengskHellion].costPoints = 0;
+    gv_unitdata_unitTypes[c_UnitDataTypesMengskHellion].rewardPoints = 100;
 
-static void unitdata_InitRewardPointsOfUnitType() {
+    gv_unitdata_unitTypes[c_UnitDataTypesSiegeTank].unitType = "SiegeTank";
+    gv_unitdata_unitTypes[c_UnitDataTypesSiegeTank].typeAlias[0] = "SiegeTankSieged";
+    gv_unitdata_unitTypes[c_UnitDataTypesSiegeTank].costPoints = 100;
+    gv_unitdata_unitTypes[c_UnitDataTypesSiegeTank].rewardPoints = 150;
 
-    DataTableInstanceCreate();
-    gv_unitdata_rewardPointsOfUnitType = DataTableInstanceLastCreated();
-    
-    DataTableInstanceSetInt(gv_unitdata_rewardPointsOfUnitType, "MengskHellion", 100);
-    DataTableInstanceSetInt(gv_unitdata_rewardPointsOfUnitType, "SiegeTank", 150);
-    DataTableInstanceSetInt(gv_unitdata_rewardPointsOfUnitType, "ThorAP", 200);
-    DataTableInstanceSetInt(gv_unitdata_rewardPointsOfUnitType, "Battlecruiser", 300);
-}
+    gv_unitdata_unitTypes[c_UnitDataTypesThorAP].unitType = "ThorAP";
+    gv_unitdata_unitTypes[c_UnitDataTypesThorAP].typeAlias[0] = "Thor";
+    gv_unitdata_unitTypes[c_UnitDataTypesThorAP].costPoints = 300;
+    gv_unitdata_unitTypes[c_UnitDataTypesThorAP].rewardPoints = 200;
 
-static void unitdata_InitUnitTypeOfTypeName() {
+    gv_unitdata_unitTypes[c_UnitDataTypesBattlecruiser].unitType = "Battlecruiser";
+    gv_unitdata_unitTypes[c_UnitDataTypesBattlecruiser].costPoints = 500;
+    gv_unitdata_unitTypes[c_UnitDataTypesBattlecruiser].rewardPoints = 300;
 
     DataTableInstanceCreate();
-    gv_unitdata_unitTypeOfTypeName = DataTableInstanceLastCreated();
-    
-    DataTableInstanceSetString(gv_unitdata_unitTypeOfTypeName, "hellion", "MengskHellion");
-    DataTableInstanceSetString(gv_unitdata_unitTypeOfTypeName, "siege-tank", "SiegeTank");
-    DataTableInstanceSetString(gv_unitdata_unitTypeOfTypeName, "thor", "ThorAP");
-    DataTableInstanceSetString(gv_unitdata_unitTypeOfTypeName, "battlecruiser", "Battlecruiser");
+    gv_unitdata_dataTypeOfUnitType = DataTableInstanceLastCreated();
+    for (lv_index = 0; lv_index < c_UnitDataTypesCount; lv_index += 1) {
+        DataTableInstanceSetInt(gv_unitdata_dataTypeOfUnitType, gv_unitdata_unitTypes[lv_index].unitType, lv_index);
+
+        for (k = 0; k < c_UnitDataTypeAliasCount; k += 1) {
+            if (gv_unitdata_unitTypes[lv_index].typeAlias[k] != "") {
+                DataTableInstanceSetInt(gv_unitdata_dataTypeOfUnitType, gv_unitdata_unitTypes[lv_index].typeAlias[k], lv_index);
+            }
+        }
+    }
+}
+
+static void unitdata_CopyUnitData(UnitDataRef dest, UnitDataRef source) {
+    int lv_index;
+
+    dest.unitType = source.unitType;
+    for (lv_index = 0; lv_index < c_UnitDataTypeAliasCount; lv_index += 1) {
+        dest.typeAlias[lv_index] = source.typeAlias[lv_index];
+    }
+    dest.costPoints = source.costPoints;
+    dest.rewardPoints = source.rewardPoints;
 }

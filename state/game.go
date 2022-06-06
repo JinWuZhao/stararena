@@ -89,7 +89,11 @@ func (m *Game) Start() {
 }
 
 func (m *Game) HandleJoinPlayers() {
-	for i := 0; i < 1; i++ {
+	randSC2PlayerId := []uint32{
+		m.config.RedPlayer,
+		m.config.BluePlayer,
+	}
+	for i := 0; i < 2; i++ {
 		if m.GetProgress() != GameProgressStarted {
 			break
 		}
@@ -105,13 +109,7 @@ func (m *Game) HandleJoinPlayers() {
 		select {
 		case player = <-m.joinQueue:
 		default:
-			if rand.Intn(100)%20 == 0 {
-				randSC2PlayerId := []uint32{
-					m.config.RedPlayer,
-					m.config.BluePlayer,
-				}[rand.Intn(2)]
-				player = NewBotPlayer(m.botIdGen.Generate().String(), randSC2PlayerId)
-			}
+			player = NewBotPlayer(m.botIdGen.Generate().String(), randSC2PlayerId[rand.Intn(2)])
 		}
 		if player == nil {
 			break

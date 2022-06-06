@@ -3,7 +3,6 @@ package game
 import (
 	"context"
 	"log"
-	"math/rand"
 
 	"github.com/JinWuZhao/sc2client"
 	"github.com/JinWuZhao/sc2client/sc2proto"
@@ -11,7 +10,6 @@ import (
 
 	"github.com/jinwuzhao/stararena/command"
 	"github.com/jinwuzhao/stararena/conf"
-	"github.com/jinwuzhao/stararena/data"
 	"github.com/jinwuzhao/stararena/msq"
 	"github.com/jinwuzhao/stararena/state"
 )
@@ -79,13 +77,10 @@ cmdLoop:
 		}
 	}
 
-	if st.Steps%20 == 0 {
+	if st.Steps%50 == 0 {
 		m.gameState.HandleJoinPlayers()
 		for _, player := range m.gameState.GetNewPlayers() {
 			sc2Actions = append(sc2Actions, m.makeJoinAction(player))
-			if player.IsBot() {
-				sc2Actions = append(sc2Actions, m.makeBotStartActions(player)...)
-			}
 		}
 		m.gameState.ClearNewPlayers()
 	}
@@ -130,45 +125,15 @@ func (m *Director) handleCommand(cmd command.Command) *sc2proto.Action {
 }
 
 func (m *Director) makeJoinAction(player *state.Player) *sc2proto.Action {
-	cmd := command.MakeCmdCtor[*command.JoinGameCmd](
+	opts := []any{
 		command.JoinGameCmdOpts(player.GetName(), player.GetSC2PlayerId()),
-	)()
+		command.JoinGameCmdOptsBot(),
+	}
+	cmd := command.MakeCmdCtor[*command.JoinGameCmd](opts...)()
 	return &sc2proto.Action{
 		ActionChat: &sc2proto.ActionChat{
 			Channel: sc2proto.ActionChat_Team.Enum(),
 			Message: proto.String(cmd.String()),
 		},
 	}
-}
-
-func (m *Director) makeBotStartActions(player *state.Player) []*sc2proto.Action {
-	var actions []*sc2proto.Action
-
-	createUnitCmd := command.MakeCmdCtor[*command.CreateUnitCmd](
-		command.CreateUnitCmdOpts(player.GetName(), data.UnitHellion.Name),
-	)()
-	actions = append(actions, &sc2proto.Action{
-		ActionChat: &sc2proto.ActionChat{
-			Channel: sc2proto.ActionChat_Team.Enum(),
-			Message: proto.String(createUnitCmd.String()),
-		},
-	})
-
-	var angle int32
-	if player.GetSC2PlayerId() == m.config.BluePlayer {
-		angle = rand.Int31n(60) - 30
-	} else if player.GetSC2PlayerId() == m.config.RedPlayer {
-		angle = rand.Int31n(60) + 150
-	}
-	moveCmd := command.MakeCmdCtor[*command.MoveCmd](
-		command.MoveCmdOpts(player.GetName(), rand.Int31n(30)+40, angle),
-	)()
-	actions = append(actions, &sc2proto.Action{
-		ActionChat: &sc2proto.ActionChat{
-			Channel: sc2proto.ActionChat_Team.Enum(),
-			Message: proto.String(moveCmd.String()),
-		},
-	})
-
-	return actions
 }

@@ -71,8 +71,7 @@ bool unitctrl_CreateThor_Func(bool testConds, bool runActions) {
     string lv_textTag;
     UnitPlayer lv_unitPlayer;
     unit lv_unit;
-    int lv_costPoints;
-    const string lv_unitType = "ThorAP";
+    UnitData lv_unitData;
 
     lv_textTag = arena_gf_CurrentCommandArgument(1);
 
@@ -87,15 +86,15 @@ bool unitctrl_CreateThor_Func(bool testConds, bool runActions) {
     if (lv_unit != null) {
         return false;
     }
-    lv_costPoints = CostPointsFromUnitType(lv_unitType);
-    if (lv_unitPlayer.points < lv_costPoints) {
+    UnitDataGet(c_UnitDataTypesThorAP, lv_unitData);
+    if (lv_unitPlayer.points < lv_unitData.costPoints) {
         return false;
     }
-    lv_unitPlayer.points -= lv_costPoints;
-    lv_unitPlayer.unitType = lv_unitType;
+    lv_unitPlayer.points -= lv_unitData.costPoints;
+    lv_unitPlayer.unitType = lv_unitData.unitType;
     SaveUnitPlayer(lv_unitPlayer);
 
-    arena_gf_CreatePlayerUnit(lv_unitPlayer.playerId, lv_unitType, lv_textTag, 1.5, 3.5);
+    arena_gf_CreatePlayerUnit(lv_unitPlayer.playerId, lv_unitData.unitType, lv_textTag, 1.5, 3.5);
     return true;
 }
 
@@ -108,8 +107,7 @@ bool unitctrl_CreateBattlecruiser_Func(bool testConds, bool runActions) {
     string lv_textTag;
     UnitPlayer lv_unitPlayer;
     unit lv_unit;
-    int lv_costPoints;
-    const string lv_unitType = "Battlecruiser";
+    UnitData lv_unitData;
 
     lv_textTag = arena_gf_CurrentCommandArgument(1);
 
@@ -124,15 +122,15 @@ bool unitctrl_CreateBattlecruiser_Func(bool testConds, bool runActions) {
     if (lv_unit != null) {
         return false;
     }
-    lv_costPoints = CostPointsFromUnitType(lv_unitType);
-    if (lv_unitPlayer.points < lv_costPoints) {
+    UnitDataGet(c_UnitDataTypesBattlecruiser, lv_unitData);
+    if (lv_unitPlayer.points < lv_unitData.costPoints) {
         return false;
     }
-    lv_unitPlayer.points -= lv_costPoints;
-    lv_unitPlayer.unitType = lv_unitType;
+    lv_unitPlayer.points -= lv_unitData.costPoints;
+    lv_unitPlayer.unitType = lv_unitData.unitType;
     SaveUnitPlayer(lv_unitPlayer);
 
-    arena_gf_CreatePlayerUnit(lv_unitPlayer.playerId, lv_unitType, lv_textTag, 1.5, 2.0);
+    arena_gf_CreatePlayerUnit(lv_unitPlayer.playerId, lv_unitData.unitType, lv_textTag, 1.5, 2.0);
     UnitSetPropertyFixed(UnitLastCreated(), c_unitPropEnergyPercent, 100.0);
     return true;
 }
@@ -146,8 +144,7 @@ bool unitctrl_CreateSiegeTank_Func(bool testConds, bool runActions) {
     string lv_textTag;
     UnitPlayer lv_unitPlayer;
     unit lv_unit;
-    int lv_costPoints;
-    const string lv_unitType = "SiegeTank";
+    UnitData lv_unitData;
 
     lv_textTag = arena_gf_CurrentCommandArgument(1);
 
@@ -162,15 +159,15 @@ bool unitctrl_CreateSiegeTank_Func(bool testConds, bool runActions) {
     if (lv_unit != null) {
         return false;
     }
-    lv_costPoints = CostPointsFromUnitType(lv_unitType);
-    if (lv_unitPlayer.points < lv_costPoints) {
+    UnitDataGet(c_UnitDataTypesSiegeTank, lv_unitData);
+    if (lv_unitPlayer.points < lv_unitData.costPoints) {
         return false;
     }
-    lv_unitPlayer.points -= lv_costPoints;
-    lv_unitPlayer.unitType = lv_unitType;
+    lv_unitPlayer.points -= lv_unitData.costPoints;
+    lv_unitPlayer.unitType = lv_unitData.unitType;
     SaveUnitPlayer(lv_unitPlayer);
 
-    arena_gf_CreatePlayerUnit(lv_unitPlayer.playerId, lv_unitType, lv_textTag, 1.5, 2.5);
+    arena_gf_CreatePlayerUnit(lv_unitPlayer.playerId, lv_unitData.unitType, lv_textTag, 1.5, 2.5);
     return true;
 }
 
@@ -183,8 +180,7 @@ bool unitctrl_CreateHellion_Func(bool testConds, bool runActions) {
     string lv_textTag;
     UnitPlayer lv_unitPlayer;
     unit lv_unit;
-    int lv_costPoints;
-    const string lv_unitType = "MengskHellion";
+    UnitData lv_unitData;
 
     lv_textTag = arena_gf_CurrentCommandArgument(1);
 
@@ -199,15 +195,15 @@ bool unitctrl_CreateHellion_Func(bool testConds, bool runActions) {
     if (lv_unit != null) {
         return false;
     }
-    lv_costPoints = CostPointsFromUnitType(lv_unitType);
-    if (lv_unitPlayer.points < lv_costPoints) {
+    UnitDataGet(c_UnitDataTypesMengskHellion, lv_unitData);
+    if (lv_unitPlayer.points < lv_unitData.costPoints) {
         return false;
     }
-    lv_unitPlayer.points -= lv_costPoints;
-    lv_unitPlayer.unitType = lv_unitType;
+    lv_unitPlayer.points -= lv_unitData.costPoints;
+    lv_unitPlayer.unitType = lv_unitData.unitType;
     SaveUnitPlayer(lv_unitPlayer);
 
-    arena_gf_CreatePlayerUnit(lv_unitPlayer.playerId, lv_unitType, lv_textTag, 1.5, 2.0);
+    arena_gf_CreatePlayerUnit(lv_unitPlayer.playerId, lv_unitData.unitType, lv_textTag, 1.5, 2.0);
     return true;
 }
 
@@ -221,6 +217,7 @@ bool unitctrl_IssueAbilityThor_Func(bool testConds, bool runActions) {
     string lv_unitAbility;
     unit lv_unit;
     UnitPlayer unitPlayer;
+    UnitData lv_unitData;
 
     lv_unitName = arena_gf_CurrentCommandArgument(1);
     lv_unitAbility = arena_gf_CurrentCommandArgument(2);
@@ -237,7 +234,10 @@ bool unitctrl_IssueAbilityThor_Func(bool testConds, bool runActions) {
     if (!UnitPlayerFromName(lv_unitName, unitPlayer)) {
         return false;
     }
-    if (unitPlayer.unitType != UnitGetType(lv_unit) && UnitGetType(lv_unit) != "Thor" && UnitGetType(lv_unit) != "ThorAP") {
+    if (!UnitDataGetByUnitType(UnitGetType(lv_unit), lv_unitData)) {
+        return false;
+    }
+    if (unitPlayer.unitType != lv_unitData.unitType) {
         return false;
     }
 
@@ -262,6 +262,7 @@ bool unitctrl_IssueAbilityBattlecruiser_Func(bool testConds, bool runActions) {
     string lv_distance;
     unit lv_unit;
     UnitPlayer unitPlayer;
+    UnitData lv_unitData;
 
     lv_unitName = arena_gf_CurrentCommandArgument(1);
     lv_unitAbility = arena_gf_CurrentCommandArgument(2);
@@ -280,7 +281,10 @@ bool unitctrl_IssueAbilityBattlecruiser_Func(bool testConds, bool runActions) {
     if (!UnitPlayerFromName(lv_unitName, unitPlayer)) {
         return false;
     }
-    if (unitPlayer.unitType != UnitGetType(lv_unit)) {
+    if (!UnitDataGetByUnitType(UnitGetType(lv_unit), lv_unitData)) {
+        return false;
+    }
+    if (unitPlayer.unitType != lv_unitData.unitType) {
         return false;
     }
 
@@ -303,6 +307,7 @@ bool unitctrl_IssueAbilitySiegeTank_Func(bool testConds, bool runActions) {
     string lv_unitAbility;
     unit lv_unit;
     UnitPlayer unitPlayer;
+    UnitData lv_unitData;
 
     lv_unitName = arena_gf_CurrentCommandArgument(1);
     lv_unitAbility = arena_gf_CurrentCommandArgument(2);
@@ -319,7 +324,10 @@ bool unitctrl_IssueAbilitySiegeTank_Func(bool testConds, bool runActions) {
     if (!UnitPlayerFromName(lv_unitName, unitPlayer)) {
         return false;
     }
-    if (unitPlayer.unitType != UnitGetType(lv_unit) && UnitGetType(lv_unit) != "SiegeTankSieged") {
+    if (!UnitDataGetByUnitType(UnitGetType(lv_unit), lv_unitData)) {
+        return false;
+    }
+    if (unitPlayer.unitType != lv_unitData.unitType) {
         return false;
     }
 

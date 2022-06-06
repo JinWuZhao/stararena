@@ -10,6 +10,7 @@ import (
 type JoinGameCmd struct {
 	player      string
 	sc2PlayerId uint32
+	isBot       bool
 }
 
 func (c *JoinGameCmd) Player() string {
@@ -27,10 +28,18 @@ func JoinGameCmdOpts(player string, sc2PlayerId uint32) func(*JoinGameCmd) {
 	}
 }
 
+func JoinGameCmdOptsBot() func(*JoinGameCmd) {
+	return func(cmd *JoinGameCmd) {
+		cmd.isBot = true
+	}
+}
+
 func (*JoinGameCmd) New(args ...any) Command {
-	if len(args) == 1 {
+	if len(args) >= 1 {
 		cmd := new(JoinGameCmd)
-		(args[0]).(func(*JoinGameCmd))(cmd)
+		for i := range args {
+			(args[i]).(func(*JoinGameCmd))(cmd)
+		}
 		return cmd
 	}
 	return new(JoinGameCmd)
@@ -60,6 +69,9 @@ func (c *JoinGameCmd) Init(ctx Context, query parsec.Queryable) error {
 }
 
 func (c *JoinGameCmd) String() string {
+	if c.isBot {
+		return fmt.Sprintf("cmd-add-player %s %d bot", c.player, c.sc2PlayerId)
+	}
 	return fmt.Sprintf("cmd-add-player %s %d", c.player, c.sc2PlayerId)
 }
 

@@ -124,6 +124,7 @@ bool gameplay_Victory_Func(bool testConds, bool runActions) {
     timer scoreTimer;
     UnitPlayerArray rankedUnitPlayers;
     int index;
+    int lv_rankLength;
 
     if (gv_gameplay_winnerPlayer == 3 || gv_gameplay_winnerPlayer == 4) {
         return false;
@@ -153,7 +154,11 @@ bool gameplay_Victory_Func(bool testConds, bool runActions) {
         arena_gf_ShowMessage("排行榜:");
         UnitPlayersOfRanked(rankedUnitPlayers);
         scoreTimer = TimerCreate();
-        for (index = 0; index < UnitPlayersCount(); index += 1) {
+        lv_rankLength = UnitPlayersCount();
+        if (lv_rankLength > 10) {
+            lv_rankLength = 10;
+        }
+        for (index = 0; index < lv_rankLength; index += 1) {
             TimerStart(scoreTimer, 1.0, false, c_timeReal);
             libNtve_gf_WaitForTimer(scoreTimer, 0.0, false);
             arena_gf_ShowMessage("第" + IntToString(index+1) + "名：" + rankedUnitPlayers[index].name + " ---------------------------- " + IntToString(rankedUnitPlayers[index].score) + "分");
@@ -257,7 +262,7 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
     lv_player.name = lv_name;
     lv_player.playerId = lv_playerId;
     lv_player.isBot = lv_isBot;
-    lv_player.aiMode = AIModeSelectMode();
+    lv_player.aiMode = AIModeSelectMode(lv_playerId);
     if (!AddUnitPlayer(lv_player)) {
         return false;
     }
@@ -368,9 +373,9 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
     unit lv_targetUnit;
     string lv_unitType;
     UnitPlayer lv_player;
-    int lv_rewardPoints;
     int lv_rewardText;
     timer lv_rewardTimer;
+    UnitData lv_unitData;
 
     lv_attackerUnit = EventUnitDamageSourceUnit();
     lv_attacker = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_attackerUnit))));
@@ -388,12 +393,14 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
     if (!UnitPlayerFromName(lv_attacker, lv_player)) {
         return false;
     }
+    if (!UnitDataGetByUnitType(lv_unitType, lv_unitData)) {
+        return false;
+    }
 
-    lv_rewardPoints = RewardPointsFromUnitType(lv_unitType);
-    lv_player.points += lv_rewardPoints;
+    lv_player.points += lv_unitData.rewardPoints;
     SaveUnitPlayer(lv_player);
 
-    lv_rewardText = TextTagCreate(StringToText("+"+IntToString(lv_rewardPoints)), 24, UnitGetPosition(libNtve_gf_KillingUnit()), 3.0, true, false, PlayerGroupAll());
+    lv_rewardText = TextTagCreate(StringToText("+"+IntToString(lv_unitData.rewardPoints)), 24, UnitGetPosition(libNtve_gf_KillingUnit()), 3.0, true, false, PlayerGroupAll());
     TextTagSetColor(lv_rewardText, c_textTagColorText, Color(0, 255, 0));
     TextTagAttachToUnit(lv_rewardText, libNtve_gf_KillingUnit(), 3.0);
     TextTagSetGravity(lv_rewardText, 2.0);

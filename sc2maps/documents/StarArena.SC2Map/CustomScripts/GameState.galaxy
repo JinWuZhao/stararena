@@ -1,6 +1,6 @@
 // Const Declarations
-const int c_unitPlayerAIStatesCap = 10;
-static const int c_unitPlayersCap = 20;
+const int c_unitPlayerAIStatesCap = 5;
+const int c_unitPlayersCap = 80;
 static const int c_gamestate_autoRewardPointsPerSecond = 10;
 
 // Type Declarations
@@ -8,12 +8,13 @@ struct UnitPlayer {
     string name;
     string unitType;
     datetime rewardTime;
+    datetime reviveTime;
     int playerId;
     int score;
     int points;
     int aiMode;
-    int[c_unitPlayerAIStatesCap] aiStates;
     bool isBot;
+    int[c_unitPlayerAIStatesCap] aiStates;
 };
 
 typedef structref<UnitPlayer> UnitPlayerRef;
@@ -38,7 +39,7 @@ void UnitPlayersOfRanked(UnitPlayerArrayRef outPlayers);
 void InitGameState();
 
 static void gamestate_InitUnitPlayerIndexOfName();
-static void gamestate_CopyUnitPlayer(UnitPlayerRef source, UnitPlayerRef dest);
+static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source);
 static int gamestate_PickAvailableUnitPlayerIndex();
 static void gamestate_SaveUnitPlayerByIndex(int index, UnitPlayerRef player);
 
@@ -57,13 +58,12 @@ static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source) {
     dest.score = source.score;
     dest.unitType = source.unitType;
     dest.rewardTime = source.rewardTime;
+    dest.reviveTime = source.reviveTime;
     dest.aiMode = source.aiMode;
-
+    dest.isBot = source.isBot;
     for (lv_aiStatesIndex = 0; lv_aiStatesIndex < c_unitPlayerAIStatesCap; lv_aiStatesIndex += 1) {
         dest.aiStates[lv_aiStatesIndex] = source.aiStates[lv_aiStatesIndex];
     }
-
-    dest.isBot = source.isBot;
 }
 
 static int gamestate_PickAvailableUnitPlayerIndex() {
@@ -88,6 +88,7 @@ bool AddUnitPlayer(UnitPlayerRef player) {
         return false;
     }
     player.rewardTime = CurrentDateTimeGet();
+    player.reviveTime = CurrentDateTimeGet();
     gamestate_SaveUnitPlayerByIndex(index, player);
     gv_gamestate_unitPlayersCount += 1;
     return true;
