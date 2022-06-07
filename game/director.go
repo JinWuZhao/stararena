@@ -127,7 +127,9 @@ func (m *Director) handleCommand(cmd command.Command) *sc2proto.Action {
 func (m *Director) makeJoinAction(player *state.Player) *sc2proto.Action {
 	opts := []any{
 		command.JoinGameCmdOpts(player.GetName(), player.GetSC2PlayerId()),
-		command.JoinGameCmdOptsBot(),
+	}
+	if player.IsBot() {
+		opts = append(opts, command.JoinGameCmdOptsBot())
 	}
 	cmd := command.MakeCmdCtor[*command.JoinGameCmd](opts...)()
 	return &sc2proto.Action{

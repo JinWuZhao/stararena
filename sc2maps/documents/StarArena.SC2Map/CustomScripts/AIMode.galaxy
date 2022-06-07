@@ -37,7 +37,6 @@ void InitAIMode() {
 
     gv_aimode_balance[c_AIModeAttack] = 4 * c_unitPlayersCap / 10;
     gv_aimode_balance[c_AIModeHunter] = 4 * c_unitPlayersCap / 10;
-    gv_aimode_balance[c_AIModeDefence] = 0;
     gv_aimode_balance[c_AIModeRetreat] = 2 * c_unitPlayersCap / 10;
 
     aimode_GameLoop_Init();
@@ -198,7 +197,9 @@ static void aimode_HunterStep(UnitPlayerRef inPlayer, unit inUnit) {
 }
 
 static void aimode_DefenceStep(UnitPlayerRef inPlayer, unit inUnit) {
-    UnitIssueOrder(inUnit, Order(AbilityCommand("move", 2)), c_orderQueueReplace);
+    if (!UnitOrderHasAbil(inUnit, "move")) {
+        UnitIssueOrder(inUnit, Order(AbilityCommand("move", 2)), c_orderQueueReplace);
+    }
 }
 
 static void aimode_RetreatStep(UnitPlayerRef inPlayer, unit inUnit) {

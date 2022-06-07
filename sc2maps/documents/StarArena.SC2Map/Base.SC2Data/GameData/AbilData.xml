@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Catalog>
+    <CAbilEffectTarget id="Hyperjump">
+        <Cost index="0">
+            <Vital index="Energy" value="20"/>
+        </Cost>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="Yamato">
+        <Cost index="0">
+            <Vital index="Energy" value="20"/>
+        </Cost>
+    </CAbilEffectTarget>
+</Catalog>

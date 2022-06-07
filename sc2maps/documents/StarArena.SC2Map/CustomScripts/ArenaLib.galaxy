@@ -7,7 +7,6 @@ include "TriggerLibs/NativeLib"
 const string arena_gv_commandPrefix = "cmd-";
 const string arena_gv_unitNamePrefix = "unit-name-";
 const string arena_gv_unitTagPrefix = "unit-tag-";
-const string arena_gv_unitBehaviorModePrefix = "unit-behavior-mode-";
 const int arena_gv_unitTextTagIndex = 0;
 static const int arena_c_maxUnitNameLength = 18;
 
@@ -29,15 +28,11 @@ void arena_gf_DispatchCommand (string lp_name, string lp_arguments);
 void arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed lp_angle, fixed lp_scale, string lp_textTag, fixed lp_tagHeight);
 void arena_gf_CreatePlayerUnit (int lp_player, string lp_type, string lp_textTag, fixed lp_scale, fixed lp_tagHeight);
 unit arena_gf_UnitFromName (string lp_name);
-string arena_gf_NameFromUnit (unit lp_unit);
-void arena_gf_SetBehaviorMode (unit lp_unit, string lp_mode);
 
 // Trigger Declarations
 trigger arena_gt_ProcessCommand;
 trigger arena_gt_MoveToward;
-trigger arena_gt_SetBehaviorMode;
 trigger arena_gt_KillUnit;
-trigger arena_gt_BehaviorModeAction;
 trigger arena_gt_CleanDeadUnit;
 trigger arena_gt_UnitLifeChange;
 
@@ -208,18 +203,6 @@ unit arena_gf_UnitFromName (string lp_name) {
     return DataTableGetUnit(true, (arena_gv_unitNamePrefix + lp_name));
 }
 
-string arena_gf_NameFromUnit (unit lp_unit) {
-    // Automatic Variable Declarations
-    // Implementation
-    return DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lp_unit))));
-}
-
-void arena_gf_SetBehaviorMode (unit lp_unit, string lp_mode) {
-    // Automatic Variable Declarations
-    // Implementation
-    DataTableSetString(true, (arena_gv_unitBehaviorModePrefix + IntToString(UnitGetTag(lp_unit))), lp_mode);
-}
-
 // Triggers
 //--------------------------------------------------------------------------------------------------
 // Trigger: Process Command
@@ -287,45 +270,6 @@ void arena_gt_MoveToward_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Set Behavior Mode
-//--------------------------------------------------------------------------------------------------
-bool arena_gt_SetBehaviorMode_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    string lv_unitName;
-    string lv_behaviorMode;
-    unit lv_unit;
-
-    // Automatic Variable Declarations
-    // Variable Initialization
-    lv_unitName = arena_gf_CurrentCommandArgument(1);
-    lv_behaviorMode = arena_gf_CurrentCommandArgument(2);
-    lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_unitName));
-
-    // Conditions
-    if (testConds) {
-        if (!((lv_unit != null))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    arena_gf_DebugLog(("Set Behavior Mode:" + (arena_gv_unitBehaviorModePrefix + IntToString(UnitGetTag(lv_unit))) + " " + lv_behaviorMode));
-    DataTableSetString(true, (arena_gv_unitBehaviorModePrefix + IntToString(UnitGetTag(lv_unit))), lv_behaviorMode);
-    UnitIssueOrder(lv_unit, Order(AbilityCommand("move", 2)), c_orderQueueReplace);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void arena_gt_SetBehaviorMode_Init () {
-    arena_gt_SetBehaviorMode = TriggerCreate("arena_gt_SetBehaviorMode_Func");
-    TriggerAddEventGeneric(arena_gt_SetBehaviorMode, (arena_gv_commandPrefix + "set-behavior-mode"));
-}
-
-//--------------------------------------------------------------------------------------------------
 // Trigger: Kill Unit
 //--------------------------------------------------------------------------------------------------
 bool arena_gt_KillUnit_Func (bool testConds, bool runActions) {
@@ -362,51 +306,6 @@ void arena_gt_KillUnit_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Behavior Mode Action
-//--------------------------------------------------------------------------------------------------
-bool arena_gt_BehaviorModeAction_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    string lv_behaviorMode;
-
-    // Automatic Variable Declarations
-    string auto49C3A6FF_val;
-
-    // Variable Initialization
-    lv_behaviorMode = DataTableGetString(true, (arena_gv_unitBehaviorModePrefix + IntToString(UnitGetTag(EventUnit()))));
-
-    // Conditions
-    if (testConds) {
-        if (!((UnitGroupHasUnit(arena_gv_playerUnitGroup, EventUnit()) == true))) {
-            return false;
-        }
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    arena_gf_DebugLog(("Behavior Mode:" + (arena_gv_unitBehaviorModePrefix + IntToString(UnitGetTag(EventUnit()))) + " " + lv_behaviorMode));
-    auto49C3A6FF_val = lv_behaviorMode;
-    if (auto49C3A6FF_val == "attack") {
-        UnitIssueOrder(EventUnit(), OrderTargetingUnit(AbilityCommand("attack", 0), libNtve_gf_AcquiredTarget()), c_orderQueueReplace);
-    }
-    else if (auto49C3A6FF_val == "defence") {
-        UnitIssueOrder(EventUnit(), Order(AbilityCommand("move", 2)), c_orderQueueReplace);
-    }
-    else if (auto49C3A6FF_val == "retreat") {
-        UnitIssueOrder(EventUnit(), OrderTargetingPoint(AbilityCommand("move", 0), PointWithOffsetPolar(UnitGetPosition(EventUnit()), 10.0, UnitGetFacing(libNtve_gf_AcquiredTarget()))), c_orderQueueReplace);
-    }
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void arena_gt_BehaviorModeAction_Init () {
-    arena_gt_BehaviorModeAction = TriggerCreate("arena_gt_BehaviorModeAction_Func");
-    TriggerAddEventUnitAcquiredTarget(arena_gt_BehaviorModeAction, null);
-}
-
-//--------------------------------------------------------------------------------------------------
 // Trigger: Clean Dead Unit
 //--------------------------------------------------------------------------------------------------
 bool arena_gt_CleanDeadUnit_Func (bool testConds, bool runActions) {
@@ -428,7 +327,6 @@ bool arena_gt_CleanDeadUnit_Func (bool testConds, bool runActions) {
     arena_gf_DebugLog(("Unit Died: " + IntToString(lv_unitTag) + " " + lv_unitName));
 
     if (UnitGroupHasUnit(arena_gv_playerUnitGroup, EventUnit())) {
-        DataTableValueRemove(true, (arena_gv_unitBehaviorModePrefix + IntToString(lv_unitTag)));
         DataTableValueRemove(true, (arena_gv_unitTagPrefix + IntToString(lv_unitTag)));
         DataTableValueRemove(true, (arena_gv_unitNamePrefix + lv_unitName));
         UnitGroupRemove(arena_gv_playerUnitGroup, EventUnit());
@@ -489,9 +387,7 @@ void arena_gt_UnitLifeChange_Init() {
 void arena_InitTriggers () {
     arena_gt_ProcessCommand_Init();
     arena_gt_MoveToward_Init();
-    arena_gt_SetBehaviorMode_Init();
     arena_gt_KillUnit_Init();
-    arena_gt_BehaviorModeAction_Init();
     arena_gt_CleanDeadUnit_Init();
     arena_gt_UnitLifeChange_Init();
 }

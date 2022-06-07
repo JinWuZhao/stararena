@@ -215,19 +215,20 @@ func (c *ChangeModeCmd) Parser(ast *parsec.AST) parsec.Parser {
 	return ast.And(c.Name(), nil,
 		parsec.AtomExact(`m`, "OP"),
 		ast.OrdChoice("MODE", nil,
-			parsec.Atom(`a`, "attack"),
-			parsec.Atom(`d`, "defence"),
-			parsec.Atom(`r`, "retreat")))
+			parsec.Atom(`1`, "attack"),
+			parsec.Atom(`2`, "hunter"),
+			parsec.Atom(`3`, "defence"),
+			parsec.Atom(`4`, "retreat")))
 }
 
 func (c *ChangeModeCmd) Init(ctx Context, query parsec.Queryable) error {
-	c.mode = query.GetChildren()[1].GetName()
+	c.mode = query.GetChildren()[1].GetValue()
 	c.player = ctx.Player
 	return nil
 }
 
 func (c *ChangeModeCmd) String() string {
-	return fmt.Sprintf("cmd-set-behavior-mode %s %s", c.player, c.mode)
+	return fmt.Sprintf("cmd-set-aimode %s %s", c.player, c.mode)
 }
 
 type CreateUnitCmd struct {
