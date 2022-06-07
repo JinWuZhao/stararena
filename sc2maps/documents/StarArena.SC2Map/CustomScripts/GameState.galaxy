@@ -1,6 +1,6 @@
 // Const Declarations
 const int c_unitPlayerAIStatesCap = 5;
-const int c_unitPlayersCap = 80;
+const int c_unitPlayersCap = 100;
 static const int c_gamestate_autoRewardPointsPerSecond = 10;
 
 // Type Declarations

@@ -146,7 +146,7 @@ static void aimode_AttackStep(UnitPlayerRef inPlayer, unit inUnit) {
     fixed lv_minDistance = -1;
     
     if (!UnitOrderHasAbil(inUnit, "attack")) {
-        for (lv_unitIndex = UnitGroupCount(gv_aimode_allStructures, c_unitCountAll)-1; lv_unitIndex >= 0; lv_unitIndex -= 1) {
+        for (lv_unitIndex = UnitGroupCount(gv_aimode_allStructures, c_unitCountAll); lv_unitIndex > 0; lv_unitIndex -= 1) {
             lv_unit = UnitGroupUnit(gv_aimode_allStructures, lv_unitIndex);
             if (lv_unit != null && UnitIsAlive(lv_unit) && UnitGetOwner(lv_unit) != inPlayer.playerId) {
                 lv_distance = DistanceBetweenPoints(UnitGetPosition(lv_unit), UnitGetPosition(inUnit));
@@ -174,7 +174,7 @@ static void aimode_HunterStep(UnitPlayerRef inPlayer, unit inUnit) {
     fixed lv_minWeight = -1;
 
     if (!UnitOrderHasAbil(inUnit, "attack")) {
-        for (lv_unitIndex = UnitGroupCount(arena_gv_playerUnitGroup, c_unitCountAll)-1; lv_unitIndex >= 0; lv_unitIndex -= 1) {
+        for (lv_unitIndex = UnitGroupCount(arena_gv_playerUnitGroup, c_unitCountAll); lv_unitIndex > 0; lv_unitIndex -= 1) {
             lv_unit = UnitGroupUnit(arena_gv_playerUnitGroup, lv_unitIndex);
 
             if (lv_unit != null && UnitIsAlive(lv_unit) && UnitGetOwner(lv_unit) != inPlayer.playerId) {
@@ -210,7 +210,7 @@ static void aimode_RetreatStep(UnitPlayerRef inPlayer, unit inUnit) {
     int defenceRadius = 10;
 
     if (!UnitOrderHasAbil(inUnit, "move") && UnitGroupCount(UnitGroupSearch("ShadowShieldGenerator", inPlayer.playerId, UnitGetPosition(inUnit), defenceRadius, null, 2), c_unitCountAlive) <= 0) {
-        for (lv_index = UnitGroupCount(gv_aimode_allStructures, c_unitCountAll)-1; lv_index >= 0; lv_index -= 1) {
+        for (lv_index = UnitGroupCount(gv_aimode_allStructures, c_unitCountAll); lv_index > 0; lv_index -= 1) {
             lv_structure = UnitGroupUnit(gv_aimode_allStructures, lv_index);
             if (lv_structure != null && UnitIsAlive(lv_structure) && UnitGetOwner(lv_structure) == inPlayer.playerId) {
                 if (UnitGetType(lv_structure) == "ShadowShieldGenerator") {
