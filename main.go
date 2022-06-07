@@ -22,7 +22,6 @@ import (
 )
 
 var confPath = flag.String("c", "conf/conf.toml", "config file path")
-var mapsPath = flag.String("m", "sc2maps/product", "map files path")
 
 func init() {
 	rand.Seed(time.Now().Unix())
@@ -33,41 +32,6 @@ func main() {
 	if err != nil {
 		log.Println("conf.NewConf() error:", err)
 		return
-	}
-
-	if *mapsPath != "" {
-		files, err := os.ReadDir(*mapsPath)
-		if err == nil {
-			sc2Path, err := sc2client.GetSC2InstallDir()
-			if err != nil {
-				log.Println("sc2client.GetSC2InstallDir() error:", err)
-				return
-			}
-			sc2MapPath := filepath.Join(sc2Path, "Maps")
-			if _, err := os.Stat(sc2MapPath); os.IsNotExist(err) {
-				err = os.Mkdir(sc2MapPath, os.ModePerm)
-				if err != nil {
-					log.Println("os.Mkdir() error:", sc2MapPath, err)
-					return
-				}
-			}
-			for _, f := range files {
-				if !f.IsDir() {
-					srcPath := filepath.Join(*mapsPath, f.Name())
-					content, err := os.ReadFile(srcPath)
-					if err != nil {
-						log.Println("failed to read map file:", srcPath, err)
-						return
-					}
-					dstPath := filepath.Join(sc2MapPath, f.Name())
-					err = os.WriteFile(dstPath, content, os.ModePerm)
-					if err != nil {
-						log.Println("failed to write map file:", dstPath, err)
-						return
-					}
-				}
-			}
-		}
 	}
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)
@@ -103,8 +67,16 @@ func main() {
 		})
 	audience := game.NewAudience(msgQueue)
 
+	gameMaps := make([]sc2client.GameMap, 0, len(cfg.GameMaps))
+	for _, m := range cfg.GameMaps {
+		gameMaps = append(gameMaps, sc2client.GameMap{
+			Name:       filepath.Base(m),
+			SourcePath: m,
+		})
+	}
+
 	err = sc2client.RunGame(ctx,
-		cfg.GameMaps,
+		gameMaps,
 		[]*sc2client.PlayerSetup{
 			{
 				Type:       sc2proto.PlayerType_Participant,
