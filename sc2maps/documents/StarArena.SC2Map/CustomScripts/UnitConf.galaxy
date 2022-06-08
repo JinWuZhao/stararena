@@ -3,6 +3,7 @@ static int gv_unitdata_dataTypeOfUnitType;
 
 const int c_UnitDataTypeAliasCount = 5;
 struct UnitData {
+    int dataType;
     string unitType;
     string[c_UnitDataTypeAliasCount] typeAlias;
     int costPoints;
@@ -34,6 +35,9 @@ void UnitDataGet(int unitDataType, UnitDataRef outData) {
 }
 
 bool UnitDataGetByUnitType(string unitType, UnitDataRef outData) {
+    if (arena_gf_StringIsEmpty(unitType)) {
+        return false;
+    }
     if (!DataTableInstanceValueExists(gv_unitdata_dataTypeOfUnitType, unitType)) {
         return false;
     }
@@ -45,20 +49,24 @@ void InitUnitData() {
     int lv_index;
     int k;
 
+    gv_unitdata_unitTypes[c_UnitDataTypesMengskHellion].dataType = c_UnitDataTypesMengskHellion;
     gv_unitdata_unitTypes[c_UnitDataTypesMengskHellion].unitType = "MengskHellion";
     gv_unitdata_unitTypes[c_UnitDataTypesMengskHellion].costPoints = 0;
     gv_unitdata_unitTypes[c_UnitDataTypesMengskHellion].rewardPoints = 100;
 
+    gv_unitdata_unitTypes[c_UnitDataTypesSiegeTank].dataType = c_UnitDataTypesSiegeTank;
     gv_unitdata_unitTypes[c_UnitDataTypesSiegeTank].unitType = "SiegeTank";
     gv_unitdata_unitTypes[c_UnitDataTypesSiegeTank].typeAlias[0] = "SiegeTankSieged";
     gv_unitdata_unitTypes[c_UnitDataTypesSiegeTank].costPoints = 100;
     gv_unitdata_unitTypes[c_UnitDataTypesSiegeTank].rewardPoints = 150;
 
+    gv_unitdata_unitTypes[c_UnitDataTypesThorAP].dataType = c_UnitDataTypesThorAP;
     gv_unitdata_unitTypes[c_UnitDataTypesThorAP].unitType = "ThorAP";
     gv_unitdata_unitTypes[c_UnitDataTypesThorAP].typeAlias[0] = "Thor";
     gv_unitdata_unitTypes[c_UnitDataTypesThorAP].costPoints = 300;
     gv_unitdata_unitTypes[c_UnitDataTypesThorAP].rewardPoints = 200;
 
+    gv_unitdata_unitTypes[c_UnitDataTypesBattlecruiser].dataType = c_UnitDataTypesBattlecruiser;
     gv_unitdata_unitTypes[c_UnitDataTypesBattlecruiser].unitType = "Battlecruiser";
     gv_unitdata_unitTypes[c_UnitDataTypesBattlecruiser].costPoints = 500;
     gv_unitdata_unitTypes[c_UnitDataTypesBattlecruiser].rewardPoints = 300;
@@ -69,7 +77,7 @@ void InitUnitData() {
         DataTableInstanceSetInt(gv_unitdata_dataTypeOfUnitType, gv_unitdata_unitTypes[lv_index].unitType, lv_index);
 
         for (k = 0; k < c_UnitDataTypeAliasCount; k += 1) {
-            if (gv_unitdata_unitTypes[lv_index].typeAlias[k] != "") {
+            if (!arena_gf_StringIsEmpty(gv_unitdata_unitTypes[lv_index].typeAlias[k])) {
                 DataTableInstanceSetInt(gv_unitdata_dataTypeOfUnitType, gv_unitdata_unitTypes[lv_index].typeAlias[k], lv_index);
             }
         }
@@ -79,6 +87,7 @@ void InitUnitData() {
 static void unitdata_CopyUnitData(UnitDataRef dest, UnitDataRef source) {
     int lv_index;
 
+    dest.dataType = source.dataType;
     dest.unitType = source.unitType;
     for (lv_index = 0; lv_index < c_UnitDataTypeAliasCount; lv_index += 1) {
         dest.typeAlias[lv_index] = source.typeAlias[lv_index];

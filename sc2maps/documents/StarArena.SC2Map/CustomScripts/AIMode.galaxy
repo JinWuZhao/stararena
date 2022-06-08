@@ -23,7 +23,7 @@ bool AIModeValidMode(int aiMode);
 int AIModeSelectMode(int playerId);
 
 static void aimode_GameLoop_Init();
-static void aimode_BotStep(UnitPlayerRef inoutPlayer, unit inUnit);
+static void aimode_PlayerStep(UnitPlayerRef inoutPlayer, unit inUnit);
 static void aimode_AttackStep(UnitPlayerRef inPlayer, unit inUnit);
 static void aimode_HunterStep(UnitPlayerRef inPlayer, unit inUnit);
 static void aimode_DefenceStep(UnitPlayerRef inPlayer, unit inUnit);
@@ -92,16 +92,15 @@ bool aimode_GameLoop_Func(bool testConds, bool runActions) {
             } else if (lv_players[index].aiMode == c_AIModeRetreat) {
                 aimode_RetreatStep(lv_players[index], lv_unit);
             }
-        } else {
+        } else if (lv_players[index].isBot) {
             lv_players[index].aiMode = c_AIModeNone;
+            lv_players[index].unitType = "";
         }
     }
 
     for (index = 0; index < UnitPlayersCount(); index += 1) {
-        if (lv_players[index].isBot) {
-            lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_players[index].name);
-            aimode_BotStep(lv_players[index], lv_unit);
-        }
+        lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_players[index].name);
+        aimode_PlayerStep(lv_players[index], lv_unit);
     }
 
     return true;
@@ -112,7 +111,7 @@ static void aimode_GameLoop_Init() {
     TriggerAddEventTimer(gt_aimode_GameLoop, gv_aimode_loopTimer);
 }
 
-static void aimode_BotStep(UnitPlayerRef inoutPlayer, unit inUnit) {
+static void aimode_PlayerStep(UnitPlayerRef inoutPlayer, unit inUnit) {
     int lv_index;
     UnitData lv_unitData;
 
@@ -121,19 +120,28 @@ static void aimode_BotStep(UnitPlayerRef inoutPlayer, unit inUnit) {
         SaveUnitPlayer(inoutPlayer);
     }
 
-    if (inUnit == null && DateTimeToInt(CurrentDateTimeGet()) - DateTimeToInt(inoutPlayer.reviveTime) >= c_aimode_reviveInterval) {
-        for (lv_index = c_UnitDataTypesCount-1; lv_index >= 0; lv_index -= 1) {
+    if (inUnit == null && DateTimeToInt(CurrentDateTimeGet()) - DateTimeToInt(inoutPlayer.deadTime) >= c_aimode_reviveInterval) {
+        if (UnitDataGetByUnitType(inoutPlayer.unitType, lv_unitData)) {
+            lv_index = lv_unitData.dataType;
+        } else {
+            lv_index = c_UnitDataTypesCount-1;
+        }
+        for (; lv_index >= 0; lv_index -= 1) {
             UnitDataGet(lv_index, lv_unitData);
             if (inoutPlayer.points >= lv_unitData.costPoints) {
                 break;
             }
         }
+
         inoutPlayer.points -= lv_unitData.costPoints;
         inoutPlayer.unitType = lv_unitData.unitType;
-        inoutPlayer.reviveTime = CurrentDateTimeGet();
+        inoutPlayer.deadTime = CurrentDateTimeGet();
         SaveUnitPlayer(inoutPlayer);
-    
-        arena_gf_CreatePlayerUnit(inoutPlayer.playerId, lv_unitData.unitType, inoutPlayer.name, 1.5, 3.5);
+
+        arena_gf_CreatePlayerUnit(inoutPlayer.playerId, lv_unitData.unitType, inoutPlayer.name, 1.5, 2.5);
+    } else if (inUnit != null) {
+        inoutPlayer.deadTime = CurrentDateTimeGet();
+        SaveUnitPlayer(inoutPlayer);
     }
 }
 

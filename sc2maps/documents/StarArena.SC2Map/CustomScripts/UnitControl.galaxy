@@ -70,7 +70,6 @@ static void unitctrl_SetAIMode_Init() {
 bool unitctrl_CreateThor_Func(bool testConds, bool runActions) {
     string lv_textTag;
     UnitPlayer lv_unitPlayer;
-    unit lv_unit;
     UnitData lv_unitData;
 
     lv_textTag = arena_gf_CurrentCommandArgument(1);
@@ -82,19 +81,10 @@ bool unitctrl_CreateThor_Func(bool testConds, bool runActions) {
     if (!UnitPlayerFromName(lv_textTag, lv_unitPlayer)) {
         return false;
     }
-    lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_textTag);
-    if (lv_unit != null) {
-        return false;
-    }
     UnitDataGet(c_UnitDataTypesThorAP, lv_unitData);
-    if (lv_unitPlayer.points < lv_unitData.costPoints) {
-        return false;
-    }
-    lv_unitPlayer.points -= lv_unitData.costPoints;
     lv_unitPlayer.unitType = lv_unitData.unitType;
     SaveUnitPlayer(lv_unitPlayer);
 
-    arena_gf_CreatePlayerUnit(lv_unitPlayer.playerId, lv_unitData.unitType, lv_textTag, 1.5, 3.5);
     return true;
 }
 
@@ -106,7 +96,6 @@ static void unitctrl_CreateThor_Init () {
 bool unitctrl_CreateBattlecruiser_Func(bool testConds, bool runActions) {
     string lv_textTag;
     UnitPlayer lv_unitPlayer;
-    unit lv_unit;
     UnitData lv_unitData;
 
     lv_textTag = arena_gf_CurrentCommandArgument(1);
@@ -118,20 +107,10 @@ bool unitctrl_CreateBattlecruiser_Func(bool testConds, bool runActions) {
     if (!UnitPlayerFromName(lv_textTag, lv_unitPlayer)) {
         return false;
     }
-    lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_textTag);
-    if (lv_unit != null) {
-        return false;
-    }
     UnitDataGet(c_UnitDataTypesBattlecruiser, lv_unitData);
-    if (lv_unitPlayer.points < lv_unitData.costPoints) {
-        return false;
-    }
-    lv_unitPlayer.points -= lv_unitData.costPoints;
     lv_unitPlayer.unitType = lv_unitData.unitType;
     SaveUnitPlayer(lv_unitPlayer);
 
-    arena_gf_CreatePlayerUnit(lv_unitPlayer.playerId, lv_unitData.unitType, lv_textTag, 1.5, 2.0);
-    UnitSetPropertyFixed(UnitLastCreated(), c_unitPropEnergyPercent, 100.0);
     return true;
 }
 
@@ -143,7 +122,6 @@ static void unitctrl_CreateBattlecruiser_Init() {
 bool unitctrl_CreateSiegeTank_Func(bool testConds, bool runActions) {
     string lv_textTag;
     UnitPlayer lv_unitPlayer;
-    unit lv_unit;
     UnitData lv_unitData;
 
     lv_textTag = arena_gf_CurrentCommandArgument(1);
@@ -155,19 +133,10 @@ bool unitctrl_CreateSiegeTank_Func(bool testConds, bool runActions) {
     if (!UnitPlayerFromName(lv_textTag, lv_unitPlayer)) {
         return false;
     }
-    lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_textTag);
-    if (lv_unit != null) {
-        return false;
-    }
     UnitDataGet(c_UnitDataTypesSiegeTank, lv_unitData);
-    if (lv_unitPlayer.points < lv_unitData.costPoints) {
-        return false;
-    }
-    lv_unitPlayer.points -= lv_unitData.costPoints;
     lv_unitPlayer.unitType = lv_unitData.unitType;
     SaveUnitPlayer(lv_unitPlayer);
 
-    arena_gf_CreatePlayerUnit(lv_unitPlayer.playerId, lv_unitData.unitType, lv_textTag, 1.5, 2.5);
     return true;
 }
 
@@ -179,7 +148,6 @@ static void unitctrl_CreateSiegeTank_Init() {
 bool unitctrl_CreateHellion_Func(bool testConds, bool runActions) {
     string lv_textTag;
     UnitPlayer lv_unitPlayer;
-    unit lv_unit;
     UnitData lv_unitData;
 
     lv_textTag = arena_gf_CurrentCommandArgument(1);
@@ -191,19 +159,10 @@ bool unitctrl_CreateHellion_Func(bool testConds, bool runActions) {
     if (!UnitPlayerFromName(lv_textTag, lv_unitPlayer)) {
         return false;
     }
-    lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_textTag);
-    if (lv_unit != null) {
-        return false;
-    }
     UnitDataGet(c_UnitDataTypesMengskHellion, lv_unitData);
-    if (lv_unitPlayer.points < lv_unitData.costPoints) {
-        return false;
-    }
-    lv_unitPlayer.points -= lv_unitData.costPoints;
     lv_unitPlayer.unitType = lv_unitData.unitType;
     SaveUnitPlayer(lv_unitPlayer);
 
-    arena_gf_CreatePlayerUnit(lv_unitPlayer.playerId, lv_unitData.unitType, lv_textTag, 1.5, 2.0);
     return true;
 }
 

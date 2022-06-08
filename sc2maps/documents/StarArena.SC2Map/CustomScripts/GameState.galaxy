@@ -8,7 +8,7 @@ struct UnitPlayer {
     string name;
     string unitType;
     datetime rewardTime;
-    datetime reviveTime;
+    datetime deadTime;
     int playerId;
     int score;
     int points;
@@ -58,7 +58,7 @@ static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source) {
     dest.score = source.score;
     dest.unitType = source.unitType;
     dest.rewardTime = source.rewardTime;
-    dest.reviveTime = source.reviveTime;
+    dest.deadTime = source.deadTime;
     dest.aiMode = source.aiMode;
     dest.isBot = source.isBot;
     for (lv_aiStatesIndex = 0; lv_aiStatesIndex < c_unitPlayerAIStatesCap; lv_aiStatesIndex += 1) {
@@ -88,7 +88,7 @@ bool AddUnitPlayer(UnitPlayerRef player) {
         return false;
     }
     player.rewardTime = CurrentDateTimeGet();
-    player.reviveTime = CurrentDateTimeGet();
+    player.deadTime = IntToDateTime(0);
     gamestate_SaveUnitPlayerByIndex(index, player);
     gv_gamestate_unitPlayersCount += 1;
     return true;
@@ -136,11 +136,15 @@ int UnitPlayerAutoRewardPoints(UnitPlayerRef player) {
     int lv_reward;
 
     lv_currentTime = CurrentDateTimeGet();
-    lv_duration = DateTimeToInt(lv_currentTime) - DateTimeToInt(player.rewardTime);
-    if (lv_duration > 0) {
-        lv_reward = lv_duration * c_gamestate_autoRewardPointsPerSecond;
+
+    if (DataTableGetUnit(true, arena_gv_unitNamePrefix + player.name) == null) {
+        lv_duration = DateTimeToInt(lv_currentTime) - DateTimeToInt(player.rewardTime);
+        if (lv_duration > 0) {
+            lv_reward = lv_duration * c_gamestate_autoRewardPointsPerSecond;
+        }
+        player.points += lv_reward;            
     }
-    player.points += lv_reward;
+
     player.rewardTime = lv_currentTime;
     SaveUnitPlayer(player);
     return lv_reward;
@@ -158,7 +162,7 @@ void UnitPlayersOfRanked(UnitPlayerArrayRef outPlayers) {
     UnitPlayer tempPlayer;
 
     for (index = 0; index < c_unitPlayersCap; index += 1) {
-        if (gv_gamestate_unitPlayers[index].name != "") {
+        if (!arena_gf_StringIsEmpty(gv_gamestate_unitPlayers[index].name)) {
             gamestate_CopyUnitPlayer(outPlayers[k], gv_gamestate_unitPlayers[index]);
             k += 1;
         }
@@ -180,7 +184,7 @@ void UnitPlayersGetAll(UnitPlayerArrayRef outPlayers) {
     int k = 0;
 
     for (index = 0; index < c_unitPlayersCap; index += 1) {
-        if (gv_gamestate_unitPlayers[index].name != "") {
+        if (!arena_gf_StringIsEmpty(gv_gamestate_unitPlayers[index].name)) {
             gamestate_CopyUnitPlayer(outPlayers[k], gv_gamestate_unitPlayers[index]);
             k += 1;
         }

@@ -28,6 +28,7 @@ void arena_gf_DispatchCommand (string lp_name, string lp_arguments);
 void arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed lp_angle, fixed lp_scale, string lp_textTag, fixed lp_tagHeight);
 void arena_gf_CreatePlayerUnit (int lp_player, string lp_type, string lp_textTag, fixed lp_scale, fixed lp_tagHeight);
 unit arena_gf_UnitFromName (string lp_name);
+bool arena_gf_StringIsEmpty(string lp_str);
 
 // Trigger Declarations
 trigger arena_gt_ProcessCommand;
@@ -141,13 +142,13 @@ void arena_gf_DispatchCommand (string lp_name, string lp_arguments) {
     arena_gf_DebugLog(("Dispatch Command: " + lp_name + " " + lp_arguments));
     do {
         lv_lastArgument = StringWord(lp_arguments, lv_lastArgumentIndex);
-        if ((lv_lastArgument != "")) {
+        if ((!arena_gf_StringIsEmpty(lv_lastArgument))) {
             DataTableSetString(false, TriggerEventParamName(lp_name, IntToString(lv_lastArgumentIndex)), lv_lastArgument);
             arena_gf_DebugLog(("Dispatch Command Argument: " + IntToString(lv_lastArgumentIndex) + ": " + lv_lastArgument));
             lv_lastArgumentIndex = (lv_lastArgumentIndex+1);
         }
 
-    }while ((lv_lastArgument != ""));
+    }while (!arena_gf_StringIsEmpty(lv_lastArgument));
     DataTableSetString(false, TriggerEventParamName(lp_name, "Argument Count"), IntToString(lv_lastArgumentIndex));
     TriggerSendEvent(lp_name);
 }
@@ -169,7 +170,7 @@ void arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed l
     UnitGroupAdd(arena_gv_playerUnitGroup, lv_createdUnit);
     UnitSetScale(lv_createdUnit, (lp_scale * 100.0), (lp_scale * 100.0), (lp_scale * 100.0));
     UnitSetTeamColorIndex(lv_createdUnit, PlayerGetColorIndex(lp_player, false));
-    if ((lp_textTag != "")) {
+    if (!arena_gf_StringIsEmpty(lp_textTag)) {
         lv_realTagHeight = (UnitGetHeight(lv_createdUnit) + (lp_scale * lp_tagHeight));
         lv_unitHealth = UnitGetPropertyFixed(lv_createdUnit, c_unitPropLifePercent, c_unitPropCurrent);
         if (StringLength(lp_textTag) < arena_c_maxUnitNameLength) {
@@ -201,6 +202,10 @@ unit arena_gf_UnitFromName (string lp_name) {
     // Automatic Variable Declarations
     // Implementation
     return DataTableGetUnit(true, (arena_gv_unitNamePrefix + lp_name));
+}
+
+bool arena_gf_StringIsEmpty(string lp_str) {
+    return lp_str == null || lp_str == "";
 }
 
 // Triggers
@@ -361,7 +366,7 @@ bool arena_gt_UnitLifeChange_Func(bool testConds, bool runActions) {
     lv_unitHealth = UnitGetPropertyFixed(lv_unit, c_unitPropLifePercent, c_unitPropCurrent);
     lv_textTag = FixedToInt(UnitGetCustomValue(lv_unit, arena_gv_unitTextTagIndex));
     if (lv_textTag > 0) {
-        if (lv_target != "") {
+        if (!arena_gf_StringIsEmpty(lv_target)) {
             if (StringLength(lv_target) < arena_c_maxUnitNameLength) {
                 lv_text = lv_target + " " + FixedToString(lv_unitHealth, 0) + "%";
             }
