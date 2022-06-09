@@ -400,14 +400,16 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
     lv_player.points += lv_unitData.rewardPoints;
     SaveUnitPlayer(lv_player);
 
-    lv_rewardText = TextTagCreate(StringToText("+"+IntToString(lv_unitData.rewardPoints)), 24, UnitGetPosition(libNtve_gf_KillingUnit()), 3.0, true, false, PlayerGroupAll());
-    TextTagSetColor(lv_rewardText, c_textTagColorText, Color(0, 255, 0));
-    TextTagAttachToUnit(lv_rewardText, libNtve_gf_KillingUnit(), 3.0);
-    TextTagSetGravity(lv_rewardText, 2.0);
-    lv_rewardTimer = TimerCreate();
-    TimerStart(lv_rewardTimer, 2.0, false, c_timeReal);
-    libNtve_gf_WaitForTimer(lv_rewardTimer, 0.0, false);
-    TextTagDestroy(lv_rewardText);
+    if (!lv_player.isBot) {
+        lv_rewardText = TextTagCreate(StringToText("+"+IntToString(lv_unitData.rewardPoints)), 24, UnitGetPosition(libNtve_gf_KillingUnit()), 3.0, true, false, PlayerGroupAll());
+        TextTagSetColor(lv_rewardText, c_textTagColorText, Color(0, 255, 0));
+        TextTagAttachToUnit(lv_rewardText, libNtve_gf_KillingUnit(), 3.0);
+        TextTagSetGravity(lv_rewardText, 2.0);
+        lv_rewardTimer = TimerCreate();
+        TimerStart(lv_rewardTimer, 2.0, false, c_timeReal);
+        libNtve_gf_WaitForTimer(lv_rewardTimer, 0.0, false);
+        TextTagDestroy(lv_rewardText);
+    }
 
     return true;
 }

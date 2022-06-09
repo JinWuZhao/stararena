@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 
 	parsec "github.com/prataprc/goparsec"
 )
@@ -93,7 +94,7 @@ func parseCommand(ctors []Constructor, ast *parsec.AST, parser parsec.Parser, ct
 }
 
 func ParseCommand(ctx Context, text string) (Command, error) {
-	return parseCommand(cmdCtors, cmdAST, cmdParser, ctx, text)
+	return parseCommand(cmdCtors, cmdAST, cmdParser, ctx, strings.ToLower(text))
 }
 
 func makeSkillCtor[T Command](op string) Constructor {

@@ -11,6 +11,8 @@ static trigger gt_unitctrl_IssueAbilitySiegeTank;
 // Function Declarations
 void InitUnitControl();
 
+static bool unitctrl_CreateUnitByDataType(string name, int dataType);
+
 static void unitctrl_SetAIMode_Init();
 static void unitctrl_CreateThor_Init();
 static void unitctrl_CreateBattlecruiser_Init();
@@ -30,6 +32,19 @@ void InitUnitControl() {
     unitctrl_IssueAbilityThor_Init();
     unitctrl_IssueAbilityBattlecruiser_Init();
     unitctrl_IssueAbilitySiegeTank_Init();
+}
+
+static bool unitctrl_CreateUnitByDataType(string name, int dataType) {
+    UnitPlayer lv_unitPlayer;
+    UnitData lv_unitData;
+
+    if (!UnitPlayerFromName(name, lv_unitPlayer)) {
+        return false;
+    }
+    UnitDataGet(dataType, lv_unitData);
+    lv_unitPlayer.unitType = lv_unitData.unitType;
+    SaveUnitPlayer(lv_unitPlayer);
+    return true;
 }
 
 bool unitctrl_SetAIMode_Func(bool testConds, bool runActions) {
@@ -68,24 +83,11 @@ static void unitctrl_SetAIMode_Init() {
 }
 
 bool unitctrl_CreateThor_Func(bool testConds, bool runActions) {
-    string lv_textTag;
-    UnitPlayer lv_unitPlayer;
-    UnitData lv_unitData;
-
-    lv_textTag = arena_gf_CurrentCommandArgument(1);
-
     if (!runActions) {
         return true;
     }
 
-    if (!UnitPlayerFromName(lv_textTag, lv_unitPlayer)) {
-        return false;
-    }
-    UnitDataGet(c_UnitDataTypesThorAP, lv_unitData);
-    lv_unitPlayer.unitType = lv_unitData.unitType;
-    SaveUnitPlayer(lv_unitPlayer);
-
-    return true;
+    return unitctrl_CreateUnitByDataType(arena_gf_CurrentCommandArgument(1), c_UnitDataTypesThorAP);
 }
 
 static void unitctrl_CreateThor_Init () {
@@ -94,24 +96,11 @@ static void unitctrl_CreateThor_Init () {
 }
 
 bool unitctrl_CreateBattlecruiser_Func(bool testConds, bool runActions) {
-    string lv_textTag;
-    UnitPlayer lv_unitPlayer;
-    UnitData lv_unitData;
-
-    lv_textTag = arena_gf_CurrentCommandArgument(1);
-
     if (!runActions) {
         return true;
     }
 
-    if (!UnitPlayerFromName(lv_textTag, lv_unitPlayer)) {
-        return false;
-    }
-    UnitDataGet(c_UnitDataTypesBattlecruiser, lv_unitData);
-    lv_unitPlayer.unitType = lv_unitData.unitType;
-    SaveUnitPlayer(lv_unitPlayer);
-
-    return true;
+    return unitctrl_CreateUnitByDataType(arena_gf_CurrentCommandArgument(1), c_UnitDataTypesBattlecruiser);
 }
 
 static void unitctrl_CreateBattlecruiser_Init() {
@@ -120,24 +109,11 @@ static void unitctrl_CreateBattlecruiser_Init() {
 }
 
 bool unitctrl_CreateSiegeTank_Func(bool testConds, bool runActions) {
-    string lv_textTag;
-    UnitPlayer lv_unitPlayer;
-    UnitData lv_unitData;
-
-    lv_textTag = arena_gf_CurrentCommandArgument(1);
-
     if (!runActions) {
         return true;
     }
 
-    if (!UnitPlayerFromName(lv_textTag, lv_unitPlayer)) {
-        return false;
-    }
-    UnitDataGet(c_UnitDataTypesSiegeTank, lv_unitData);
-    lv_unitPlayer.unitType = lv_unitData.unitType;
-    SaveUnitPlayer(lv_unitPlayer);
-
-    return true;
+    return unitctrl_CreateUnitByDataType(arena_gf_CurrentCommandArgument(1), c_UnitDataTypesSiegeTank);
 }
 
 static void unitctrl_CreateSiegeTank_Init() {
@@ -146,24 +122,11 @@ static void unitctrl_CreateSiegeTank_Init() {
 }
 
 bool unitctrl_CreateHellion_Func(bool testConds, bool runActions) {
-    string lv_textTag;
-    UnitPlayer lv_unitPlayer;
-    UnitData lv_unitData;
-
-    lv_textTag = arena_gf_CurrentCommandArgument(1);
-
     if (!runActions) {
         return true;
     }
 
-    if (!UnitPlayerFromName(lv_textTag, lv_unitPlayer)) {
-        return false;
-    }
-    UnitDataGet(c_UnitDataTypesMengskHellion, lv_unitData);
-    lv_unitPlayer.unitType = lv_unitData.unitType;
-    SaveUnitPlayer(lv_unitPlayer);
-
-    return true;
+    return unitctrl_CreateUnitByDataType(arena_gf_CurrentCommandArgument(1), c_UnitDataTypesMengskHellion);
 }
 
 static void unitctrl_CreateHellion_Init() {

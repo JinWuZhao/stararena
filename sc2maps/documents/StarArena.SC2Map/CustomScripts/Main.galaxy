@@ -1,6 +1,7 @@
 include "CustomScripts/ArenaLib"
 include "CustomScripts/UnitConf"
 include "CustomScripts/GameState"
+include "CustomScripts/Servant"
 include "CustomScripts/AIMode"
 include "CustomScripts/UnitControl"
 include "CustomScripts/GamePlay"
@@ -9,6 +10,7 @@ void InitCustomScripts() {
     InitArenaLib();
     InitUnitData();
     InitGameState();
+    InitServant();
     InitAIMode();
     InitUnitControl();
     InitGamePlay();

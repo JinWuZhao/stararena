@@ -1,6 +1,6 @@
 // Const Declarations
 const int c_unitPlayerAIStatesCap = 5;
-const int c_unitPlayersCap = 100;
+const int c_unitPlayersCap = 40;
 static const int c_gamestate_autoRewardPointsPerSecond = 10;
 
 // Type Declarations
@@ -13,6 +13,8 @@ struct UnitPlayer {
     int score;
     int points;
     int aiMode;
+    int servants;
+    string servantType;
     bool isBot;
     int[c_unitPlayerAIStatesCap] aiStates;
 };
@@ -60,6 +62,8 @@ static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source) {
     dest.rewardTime = source.rewardTime;
     dest.deadTime = source.deadTime;
     dest.aiMode = source.aiMode;
+    dest.servants = source.servants;
+    dest.servantType = source.servantType;
     dest.isBot = source.isBot;
     for (lv_aiStatesIndex = 0; lv_aiStatesIndex < c_unitPlayerAIStatesCap; lv_aiStatesIndex += 1) {
         dest.aiStates[lv_aiStatesIndex] = source.aiStates[lv_aiStatesIndex];
@@ -89,6 +93,7 @@ bool AddUnitPlayer(UnitPlayerRef player) {
     }
     player.rewardTime = CurrentDateTimeGet();
     player.deadTime = IntToDateTime(0);
+    player.servants = 5;
     gamestate_SaveUnitPlayerByIndex(index, player);
     gv_gamestate_unitPlayersCount += 1;
     return true;
