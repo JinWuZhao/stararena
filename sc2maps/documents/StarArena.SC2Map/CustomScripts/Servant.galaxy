@@ -1,61 +1,102 @@
-static int servant_unitGroupByPlayerName;
+static int gv_servant_unitGroupByPlayerName;
+static int gv_servant_masterByServantUnit;
 
-bool ServantSpawnUnits(UnitPlayerRef player);
+unitgroup ServantSpawnUnits(UnitPlayerRef player);
 unitgroup ServantGetUnits(string master);
-bool ServantDeleteUnits(string master);
+bool ServantCleanUnit(unit inUnit);
+string ServantGetMaster(unit inUnit);
 void InitServant();
 
-bool ServantSpawnUnits(UnitPlayerRef player) {
-    unit lv_unit;
-    UnitData lv_unitData;
-    point lv_position;
-    fixed lv_facing;
+unitgroup ServantSpawnUnits(UnitPlayerRef player) {
+    unit lv_masterUnit;
+    UnitData lv_masterUnitData;
+    point lv_masterPosition;
+    fixed lv_masterFacing;
     unitgroup lv_servants;
     string lv_servantType;
+    int lv_index;
+    unit lv_unit;
 
-    lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + player.name);
-    if (lv_unit == null) {
-        return false;
+    lv_masterUnit = DataTableGetUnit(true, arena_gv_unitNamePrefix + player.name);
+    if (!UnitIsValid(lv_masterUnit)) {
+        return null;
     }
-    if (!UnitDataGetByUnitType(UnitGetType(lv_unit), lv_unitData)) {
-        return false;
+    if (!UnitDataGetByUnitType(UnitGetType(lv_masterUnit), lv_masterUnitData)) {
+        return null;
     }
-    lv_facing = UnitGetFacing(lv_unit);
-    lv_position = PointWithOffsetPolar(UnitGetPosition(lv_unit), 5, lv_facing);
-    if (lv_position == null) {
-        return false;
+    lv_masterFacing = UnitGetFacing(lv_masterUnit);
+    lv_masterPosition = PointWithOffsetPolar(UnitGetPosition(lv_masterUnit), 5, lv_masterFacing);
+    if (lv_masterPosition == null) {
+        return null;
     }
 
     if (!arena_gf_StringIsEmpty(player.servantType)) {
         lv_servantType = player.servantType;
     } else {
-        lv_servantType = lv_unitData.servantType;
+        lv_servantType = lv_masterUnitData.servantType;
     }
-    lv_servants = UnitCreate(player.servants, lv_servantType, 0, player.playerId, lv_position, lv_facing);
-    if (lv_servants == null) {
-        return false;
+    lv_servants = UnitCreate(player.servants, lv_servantType, 0, player.playerId, lv_masterPosition, lv_masterFacing);
+    for (lv_index = UnitGroupCount(lv_servants, c_unitCountAll); lv_index > 0; lv_index -= 1) {
+        lv_unit = UnitGroupUnit(lv_servants, lv_index);
+        if (lv_unit != null && UnitIsAlive(lv_unit)) {
+            DataTableInstanceSetString(gv_servant_masterByServantUnit, IntToString(UnitGetTag(lv_unit)), player.name);
+        }
     }
-    DataTableInstanceSetUnitGroup(servant_unitGroupByPlayerName, player.name, lv_servants);
 
-    return true;
+    DataTableInstanceSetUnitGroup(gv_servant_unitGroupByPlayerName, player.name, lv_servants);
+
+    return lv_servants;
 }
 
 unitgroup ServantGetUnits(string master) {
-    if (!DataTableInstanceValueExists(servant_unitGroupByPlayerName, master)) {
+    if (!DataTableInstanceValueExists(gv_servant_unitGroupByPlayerName, master)) {
         return null;
     }
-    return DataTableInstanceGetUnitGroup(servant_unitGroupByPlayerName, master);
+    return DataTableInstanceGetUnitGroup(gv_servant_unitGroupByPlayerName, master);
 }
 
-bool ServantDeleteUnits(string master) {
-    if (!DataTableInstanceValueExists(servant_unitGroupByPlayerName, master)) {
+bool ServantCleanUnit(unit inUnit) {
+    string lv_master;
+    unitgroup lv_servants;
+    int lv_index;
+    unit lv_servantUnit;
+
+    lv_master = ServantGetMaster(inUnit);
+    if (arena_gf_StringIsEmpty(lv_master)) {
         return false;
     }
-    DataTableInstanceValueRemove(servant_unitGroupByPlayerName, master);
+    DataTableInstanceValueRemove(gv_servant_masterByServantUnit, IntToString(UnitGetTag(inUnit)));
+
+    lv_servants = ServantGetUnits(lv_master);
+    if (lv_servants != null) {
+        if (UnitGroupCount(lv_servants, c_unitCountAlive) > 0) {
+            if (!UnitGroupHasUnit(lv_servants, inUnit)) {
+                for (lv_index = UnitGroupCount(lv_servants, c_unitCountAll); lv_index > 0; lv_index -= 1) {
+                    lv_servantUnit = UnitGroupUnit(lv_servants, lv_index);
+                    if (UnitIsValid(lv_servantUnit)) {
+                        DataTableInstanceValueRemove(gv_servant_masterByServantUnit, IntToString(UnitGetTag(lv_servantUnit)));
+                    }
+                }
+            }
+        } else {
+            UnitGroupClear(lv_servants);
+            DataTableInstanceValueRemove(gv_servant_unitGroupByPlayerName, lv_master);
+        }
+    }
     return true;
+}
+
+string ServantGetMaster(unit inUnit) {
+    string lv_master = DataTableInstanceGetString(gv_servant_masterByServantUnit, IntToString(UnitGetTag(inUnit)));
+    if (arena_gf_StringIsEmpty(lv_master)) {
+        return DataTableGetString(true, arena_gv_unitTagPrefix + IntToString(UnitGetTag(inUnit)));
+    }
+    return lv_master;
 }
 
 void InitServant() {
     DataTableInstanceCreate();
-    servant_unitGroupByPlayerName = DataTableInstanceLastCreated();
+    gv_servant_unitGroupByPlayerName = DataTableInstanceLastCreated();
+    DataTableInstanceCreate();
+    gv_servant_masterByServantUnit = DataTableInstanceLastCreated();
 }

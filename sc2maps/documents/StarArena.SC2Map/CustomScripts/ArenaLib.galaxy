@@ -7,13 +7,15 @@ include "TriggerLibs/NativeLib"
 const string arena_gv_commandPrefix = "cmd-";
 const string arena_gv_unitNamePrefix = "unit-name-";
 const string arena_gv_unitTagPrefix = "unit-tag-";
-const int arena_gv_unitTextTagIndex = 0;
 static const int arena_c_maxUnitNameLength = 18;
 
 // Variable Declarations
 int arena_gv_directorPlayer;
 int arena_gv_audiencePlayer;
 unitgroup arena_gv_playerUnitGroup;
+
+// Data tables
+static int arena_gv_textTagByUnitTag;
 
 // Function Declarations
 void arena_gf_InitbaseMap (camerainfo lp_mainCamera);
@@ -25,8 +27,8 @@ void arena_gf_InfoLog (string lp_message);
 void arena_gf_ShowMessage (string lp_message);
 void arena_gf_ProcessCommand (string lp_commandMessage);
 void arena_gf_DispatchCommand (string lp_name, string lp_arguments);
-void arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed lp_angle, fixed lp_scale, string lp_textTag, fixed lp_tagHeight);
-void arena_gf_CreatePlayerUnit (int lp_player, string lp_type, string lp_textTag, fixed lp_scale, fixed lp_tagHeight);
+unit arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed lp_angle, fixed lp_scale, string lp_textTag, fixed lp_tagHeight);
+unit arena_gf_CreatePlayerUnit (int lp_player, string lp_type, string lp_textTag, fixed lp_scale, fixed lp_tagHeight);
 unit arena_gf_UnitFromName (string lp_name);
 bool arena_gf_StringIsEmpty(string lp_str);
 
@@ -50,6 +52,8 @@ void arena_InitVariables () {
     arena_gv_directorPlayer = 1;
     arena_gv_audiencePlayer = 2;
     arena_gv_playerUnitGroup = UnitGroupEmpty();
+    DataTableInstanceCreate();
+    arena_gv_textTagByUnitTag = DataTableInstanceLastCreated();
 }
 
 // Functions
@@ -121,7 +125,6 @@ void arena_gf_ProcessCommand (string lp_commandMessage) {
     // Implementation
     if ((lv_commandName != StringReplaceWord(lv_commandName, arena_gv_commandPrefix, "", 1, c_stringCase))) {
         lv_commandArguments = StringReplaceWord(lv_commandArguments, " ", "", 1, c_stringCase);
-        arena_gf_DebugLog(("Process Command: " + lv_commandName + " " + lv_commandArguments));
         arena_gf_DispatchCommand(lv_commandName, lv_commandArguments);
     }
 
@@ -139,12 +142,10 @@ void arena_gf_DispatchCommand (string lp_name, string lp_arguments) {
     lv_lastArgument = "";
 
     // Implementation
-    arena_gf_DebugLog(("Dispatch Command: " + lp_name + " " + lp_arguments));
     do {
         lv_lastArgument = StringWord(lp_arguments, lv_lastArgumentIndex);
         if ((!arena_gf_StringIsEmpty(lv_lastArgument))) {
             DataTableSetString(false, TriggerEventParamName(lp_name, IntToString(lv_lastArgumentIndex)), lv_lastArgument);
-            arena_gf_DebugLog(("Dispatch Command Argument: " + IntToString(lv_lastArgumentIndex) + ": " + lv_lastArgument));
             lv_lastArgumentIndex = (lv_lastArgumentIndex+1);
         }
 
@@ -153,7 +154,7 @@ void arena_gf_DispatchCommand (string lp_name, string lp_arguments) {
     TriggerSendEvent(lp_name);
 }
 
-void arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed lp_angle, fixed lp_scale, string lp_textTag, fixed lp_tagHeight) {
+unit arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed lp_angle, fixed lp_scale, string lp_textTag, fixed lp_tagHeight) {
     // Variable Declarations
     fixed lv_realTagHeight;
     fixed lv_unitHealth;
@@ -178,15 +179,15 @@ void arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed l
             lv_textTag = TextTagCreate(StringToText(lv_unitText), 22, UnitGetPosition(lv_createdUnit), lv_realTagHeight, true, false, PlayerGroupAll());
             //TextTagSetColor(lv_textTag, c_textTagColorText, libNtve_gf_ConvertPlayerColorToColor(PlayerGetColorIndex(lp_player, false)));
             TextTagAttachToUnit(lv_textTag, lv_createdUnit, lv_realTagHeight);
-            UnitSetCustomValue(lv_createdUnit, arena_gv_unitTextTagIndex, IntToFixed(lv_textTag));
+            DataTableInstanceSetInt(arena_gv_textTagByUnitTag, IntToString(UnitGetTag(lv_createdUnit)), lv_textTag);
         }
         DataTableSetUnit(true, (arena_gv_unitNamePrefix + lp_textTag), lv_createdUnit);
         DataTableSetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_createdUnit))), lp_textTag);
     }
-
+    return lv_createdUnit;
 }
 
-void arena_gf_CreatePlayerUnit (int lp_player, string lp_type, string lp_textTag, fixed lp_scale, fixed lp_tagHeight) {
+unit arena_gf_CreatePlayerUnit (int lp_player, string lp_type, string lp_textTag, fixed lp_scale, fixed lp_tagHeight) {
     // Variable Declarations
     point lv_startLocation;
 
@@ -195,7 +196,7 @@ void arena_gf_CreatePlayerUnit (int lp_player, string lp_type, string lp_textTag
 
     // Implementation
     lv_startLocation = PlayerStartLocation(lp_player);
-    arena_gf_CreateUnit(lp_player, lv_startLocation, lp_type, PointGetFacing(lv_startLocation), lp_scale, lp_textTag, lp_tagHeight);
+    return arena_gf_CreateUnit(lp_player, lv_startLocation, lp_type, PointGetFacing(lv_startLocation), lp_scale, lp_textTag, lp_tagHeight);
 }
 
 unit arena_gf_UnitFromName (string lp_name) {
@@ -206,6 +207,20 @@ unit arena_gf_UnitFromName (string lp_name) {
 
 bool arena_gf_StringIsEmpty(string lp_str) {
     return lp_str == null || lp_str == "";
+}
+
+void arena_gf_CleanPlayerUnit(unit inUnit) {
+    int lv_unitTag;
+    string lv_unitName;
+
+    lv_unitTag = UnitGetTag(inUnit);
+    lv_unitName = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(lv_unitTag)));
+
+    if (UnitGroupHasUnit(arena_gv_playerUnitGroup, inUnit)) {
+        DataTableValueRemove(true, (arena_gv_unitTagPrefix + IntToString(lv_unitTag)));
+        DataTableValueRemove(true, (arena_gv_unitNamePrefix + lv_unitName));
+        UnitGroupRemove(arena_gv_playerUnitGroup, inUnit);
+    }
 }
 
 // Triggers
@@ -252,11 +267,8 @@ bool arena_gt_MoveToward_Func (bool testConds, bool runActions) {
     lv_distance = arena_gf_CurrentCommandArgument(3);
     lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_unitName));
 
-    // Conditions
-    if (testConds) {
-        if (!((lv_unit != null))) {
-            return false;
-        }
+    if (!UnitIsValid(lv_unit)) {
+        return false;
     }
 
     // Actions
@@ -287,11 +299,8 @@ bool arena_gt_KillUnit_Func (bool testConds, bool runActions) {
     lv_unitName = arena_gf_CurrentCommandArgument(1);
     lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_unitName));
 
-    // Conditions
-    if (testConds) {
-        if (!((lv_unit != null))) {
-            return false;
-        }
+    if (!UnitIsValid(lv_unit)) {
+        return false;
     }
 
     // Actions
@@ -299,7 +308,6 @@ bool arena_gt_KillUnit_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    arena_gf_DebugLog(("Kill Unit: " + lv_unitName));
     UnitKill(lv_unit);
     return true;
 }
@@ -329,16 +337,9 @@ bool arena_gt_CleanDeadUnit_Func (bool testConds, bool runActions) {
         return true;
     }
 
-    arena_gf_DebugLog(("Unit Died: " + IntToString(lv_unitTag) + " " + lv_unitName));
-
-    if (UnitGroupHasUnit(arena_gv_playerUnitGroup, EventUnit())) {
-        DataTableValueRemove(true, (arena_gv_unitTagPrefix + IntToString(lv_unitTag)));
-        DataTableValueRemove(true, (arena_gv_unitNamePrefix + lv_unitName));
-        UnitGroupRemove(arena_gv_playerUnitGroup, EventUnit());
-    }
-    lv_textTag = FixedToInt(UnitGetCustomValue(EventUnit(), arena_gv_unitTextTagIndex));
+    lv_textTag = DataTableInstanceGetInt(arena_gv_textTagByUnitTag, IntToString(UnitGetTag(EventUnit())));
     if (lv_textTag > 0) {
-        UnitSetCustomValue(EventUnit(), arena_gv_unitTextTagIndex, 0.0);
+        DataTableInstanceValueRemove(arena_gv_textTagByUnitTag, IntToString(UnitGetTag(EventUnit())));
         TextTagDestroy(lv_textTag);
     }
     return true;
@@ -364,7 +365,7 @@ bool arena_gt_UnitLifeChange_Func(bool testConds, bool runActions) {
     lv_unit = EventUnit();
     lv_target = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_unit))));
     lv_unitHealth = UnitGetPropertyFixed(lv_unit, c_unitPropLifePercent, c_unitPropCurrent);
-    lv_textTag = FixedToInt(UnitGetCustomValue(lv_unit, arena_gv_unitTextTagIndex));
+    lv_textTag = DataTableInstanceGetInt(arena_gv_textTagByUnitTag, IntToString(UnitGetTag(lv_unit)));
     if (lv_textTag > 0 && !arena_gf_StringIsEmpty(lv_target)) {
         lv_text = lv_target + " " + FixedToString(lv_unitHealth, 0) + "%";
         TextTagSetText(lv_textTag, StringToText(lv_text));

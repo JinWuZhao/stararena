@@ -9,6 +9,7 @@ struct UnitData {
     int costPoints;
     int rewardPoints;
     string servantType;
+    int willPoints;
 };
 typedef structref<UnitData> UnitDataRef;
 
@@ -57,6 +58,7 @@ void InitUnitData() {
     data.costPoints = 0;
     data.rewardPoints = 100;
     data.servantType = "MengskHellion";
+    data.willPoints = 10;
     unitdata_CopyUnitData(gv_unitdata_unitTypes[c_UnitDataTypesMengskHellion], data);
 
     unitdata_CopyUnitData(data, emptyData);
@@ -66,6 +68,7 @@ void InitUnitData() {
     data.costPoints = 100;
     data.rewardPoints = 150;
     data.servantType = "SiegeTank";
+    data.willPoints = 20;
     unitdata_CopyUnitData(gv_unitdata_unitTypes[c_UnitDataTypesSiegeTank], data);
 
     unitdata_CopyUnitData(data, emptyData);
@@ -75,6 +78,7 @@ void InitUnitData() {
     data.costPoints = 300;
     data.rewardPoints = 200;
     data.servantType = "ThorAP";
+    data.willPoints = 30;
     unitdata_CopyUnitData(gv_unitdata_unitTypes[c_UnitDataTypesThorAP], data);
 
     unitdata_CopyUnitData(data, emptyData);
@@ -83,6 +87,7 @@ void InitUnitData() {
     data.costPoints = 500;
     data.rewardPoints = 300;
     data.servantType = "Battlecruiser";
+    data.willPoints = 40;
     unitdata_CopyUnitData(gv_unitdata_unitTypes[c_UnitDataTypesBattlecruiser], data);
 
     DataTableInstanceCreate();
@@ -106,6 +111,7 @@ static void unitdata_CopyUnitData(UnitDataRef dest, UnitDataRef source) {
     dest.costPoints = source.costPoints;
     dest.rewardPoints = source.rewardPoints;
     dest.servantType = source.servantType;
+    dest.willPoints = source.willPoints;
 
     for (lv_index = 0; lv_index < c_UnitDataTypeAliasCount; lv_index += 1) {
         dest.typeAlias[lv_index] = source.typeAlias[lv_index];

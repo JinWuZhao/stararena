@@ -93,7 +93,7 @@ bool AddUnitPlayer(UnitPlayerRef player) {
     }
     player.rewardTime = CurrentDateTimeGet();
     player.deadTime = IntToDateTime(0);
-    player.servants = 5;
+    player.servants = 2;
     gamestate_SaveUnitPlayerByIndex(index, player);
     gv_gamestate_unitPlayersCount += 1;
     return true;
@@ -142,7 +142,7 @@ int UnitPlayerAutoRewardPoints(UnitPlayerRef player) {
 
     lv_currentTime = CurrentDateTimeGet();
 
-    if (DataTableGetUnit(true, arena_gv_unitNamePrefix + player.name) == null) {
+    if (!UnitIsValid(DataTableGetUnit(true, arena_gv_unitNamePrefix + player.name))) {
         lv_duration = DateTimeToInt(lv_currentTime) - DateTimeToInt(player.rewardTime);
         if (lv_duration > 0) {
             lv_reward = lv_duration * c_gamestate_autoRewardPointsPerSecond;

@@ -125,6 +125,7 @@ bool gameplay_Victory_Func(bool testConds, bool runActions) {
     UnitPlayerArray rankedUnitPlayers;
     int index;
     int lv_rankLength;
+    string lv_playerName;
 
     if (gv_gameplay_winnerPlayer == 3 || gv_gameplay_winnerPlayer == 4) {
         return false;
@@ -158,10 +159,14 @@ bool gameplay_Victory_Func(bool testConds, bool runActions) {
         if (lv_rankLength > 10) {
             lv_rankLength = 10;
         }
-        for (index = 0; index < lv_rankLength; index += 1) {
+        for (index = lv_rankLength-1; index >= 0; index -= 1) {
             TimerStart(scoreTimer, 1.0, false, c_timeReal);
             libNtve_gf_WaitForTimer(scoreTimer, 0.0, false);
-            arena_gf_ShowMessage("第" + IntToString(index+1) + "名：" + rankedUnitPlayers[index].name + " ---------------------------- " + IntToString(rankedUnitPlayers[index].score) + "分");
+            lv_playerName = rankedUnitPlayers[index].name;
+            if (rankedUnitPlayers[index].isBot) {
+                lv_playerName = "Bot";
+            }
+            arena_gf_ShowMessage("第" + IntToString(index+1) + "名：" + lv_playerName + " ---------------------------- " + IntToString(rankedUnitPlayers[index].score) + "分");
         }
 
         arena_gf_ShowMessage("10秒后游戏结束");
@@ -242,7 +247,7 @@ static void gameplay_EndGame_Init() {
 bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
     string lv_name;
     int lv_playerId;
-    bool lv_isBot;
+    bool lv_isBot = false;
     UnitPlayer lv_player;
 
     lv_name = arena_gf_CurrentCommandArgument(1);
@@ -262,7 +267,6 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
     lv_player.name = lv_name;
     lv_player.playerId = lv_playerId;
     lv_player.isBot = lv_isBot;
-    lv_player.aiMode = AIModeSelectMode(lv_playerId);
     if (!AddUnitPlayer(lv_player)) {
         return false;
     }
@@ -314,7 +318,7 @@ bool gameplay_ShowUnitPlayerPoints_Func(bool testConds, bool runActions) {
     }
 
     lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_name);
-    if (lv_unit == null) {
+    if (!UnitIsValid(lv_unit)) {
         return false;
     }
 
@@ -336,16 +340,18 @@ static void gameplay_ShowUnitPlayerPoints() {
 
 bool gameplay_DamageUnit_Func(bool testConds, bool runActions) {
     string lv_attacker;
-    string lv_target;
     int lv_damage;
     UnitPlayer lv_player;
+    unit lv_attackerUnit = EventUnitDamageSourceUnit();
 
-    lv_attacker = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(EventUnitDamageSourceUnit()))));
-    lv_target = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(EventUnit()))));
+    lv_attacker = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_attackerUnit))));
     lv_damage = FixedToInt(EventUnitDamageAmount());
 
     if (arena_gf_StringIsEmpty(lv_attacker)) {
-        return false;
+        lv_attacker = ServantGetMaster(lv_attackerUnit);
+        if (arena_gf_StringIsEmpty(lv_attacker)) {
+            return false;
+        }
     }
 
     if (!runActions) {
@@ -382,12 +388,19 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
     lv_targetUnit = EventUnit();
     lv_unitType = UnitGetType(lv_targetUnit);
 
-    if (arena_gf_StringIsEmpty(lv_attacker) || UnitGetOwner(lv_attackerUnit) == UnitGetOwner(lv_targetUnit)) {
-        return false;
+    if (arena_gf_StringIsEmpty(lv_attacker)) {
+        lv_attacker = ServantGetMaster(lv_attackerUnit);
     }
 
     if (!runActions) {
         return true;
+    }
+
+    ServantCleanUnit(lv_targetUnit);
+    arena_gf_CleanPlayerUnit(lv_targetUnit);
+
+    if (arena_gf_StringIsEmpty(lv_attacker) || UnitGetOwner(lv_attackerUnit) == UnitGetOwner(lv_targetUnit)) {
+        return false;
     }
 
     if (!UnitPlayerFromName(lv_attacker, lv_player)) {
@@ -401,14 +414,17 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
     SaveUnitPlayer(lv_player);
 
     if (!lv_player.isBot) {
-        lv_rewardText = TextTagCreate(StringToText("+"+IntToString(lv_unitData.rewardPoints)), 24, UnitGetPosition(libNtve_gf_KillingUnit()), 3.0, true, false, PlayerGroupAll());
-        TextTagSetColor(lv_rewardText, c_textTagColorText, Color(0, 255, 0));
-        TextTagAttachToUnit(lv_rewardText, libNtve_gf_KillingUnit(), 3.0);
-        TextTagSetGravity(lv_rewardText, 2.0);
-        lv_rewardTimer = TimerCreate();
-        TimerStart(lv_rewardTimer, 2.0, false, c_timeReal);
-        libNtve_gf_WaitForTimer(lv_rewardTimer, 0.0, false);
-        TextTagDestroy(lv_rewardText);
+        lv_attackerUnit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_attacker);
+        if (UnitIsValid(lv_attackerUnit)) {
+            lv_rewardText = TextTagCreate(StringToText("+"+IntToString(lv_unitData.rewardPoints)), 24, UnitGetPosition(lv_attackerUnit), 3.0, true, false, PlayerGroupAll());
+            TextTagSetColor(lv_rewardText, c_textTagColorText, Color(0, 255, 0));
+            TextTagAttachToUnit(lv_rewardText, lv_attackerUnit, 3.0);
+            TextTagSetGravity(lv_rewardText, 2.0);
+            lv_rewardTimer = TimerCreate();
+            TimerStart(lv_rewardTimer, 2.0, false, c_timeReal);
+            libNtve_gf_WaitForTimer(lv_rewardTimer, 0.0, false);
+            TextTagDestroy(lv_rewardText);
+        }
     }
 
     return true;
@@ -446,7 +462,7 @@ bool gameplay_RechargePoints_Func(bool testConds, bool runActions) {
     SaveUnitPlayer(lv_player);
 
     lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_name);
-    if (lv_unit == null) {
+    if (!UnitIsValid(lv_unit)) {
         return true;
     }
 

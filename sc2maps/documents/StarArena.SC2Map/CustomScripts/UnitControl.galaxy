@@ -51,7 +51,6 @@ bool unitctrl_SetAIMode_Func(bool testConds, bool runActions) {
     string lv_textTag;
     int lv_aiMode;
     UnitPlayer lv_unitPlayer;
-    unit lv_unit;
 
     lv_textTag = arena_gf_CurrentCommandArgument(1);
     lv_aiMode = StringToInt(arena_gf_CurrentCommandArgument(2));
@@ -67,12 +66,7 @@ bool unitctrl_SetAIMode_Func(bool testConds, bool runActions) {
         return false;
     }
 
-    lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_textTag);
-    if (lv_unit != null) {
-        UnitIssueOrder(lv_unit, Order(AbilityCommand("stop", 0)), c_orderQueueReplace);
-    }
-    lv_unitPlayer.aiMode = lv_aiMode;
-    SaveUnitPlayer(lv_unitPlayer);
+    AIModeSetMode(lv_unitPlayer, lv_aiMode);
 
     return true;
 }
@@ -145,7 +139,7 @@ bool unitctrl_IssueAbilityThor_Func(bool testConds, bool runActions) {
     lv_unitAbility = arena_gf_CurrentCommandArgument(2);
     lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_unitName));
 
-    if (lv_unit == null) {
+    if (!UnitIsValid(lv_unit)) {
         return false;
     }
 
@@ -192,7 +186,7 @@ bool unitctrl_IssueAbilityBattlecruiser_Func(bool testConds, bool runActions) {
     lv_distance = arena_gf_CurrentCommandArgument(4);
     lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_unitName));
 
-    if (lv_unit == null) {
+    if (!UnitIsValid(lv_unit)) {
         return false;
     }
 
@@ -235,7 +229,7 @@ bool unitctrl_IssueAbilitySiegeTank_Func(bool testConds, bool runActions) {
     lv_unitAbility = arena_gf_CurrentCommandArgument(2);
     lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_unitName));
 
-    if (lv_unit == null) {
+    if (!UnitIsValid(lv_unit)) {
         return false;
     }
 
