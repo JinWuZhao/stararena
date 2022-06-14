@@ -13,27 +13,48 @@ struct UnitData {
 };
 typedef structref<UnitData> UnitDataRef;
 
+const int c_UnitDataTypesNone = -1;
 const int c_UnitDataTypesMengskHellion = 0;
 const int c_UnitDataTypesSiegeTank = 1;
 const int c_UnitDataTypesThorAP = 2;
 const int c_UnitDataTypesBattlecruiser = 3;
 const int c_UnitDataTypesCount = 4;
 
+const int c_UnitDataLevelsCount = 5;
+const int c_UnitDataCapPerLevel = 5;
+
 typedef UnitData[c_UnitDataTypesCount] UnitDataArray;
-typedef arrayref<UnitDataArray> UnitDataArrayRef;
 
 static UnitDataArray gv_unitdata_unitTypes;
+static int[c_UnitDataLevelsCount][c_UnitDataCapPerLevel] gv_unitdata_unitMatrix;
 
 // Function Declarations
+void UnitDataCopy(UnitDataRef dest, UnitDataRef source);
 void UnitDataGet(int unitDataType, UnitDataRef outData);
 bool UnitDataGetByUnitType(string unitType, UnitDataRef outData);
+bool UnitDataGetByLevel(int level, int index, UnitDataRef outData);
 void InitUnitData();
 
-static void unitdata_CopyUnitData(UnitDataRef dest, UnitDataRef source);
+static void unitdata_InitUnitMatrix();
 
 // Functions
+void UnitDataCopy(UnitDataRef dest, UnitDataRef source) {
+    int lv_index;
+
+    dest.dataType = source.dataType;
+    dest.unitType = source.unitType;
+    dest.costPoints = source.costPoints;
+    dest.rewardPoints = source.rewardPoints;
+    dest.servantType = source.servantType;
+    dest.willPoints = source.willPoints;
+
+    for (lv_index = 0; lv_index < c_UnitDataTypeAliasCount; lv_index += 1) {
+        dest.typeAlias[lv_index] = source.typeAlias[lv_index];
+    }
+}
+
 void UnitDataGet(int unitDataType, UnitDataRef outData) {
-    unitdata_CopyUnitData(outData, gv_unitdata_unitTypes[unitDataType]);
+    UnitDataCopy(outData, gv_unitdata_unitTypes[unitDataType]);
 }
 
 bool UnitDataGetByUnitType(string unitType, UnitDataRef outData) {
@@ -43,8 +64,21 @@ bool UnitDataGetByUnitType(string unitType, UnitDataRef outData) {
     if (!DataTableInstanceValueExists(gv_unitdata_dataTypeOfUnitType, unitType)) {
         return false;
     }
-    unitdata_CopyUnitData(outData, gv_unitdata_unitTypes[DataTableInstanceGetInt(gv_unitdata_dataTypeOfUnitType, unitType)]);
+    UnitDataCopy(outData, gv_unitdata_unitTypes[DataTableInstanceGetInt(gv_unitdata_dataTypeOfUnitType, unitType)]);
     return true;
+}
+
+bool UnitDataGetByLevel(int level, int index, UnitDataRef outData) {
+    int lv_dataType;
+
+    if (level < c_UnitDataLevelsCount && index < c_UnitDataCapPerLevel) {
+        lv_dataType = gv_unitdata_unitMatrix[level][index];
+        if (lv_dataType > c_UnitDataTypesNone) {
+            UnitDataCopy(outData, gv_unitdata_unitTypes[lv_dataType]);
+        }
+        return true;
+    }
+    return false;
 }
 
 void InitUnitData() {
@@ -55,13 +89,14 @@ void InitUnitData() {
 
     data.dataType = c_UnitDataTypesMengskHellion;
     data.unitType = "MengskHellion";
-    data.costPoints = 0;
+    data.costPoints = 50;
     data.rewardPoints = 100;
     data.servantType = "MengskHellion";
     data.willPoints = 10;
-    unitdata_CopyUnitData(gv_unitdata_unitTypes[c_UnitDataTypesMengskHellion], data);
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypesMengskHellion], data);
+    gv_unitdata_unitMatrix[0][0] = c_UnitDataTypesMengskHellion;
 
-    unitdata_CopyUnitData(data, emptyData);
+    UnitDataCopy(data, emptyData);
     data.dataType = c_UnitDataTypesSiegeTank;
     data.unitType = "SiegeTank";
     data.typeAlias[0] = "SiegeTankSieged";
@@ -69,9 +104,10 @@ void InitUnitData() {
     data.rewardPoints = 150;
     data.servantType = "SiegeTank";
     data.willPoints = 20;
-    unitdata_CopyUnitData(gv_unitdata_unitTypes[c_UnitDataTypesSiegeTank], data);
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypesSiegeTank], data);
+    gv_unitdata_unitMatrix[1][0] = c_UnitDataTypesSiegeTank;
 
-    unitdata_CopyUnitData(data, emptyData);
+    UnitDataCopy(data, emptyData);
     data.dataType = c_UnitDataTypesThorAP;
     data.unitType = "ThorAP";
     data.typeAlias[0] = "Thor";
@@ -79,16 +115,18 @@ void InitUnitData() {
     data.rewardPoints = 200;
     data.servantType = "ThorAP";
     data.willPoints = 30;
-    unitdata_CopyUnitData(gv_unitdata_unitTypes[c_UnitDataTypesThorAP], data);
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypesThorAP], data);
+    gv_unitdata_unitMatrix[2][0] = c_UnitDataTypesThorAP;
 
-    unitdata_CopyUnitData(data, emptyData);
+    UnitDataCopy(data, emptyData);
     data.dataType = c_UnitDataTypesBattlecruiser;
     data.unitType = "Battlecruiser";
     data.costPoints = 500;
     data.rewardPoints = 300;
     data.servantType = "Battlecruiser";
     data.willPoints = 40;
-    unitdata_CopyUnitData(gv_unitdata_unitTypes[c_UnitDataTypesBattlecruiser], data);
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypesBattlecruiser], data);
+    gv_unitdata_unitMatrix[3][0] = c_UnitDataTypesBattlecruiser;
 
     DataTableInstanceCreate();
     gv_unitdata_dataTypeOfUnitType = DataTableInstanceLastCreated();
@@ -103,17 +141,13 @@ void InitUnitData() {
     }
 }
 
-static void unitdata_CopyUnitData(UnitDataRef dest, UnitDataRef source) {
+static void unitdata_InitUnitMatrix() {
+    int lv_level;
     int lv_index;
 
-    dest.dataType = source.dataType;
-    dest.unitType = source.unitType;
-    dest.costPoints = source.costPoints;
-    dest.rewardPoints = source.rewardPoints;
-    dest.servantType = source.servantType;
-    dest.willPoints = source.willPoints;
-
-    for (lv_index = 0; lv_index < c_UnitDataTypeAliasCount; lv_index += 1) {
-        dest.typeAlias[lv_index] = source.typeAlias[lv_index];
+    for (lv_level = 0; lv_level < c_UnitDataLevelsCount; lv_level += 1) {
+        for (lv_index = 0; lv_index < c_UnitDataCapPerLevel; lv_index += 1) {
+            gv_unitdata_unitMatrix[lv_level][lv_index] = c_UnitDataTypesNone;
+        }
     }
 }

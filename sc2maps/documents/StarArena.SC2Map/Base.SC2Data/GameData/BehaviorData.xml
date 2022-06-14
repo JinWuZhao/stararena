@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Catalog>
+    <CBehaviorBuff id="StarArenaUnitEnhance">
+        <Modification>
+            <DamageDealtFraction index="Spell" value="1"/>
+            <DamageDealtFraction index="Melee" value="1"/>
+            <DamageDealtFraction index="Ranged" value="1"/>
+            <DamageDealtFraction index="Splash" value="1"/>
+        </Modification>
+        <MaxStackCount value="20"/>
+        <MaxStackCountPerCaster value="20"/>
+    </CBehaviorBuff>
+</Catalog>

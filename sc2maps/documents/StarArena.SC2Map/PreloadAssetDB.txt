@@ -12,3 +12,8 @@ Actor=Battlecruiser_TacticalJumpCursorSound,CommandUIHarnessAttackProtoss,Comman
 Button
 Effect=##id##CreatePrecursor
 
+[Behavior]
+id=StarArenaUnitEnhance
+asset=Assets\Textures\btn-missing-kaeo.dds
+Actor=CommandUIHarnessAttackProtoss,CommandUIHarnessAttackTerran,CommandUIHarnessAttackZerg,CommandUIHarnessConfirmProtoss,CommandUIHarnessConfirmTerran,CommandUIHarnessConfirmZerg,CommandUIHarnessMoveProtoss,CommandUIHarnessMoveTerran,CommandUIHarnessMoveZerg,CommandUIHarnessRallyProtoss,CommandUIHarnessRallyTerran,CommandUIHarnessRallyZerg,TerrainMgr
+

@@ -1,7 +1,7 @@
 // Const Declarations
 const int c_unitPlayerAIStatesCap = 5;
 const int c_unitPlayersCap = 40;
-static const int c_gamestate_autoRewardPointsPerSecond = 10;
+static const int c_gamestate_autoRewardPointsPerSecond = 20;
 
 // Type Declarations
 struct UnitPlayer {
@@ -91,8 +91,10 @@ bool AddUnitPlayer(UnitPlayerRef player) {
     if (index == c_unitPlayersCap) {
         return false;
     }
+    player.points = 200;
     player.rewardTime = CurrentDateTimeGet();
     player.deadTime = IntToDateTime(0);
+    player.unitType = "MengskHellion";
     player.servants = 2;
     gamestate_SaveUnitPlayerByIndex(index, player);
     gv_gamestate_unitPlayersCount += 1;

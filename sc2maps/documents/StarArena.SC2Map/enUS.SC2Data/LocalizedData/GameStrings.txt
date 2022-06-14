@@ -1,11 +1,12 @@
-﻿LoadingScreen/TextBody=<c val="FFFF80">加入游戏：               创建单位：<n/>    jr 加入红方              u1 恶火，花费点数0<n/>    jb 加入蓝方              u2 攻城坦克，花费点数100<n/>                                 u3 雷神，花费点数300<n/>                                 u4 战列巡航舰，花费点数500<n/>战斗模式：<n/>     m1 进攻<n/>     m2 猎杀<n/>     m3 防御<n/>     m4 撤退<n/>查询信息：<n/>    pt 在单位头顶显示可用点数</c>
+﻿Behavior/Name/StarArenaUnitEnhance=StarArena Unit Enhance
+LoadingScreen/TextBody=<c val="FFFF80">加入游戏：               创建单位：<n/>    jr 加入红方              u1 恶火，花费点数0<n/>    jb 加入蓝方              u2 攻城坦克，花费点数100<n/>                                 u3 雷神，花费点数300<n/>                                 u4 战列巡航舰，花费点数500<n/>战斗模式：<n/>     m1 进攻<n/>     m2 猎杀<n/>     m3 防御<n/>     m4 撤退<n/>查询信息：<n/>    pt 在单位头顶显示可用点数</c>
 LoadingScreen/Tip= 
 LoadingScreen/TipRestart= 
 LoadingScreen/Title=<c val="FFFF00">星际竞技场</c>
 MapInfo/Player00/Name=中立
 MapInfo/Player01/Name=玩家1
 MapInfo/Player02/Name=玩家2
-MapInfo/Player03/Name=玩家3
-MapInfo/Player04/Name=玩家4
+MapInfo/Player03/Name=蓝队
+MapInfo/Player04/Name=红队
 Param/Value/3EB91770=<s val="MessageDialogBody1">红方玩家获胜！</s>
 Param/Value/E3AAC0FC=<s val="MessageDialogBody1">蓝方玩家获胜！</s>

@@ -166,7 +166,7 @@ bool gameplay_Victory_Func(bool testConds, bool runActions) {
             if (rankedUnitPlayers[index].isBot) {
                 lv_playerName = "Bot";
             }
-            arena_gf_ShowMessage("第" + IntToString(index+1) + "名：" + lv_playerName + " ---------------------------- " + IntToString(rankedUnitPlayers[index].score) + "分");
+            arena_gf_ShowMessage("第" + IntToString(index+1) + "名：" + lv_playerName + " -------------------------------------- " + IntToString(rankedUnitPlayers[index].score) + "分");
         }
 
         arena_gf_ShowMessage("10秒后游戏结束");
@@ -249,6 +249,7 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
     int lv_playerId;
     bool lv_isBot = false;
     UnitPlayer lv_player;
+    string lv_teamName;
 
     lv_name = arena_gf_CurrentCommandArgument(1);
     lv_playerId = StringToInt(arena_gf_CurrentCommandArgument(2));
@@ -269,6 +270,15 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
     lv_player.isBot = lv_isBot;
     if (!AddUnitPlayer(lv_player)) {
         return false;
+    }
+
+    if (!lv_player.isBot) {
+        if (lv_player.playerId == 3) {
+            lv_teamName = "蓝方";
+        } else if (lv_player.playerId == 4) {
+            lv_teamName = "红方";
+        }
+        arena_gf_ShowMessage(lv_player.name + " 加入了 " + lv_teamName + " 队伍");
     }
 
     return true;
@@ -303,9 +313,6 @@ static void gameplay_RemoveUnitPlayer_Init() {
 bool gameplay_ShowUnitPlayerPoints_Func(bool testConds, bool runActions) {
     string lv_name;
     UnitPlayer lv_player;
-    unit lv_unit;
-    int lv_pointsText;
-    timer lv_pointsTimer;
 
     lv_name = arena_gf_CurrentCommandArgument(1);
 
@@ -317,18 +324,7 @@ bool gameplay_ShowUnitPlayerPoints_Func(bool testConds, bool runActions) {
         return false;
     }
 
-    lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_name);
-    if (!UnitIsValid(lv_unit)) {
-        return false;
-    }
-
-    lv_pointsText = TextTagCreate(StringToText(IntToString(lv_player.points)), 24, UnitGetPosition(lv_unit), 5.0, true, false, PlayerGroupAll());
-    TextTagSetColor(lv_pointsText, c_textTagColorText, Color(0, 255, 0));
-    TextTagAttachToUnit(lv_pointsText, lv_unit, 5.0);
-    lv_pointsTimer = TimerCreate();
-    TimerStart(lv_pointsTimer, 2.0, false, c_timeReal);
-    libNtve_gf_WaitForTimer(lv_pointsTimer, 0.0, false);
-    TextTagDestroy(lv_pointsText);
+    arena_gf_ShowMessage(lv_player.name + " 拥有点数 " + IntToString(lv_player.points));
 
     return true;
 }
