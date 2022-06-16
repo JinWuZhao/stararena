@@ -142,14 +142,13 @@ static void aimode_GameLoop_Init() {
 }
 
 static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
-    int lv_index;
-    int lv_unitLevel;
     UnitData lv_unitData;
-    bool lv_unitDataFound = false;
+    UnitData lv_servantData;
     int lv_willBrokenTime;
     unitgroup lv_servants;
     order lv_initOrder;
     int lv_servantsCount;
+    int lv_reviveCostPoints;
 
     if (UnitIsValid(inUnit)) {
         lv_willBrokenTime = refPlayer.aiStates[c_aimode_stateWillBrokenTime];
@@ -179,29 +178,29 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
     } else {
         if (DateTimeToInt(CurrentDateTimeGet()) - DateTimeToInt(refPlayer.deadTime) >= c_aimode_reviveInterval) {
             if (UnitDataGetByUnitType(refPlayer.unitType, lv_unitData)) {
-                if (refPlayer.points >= lv_unitData.costPoints * refPlayer.servants) {
-                    lv_unitDataFound = true;
-                }  
-            }
-
-            if (lv_unitDataFound) {
-                refPlayer.points -= lv_unitData.costPoints * refPlayer.servants;
-                refPlayer.deadTime = CurrentDateTimeGet();
-                if (refPlayer.aiMode == c_AIModeNone) {
-                    AIModeSetMode(refPlayer, AIModeSelectMode(refPlayer.playerId));
+                if (!UnitDataGetByUnitType(refPlayer.servantType, lv_servantData)) {
+                    UnitDataCopy(lv_servantData, lv_unitData);
                 }
-                SaveUnitPlayer(refPlayer);
+                lv_reviveCostPoints = lv_unitData.costPoints + lv_servantData.costPoints * refPlayer.servants / 2;
+                if (refPlayer.points >= lv_reviveCostPoints) {
+                    refPlayer.points -= lv_reviveCostPoints;
+                    refPlayer.deadTime = CurrentDateTimeGet();
+                    if (refPlayer.aiMode == c_AIModeNone) {
+                        AIModeSetMode(refPlayer, AIModeSelectMode(refPlayer.playerId));
+                    }
+                    SaveUnitPlayer(refPlayer);
+            
+                    inUnit = arena_gf_CreatePlayerUnit(refPlayer.playerId, lv_unitData.unitType, refPlayer.name, 2.0, 3.0);
+                    UnitSetPropertyInt(inUnit, c_unitPropLifeMax, UnitGetPropertyInt(inUnit, c_unitPropLifeMax, false) * refPlayer.servants);
+                    lv_servants = ServantSpawnUnits(refPlayer);
         
-                inUnit = arena_gf_CreatePlayerUnit(refPlayer.playerId, lv_unitData.unitType, refPlayer.name, 2.0, 3.0);
-                UnitSetPropertyInt(inUnit, c_unitPropLifeMax, UnitGetPropertyInt(inUnit, c_unitPropLifeMax, false) * refPlayer.servants);
-                lv_servants = ServantSpawnUnits(refPlayer);
-    
-                lv_initOrder = OrderTargetingPoint(
-                    AbilityCommand("move", 0), 
-                    PointWithOffsetPolar(UnitGetPosition(inUnit), RandomInt(15, 25), RandomFixed(-60, 60)+UnitGetFacing(inUnit)));
-                UnitIssueOrder(inUnit, lv_initOrder, c_orderQueueReplace);
-                if (lv_servants != null && UnitGroupCount(lv_servants, c_unitCountAlive) > 0) {
-                    UnitGroupIssueOrder(lv_servants, lv_initOrder, c_orderQueueReplace);
+                    lv_initOrder = OrderTargetingPoint(
+                        AbilityCommand("move", 0), 
+                        PointWithOffsetPolar(UnitGetPosition(inUnit), RandomInt(15, 25), RandomFixed(-60, 60)+UnitGetFacing(inUnit)));
+                    UnitIssueOrder(inUnit, lv_initOrder, c_orderQueueReplace);
+                    if (lv_servants != null && UnitGroupCount(lv_servants, c_unitCountAlive) > 0) {
+                        UnitGroupIssueOrder(lv_servants, lv_initOrder, c_orderQueueReplace);
+                    }
                 }
             }
         }

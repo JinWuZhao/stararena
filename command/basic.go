@@ -21,28 +21,31 @@ func (c *JoinGameCmd) SC2PlayerId() uint32 {
 	return c.sc2PlayerId
 }
 
-func JoinGameCmdOpts(player string, sc2PlayerId uint32) func(*JoinGameCmd) {
+func (*JoinGameCmd) New() Command {
+	return new(JoinGameCmd)
+}
+
+type JoinGameOpts func(*JoinGameCmd)
+
+func JoinGameOptsPlayer(player string, sc2PlayerId uint32) JoinGameOpts {
 	return func(cmd *JoinGameCmd) {
 		cmd.player = player
 		cmd.sc2PlayerId = sc2PlayerId
 	}
 }
 
-func JoinGameCmdOptsBot() func(*JoinGameCmd) {
+func JoinGameOptsBot() JoinGameOpts {
 	return func(cmd *JoinGameCmd) {
 		cmd.isBot = true
 	}
 }
 
-func (*JoinGameCmd) New(args ...any) Command {
-	if len(args) >= 1 {
-		cmd := new(JoinGameCmd)
-		for i := range args {
-			(args[i]).(func(*JoinGameCmd))(cmd)
-		}
-		return cmd
+func (*JoinGameCmd) NewWithOpts(opts ...JoinGameOpts) Command {
+	cmd := new(JoinGameCmd)
+	for _, opt := range opts {
+		opt(cmd)
 	}
-	return new(JoinGameCmd)
+	return cmd
 }
 
 func (*JoinGameCmd) Name() string {
@@ -81,20 +84,7 @@ type MoveCmd struct {
 	angle    int32
 }
 
-func MoveCmdOpts(player string, distance int32, angle int32) func(*MoveCmd) {
-	return func(cmd *MoveCmd) {
-		cmd.player = player
-		cmd.distance = distance
-		cmd.angle = angle
-	}
-}
-
-func (*MoveCmd) New(args ...any) Command {
-	if len(args) == 1 {
-		cmd := new(MoveCmd)
-		(args[0]).(func(*MoveCmd))(cmd)
-		return cmd
-	}
+func (*MoveCmd) New() Command {
 	return new(MoveCmd)
 }
 
@@ -140,7 +130,7 @@ type MoveXCmd struct {
 	angle     int32
 }
 
-func (*MoveXCmd) New(...any) Command {
+func (*MoveXCmd) New() Command {
 	return new(MoveXCmd)
 }
 
@@ -203,7 +193,7 @@ type ChangeModeCmd struct {
 	mode   string
 }
 
-func (*ChangeModeCmd) New(...any) Command {
+func (*ChangeModeCmd) New() Command {
 	return new(ChangeModeCmd)
 }
 
@@ -215,6 +205,7 @@ func (c *ChangeModeCmd) Parser(ast *parsec.AST) parsec.Parser {
 	return ast.And(c.Name(), nil,
 		parsec.AtomExact(`m`, "OP"),
 		ast.OrdChoice("MODE", nil,
+			parsec.Atom(`0`, "manual"),
 			parsec.Atom(`1`, "attack"),
 			parsec.Atom(`2`, "hunter"),
 			parsec.Atom(`3`, "defence"),
@@ -231,106 +222,113 @@ func (c *ChangeModeCmd) String() string {
 	return fmt.Sprintf("cmd-set-aimode %s %s", c.player, c.mode)
 }
 
-type CreateUnitCmd struct {
+type SetUnitCmd struct {
 	player string
 	unit   string
 }
 
-func CreateUnitCmdOpts(player string, unit string) func(*CreateUnitCmd) {
-	return func(cmd *CreateUnitCmd) {
-		cmd.player = player
-		cmd.unit = unit
-	}
+func (*SetUnitCmd) New() Command {
+	return new(SetUnitCmd)
 }
 
-func (*CreateUnitCmd) New(args ...any) Command {
-	if len(args) == 1 {
-		cmd := new(CreateUnitCmd)
-		(args[0]).(func(*CreateUnitCmd))(cmd)
-		return cmd
-	}
-	return new(CreateUnitCmd)
+func (*SetUnitCmd) Name() string {
+	return "SET_UNIT"
 }
 
-func (*CreateUnitCmd) Name() string {
-	return "CREATE_UNIT"
-}
-
-func (c *CreateUnitCmd) Player() string {
+func (c *SetUnitCmd) Player() string {
 	return c.player
 }
 
-func (c *CreateUnitCmd) Unit() string {
+func (c *SetUnitCmd) Unit() string {
 	return c.unit
 }
 
-func (c *CreateUnitCmd) Parser(ast *parsec.AST) parsec.Parser {
+func (c *SetUnitCmd) Parser(ast *parsec.AST) parsec.Parser {
 	return ast.And(c.Name(), nil,
 		parsec.AtomExact(`u`, "OP"),
-		parsec.Token(`[a-zA-Z0-9-]{1,64}`, "UNIT"))
+		parsec.Token(`[a-zA-Z0-9-]{1,3}`, "UNIT"))
 }
 
-func (c *CreateUnitCmd) Init(ctx Context, query parsec.Queryable) error {
-	unitName := query.GetChildren()[1].GetValue()
-	unit, ok := unitDataAcc[unitName]
+func (c *SetUnitCmd) Init(ctx Context, query parsec.Queryable) error {
+	name := query.GetChildren()[1].GetValue()
+	unit, ok := unitDataAcc[name]
 	if !ok {
-		return fmt.Errorf("invalid unit name: %s", unitName)
+		return fmt.Errorf("invalid unit name: %s", name)
 	}
-	c.unit = unit.Name
+	c.unit = unit
 	c.player = ctx.Player
 	return nil
 }
 
-func (c *CreateUnitCmd) String() string {
-	return fmt.Sprintf("cmd-create-%s %s", c.unit, c.player)
+func (c *SetUnitCmd) String() string {
+	return fmt.Sprintf("cmd-set-unit %s %s", c.player, c.unit)
 }
 
-type IssueSkillCmd struct {
+type SetServantsCmd struct {
 	player string
 	unit   string
-	skill  Command
+	num    int32
 }
 
-func (*IssueSkillCmd) New(...any) Command {
-	return new(IssueSkillCmd)
+func (*SetServantsCmd) New() Command {
+	return new(SetServantsCmd)
 }
 
-func (*IssueSkillCmd) Name() string {
-	return "ISSUE_SKILL"
+func (*SetServantsCmd) Name() string {
+	return "SET_SERVANTS"
 }
 
-func (c *IssueSkillCmd) Parser(ast *parsec.AST) parsec.Parser {
+func (c *SetServantsCmd) Player() string {
+	return c.player
+}
+
+func (c *SetServantsCmd) Unit() string {
+	return c.unit
+}
+
+func (c *SetServantsCmd) Num() int32 {
+	return c.num
+}
+
+func (c *SetServantsCmd) Parser(ast *parsec.AST) parsec.Parser {
 	return ast.And(c.Name(), nil,
-		parsec.AtomExact(`k`, "OP"),
-		parsec.Token(`[a-zA-Z0-9-\s]{1,128}`, "SKILL"))
+		parsec.AtomExact(`i`, "OP"),
+		parsecUint("NUM", 2),
+		ast.Maybe("OPTION", nil,
+			parsec.Token(`[a-zA-Z0-9-]{1,2}`, "UNIT")))
 }
 
-func (c *IssueSkillCmd) Init(ctx Context, query parsec.Queryable) error {
-	if _, ok := unitSkillCtors[ctx.Unit]; !ok {
-		return fmt.Errorf("invalid unit name: %s", ctx.Unit)
-	}
-	skill, err := parseUnitSkill(ctx, query.GetChildren()[1].GetValue())
+func (c *SetServantsCmd) Init(ctx Context, query parsec.Queryable) error {
+	num, err := strconv.ParseInt(query.GetChildren()[1].GetValue(), 10, 32)
 	if err != nil {
-		return fmt.Errorf("parseUnitSkill() error: %w", err)
+		return fmt.Errorf("strconv.ParseInt(num) error: %w", err)
 	}
+	var unit string
+	if name := query.GetChildren()[2].GetValue(); name != "" {
+		var ok bool
+		unit, ok = unitDataAcc[name]
+		if !ok {
+			return fmt.Errorf("invalid unit name: %s", name)
+		}
+	}
+	c.num = int32(num)
+	c.unit = unit
 	c.player = ctx.Player
-	c.unit = ctx.Unit
-	c.skill = skill
 	return nil
 }
 
-func (c *IssueSkillCmd) String() string {
-	if c.skill == nil {
-		return ""
+func (c *SetServantsCmd) String() string {
+	if c.unit != "" {
+		return fmt.Sprintf("cmd-set-servants %s %d %s", c.player, c.num, c.unit)
 	}
-	return fmt.Sprintf("cmd-issue-ability-%s %s %s", c.unit, c.player, c.skill.String())
+	return fmt.Sprintf("cmd-set-servants %s %d", c.player, c.num)
 }
 
 type ShowPointsCmd struct {
 	player string
 }
 
-func (c *ShowPointsCmd) New(...any) Command {
+func (c *ShowPointsCmd) New() Command {
 	return new(ShowPointsCmd)
 }
 
@@ -350,27 +348,4 @@ func (c *ShowPointsCmd) Init(ctx Context, query parsec.Queryable) error {
 
 func (c *ShowPointsCmd) String() string {
 	return fmt.Sprintf("cmd-show-points %s", c.player)
-}
-
-type EndGameCmd struct {
-}
-
-func (*EndGameCmd) New(...any) Command {
-	return new(EndGameCmd)
-}
-
-func (*EndGameCmd) Name() string {
-	return "END_GAME"
-}
-
-func (*EndGameCmd) Parser(ast *parsec.AST) parsec.Parser {
-	panic("not support")
-}
-
-func (*EndGameCmd) Init(ctx Context, query parsec.Queryable) error {
-	return nil
-}
-
-func (*EndGameCmd) String() string {
-	return "cmd-end-game"
 }

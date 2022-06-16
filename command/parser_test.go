@@ -40,74 +40,44 @@ func TestParseCommand(t *testing.T) {
 			Want: "cmd-move-toward player 45 10",
 		},
 		{
-			Text: "m a",
-			Want: "cmd-set-behavior-mode player attack",
+			Text: "m 0",
+			Want: "cmd-set-aimode player 0",
 		},
 		{
-			Text: "m d",
-			Want: "cmd-set-behavior-mode player defence",
+			Text: "m 1",
+			Want: "cmd-set-aimode player 1",
 		},
 		{
-			Text: "m r",
-			Want: "cmd-set-behavior-mode player retreat",
+			Text: "m 2",
+			Want: "cmd-set-aimode player 2",
 		},
 		{
-			Text: "u 1",
-			Want: "cmd-create-hellion player",
+			Text: "m 3",
+			Want: "cmd-set-aimode player 3",
 		},
 		{
-			Text: "u 2",
-			Want: "cmd-create-siege-tank player",
+			Text: "m 4",
+			Want: "cmd-set-aimode player 4",
 		},
 		{
-			Text: "u 3",
-			Want: "cmd-create-thor player",
+			Text: "u aa",
+			Want: "cmd-set-unit player MengskHellion",
 		},
 		{
-			Text: "u 4",
-			Want: "cmd-create-battlecruiser player",
+			Text: "u ba",
+			Want: "cmd-set-unit player SiegeTank",
 		},
 		{
-			Context: Context{
-				Unit: "siege-tank",
-			},
-			Text: "k 1",
-			Want: "cmd-issue-ability-siege-tank player siege-mode",
+			Text: "i 20 aa",
+			Want: "cmd-set-servants player 20 MengskHellion",
 		},
 		{
-			Context: Context{
-				Unit: "siege-tank",
-			},
-			Text: "k 2",
-			Want: "cmd-issue-ability-siege-tank player tank-mode",
+			Text: "i 20",
+			Want: "cmd-set-servants player 20",
 		},
 		{
-			Context: Context{
-				Unit: "battlecruiser",
-			},
-			Text: "k 1",
-			Want: "cmd-issue-ability-battlecruiser player yamato-cannon",
-		},
-		{
-			Context: Context{
-				Unit: "battlecruiser",
-			},
-			Text: "k 2 20 180",
-			Want: "cmd-issue-ability-battlecruiser player tactical-jump 20 180",
-		},
-		{
-			Context: Context{
-				Unit: "thor",
-			},
-			Text: "k 1",
-			Want: "cmd-issue-ability-thor player explosive-payload",
-		},
-		{
-			Context: Context{
-				Unit: "thor",
-			},
-			Text: "k 2",
-			Want: "cmd-issue-ability-thor player high-impact-payload",
+			Text: "pt",
+			Want: "cmd-show-points player",
 		},
 	}
 	for _, p := range tests {

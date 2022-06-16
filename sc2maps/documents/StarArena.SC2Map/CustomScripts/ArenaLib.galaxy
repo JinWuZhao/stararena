@@ -34,7 +34,6 @@ bool arena_gf_StringIsEmpty(string lp_str);
 
 // Trigger Declarations
 trigger arena_gt_ProcessCommand;
-trigger arena_gt_MoveToward;
 trigger arena_gt_KillUnit;
 trigger arena_gt_CleanDeadUnit;
 trigger arena_gt_UnitLifeChange;
@@ -251,42 +250,6 @@ void arena_gt_ProcessCommand_Init () {
 }
 
 //--------------------------------------------------------------------------------------------------
-// Trigger: Move Toward
-//--------------------------------------------------------------------------------------------------
-bool arena_gt_MoveToward_Func (bool testConds, bool runActions) {
-    // Variable Declarations
-    string lv_unitName;
-    string lv_angle;
-    string lv_distance;
-    unit lv_unit;
-
-    // Automatic Variable Declarations
-    // Variable Initialization
-    lv_unitName = arena_gf_CurrentCommandArgument(1);
-    lv_angle = arena_gf_CurrentCommandArgument(2);
-    lv_distance = arena_gf_CurrentCommandArgument(3);
-    lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_unitName));
-
-    if (!UnitIsValid(lv_unit)) {
-        return false;
-    }
-
-    // Actions
-    if (!runActions) {
-        return true;
-    }
-
-    UnitIssueOrder(lv_unit, OrderTargetingPoint(AbilityCommand("move", 0), PointWithOffsetPolar(UnitGetPosition(lv_unit), StringToFixed(lv_distance), StringToFixed(lv_angle))), c_orderQueueReplace);
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-void arena_gt_MoveToward_Init () {
-    arena_gt_MoveToward = TriggerCreate("arena_gt_MoveToward_Func");
-    TriggerAddEventGeneric(arena_gt_MoveToward, (arena_gv_commandPrefix + "move-toward"));
-}
-
-//--------------------------------------------------------------------------------------------------
 // Trigger: Kill Unit
 //--------------------------------------------------------------------------------------------------
 bool arena_gt_KillUnit_Func (bool testConds, bool runActions) {
@@ -381,7 +344,6 @@ void arena_gt_UnitLifeChange_Init() {
 
 void arena_InitTriggers () {
     arena_gt_ProcessCommand_Init();
-    arena_gt_MoveToward_Init();
     arena_gt_KillUnit_Init();
     arena_gt_CleanDeadUnit_Init();
     arena_gt_UnitLifeChange_Init();

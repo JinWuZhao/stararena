@@ -107,7 +107,7 @@ func (m *Director) handleCommand(cmd command.Command) *sc2proto.Action {
 			log.Println(cmd.Player(), "joined game player", cmd.SC2PlayerId())
 		}
 		return nil
-	case *command.CreateUnitCmd:
+	case *command.SetUnitCmd:
 		player := m.gameState.GetPlayer(cmd.Player())
 		if player != nil {
 			player.SetUnit(cmd.Unit())
@@ -125,13 +125,13 @@ func (m *Director) handleCommand(cmd command.Command) *sc2proto.Action {
 }
 
 func (m *Director) makeJoinAction(player *state.Player) *sc2proto.Action {
-	opts := []any{
-		command.JoinGameCmdOpts(player.GetName(), player.GetSC2PlayerId()),
+	opts := []command.JoinGameOpts{
+		command.JoinGameOptsPlayer(player.GetName(), player.GetSC2PlayerId()),
 	}
 	if player.IsBot() {
-		opts = append(opts, command.JoinGameCmdOptsBot())
+		opts = append(opts, command.JoinGameOptsBot())
 	}
-	cmd := command.MakeCmdCtor[*command.JoinGameCmd](opts...)()
+	cmd := (*command.JoinGameCmd)(nil).NewWithOpts(opts...)
 	return &sc2proto.Action{
 		ActionChat: &sc2proto.ActionChat{
 			Channel: sc2proto.ActionChat_Team.Enum(),

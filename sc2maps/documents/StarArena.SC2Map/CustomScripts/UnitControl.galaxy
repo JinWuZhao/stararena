@@ -2,6 +2,7 @@
 static trigger gt_unitctrl_SetAIMode;
 static trigger gt_unitctrl_SetUnit;
 static trigger gt_unitctrl_SetServants;
+static trigger gt_unitctrl_MoveToward;
 
 // Function Declarations
 void InitUnitControl();
@@ -9,12 +10,14 @@ void InitUnitControl();
 static void unitctrl_SetAIMode_Init();
 static void unitctrl_SetUnit_Init();
 static void unitctrl_SetServants_Init();
+static void unitctrl_MoveToward_Init();
 
 // Functions
 void InitUnitControl() {
     unitctrl_SetAIMode_Init();
     unitctrl_SetUnit_Init();
     unitctrl_SetServants_Init();
+    unitctrl_MoveToward_Init();
 }
 
 bool unitctrl_SetAIMode_Func(bool testConds, bool runActions) {
@@ -101,4 +104,51 @@ bool unitctrl_SetServants_Func(bool testConds, bool runActions) {
 static void unitctrl_SetServants_Init() {
     gt_unitctrl_SetServants = TriggerCreate("unitctrl_SetServants_Func");
     TriggerAddEventGeneric(gt_unitctrl_SetServants, (arena_gv_commandPrefix + "set-servants"));
+}
+
+bool unitctrl_MoveToward_Func(bool testConds, bool runActions) {
+    string lv_unitName;
+    string lv_angle;
+    string lv_distance;
+    UnitPlayer lv_player;
+    unit lv_unit;
+    unitgroup lv_servants;
+
+    lv_unitName = arena_gf_CurrentCommandArgument(1);
+    lv_angle = arena_gf_CurrentCommandArgument(2);
+    lv_distance = arena_gf_CurrentCommandArgument(3);
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (!UnitPlayerFromName(lv_unitName, lv_player)) {
+        return false;
+    }
+    AIModeSetMode(lv_player, c_AIModeNone);
+    SaveUnitPlayer(lv_player);
+
+    lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_unitName));
+    if (!UnitIsValid(lv_unit)) {
+        return false;
+    }
+    UnitIssueOrder(lv_unit, 
+        OrderTargetingPoint(
+            AbilityCommand("move", 0), 
+            PointWithOffsetPolar(UnitGetPosition(lv_unit), StringToFixed(lv_distance), StringToFixed(lv_angle))), 
+        c_orderQueueReplace);
+    lv_servants = ServantGetUnits(lv_player.name);
+    if (lv_servants != null) {
+        UnitGroupIssueOrder(lv_servants, 
+            OrderTargetingPoint(
+                AbilityCommand("move", 0), 
+                PointWithOffsetPolar(UnitGetPosition(lv_unit), StringToFixed(lv_distance)+4, StringToFixed(lv_angle))), 
+            c_orderQueueReplace);
+    }
+    return true;
+}
+
+static void unitctrl_MoveToward_Init() {
+    gt_unitctrl_MoveToward = TriggerCreate("unitctrl_MoveToward_Func");
+    TriggerAddEventGeneric(gt_unitctrl_MoveToward, (arena_gv_commandPrefix + "move-toward"));
 }

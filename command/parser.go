@@ -10,8 +10,7 @@ import (
 )
 
 var (
-	cmdAST, cmdParser       = makeParser()
-	skillASTs, skillParsers = makeSkillParsers()
+	cmdAST, cmdParser = makeParser()
 )
 
 type Context struct {
@@ -22,7 +21,7 @@ type Context struct {
 }
 
 type Command interface {
-	New(params ...any) Command
+	New() Command
 	Name() string
 	Parser(ast *parsec.AST) parsec.Parser
 	Init(ctx Context, query parsec.Queryable) error
@@ -31,10 +30,10 @@ type Command interface {
 
 type Constructor func() Command
 
-func MakeCmdCtor[T Command](args ...any) Constructor {
+func MakeCmdCtor[T Command]() Constructor {
 	return func() Command {
-		var skill T
-		return skill.New(args...)
+		var cmd T
+		return cmd.New()
 	}
 }
 
@@ -95,66 +94,6 @@ func parseCommand(ctors []Constructor, ast *parsec.AST, parser parsec.Parser, ct
 
 func ParseCommand(ctx Context, text string) (Command, error) {
 	return parseCommand(cmdCtors, cmdAST, cmdParser, ctx, strings.ToLower(text))
-}
-
-func makeSkillCtor[T Command](op string) Constructor {
-	return func() Command {
-		var skill T
-		return skill.New(op)
-	}
-}
-
-func makeUnitSkillParsers(commands []Constructor, ast *parsec.AST) []interface{} {
-	parsers := make([]interface{}, 0, len(commands))
-	for _, cmd := range commands {
-		parsers = append(parsers, cmd().Parser(ast))
-	}
-	return parsers
-}
-
-func makeSkillParsers() (map[string]*parsec.AST, map[string]parsec.Parser) {
-	asts := make(map[string]*parsec.AST)
-	parsers := make(map[string]parsec.Parser)
-	for unit, ctors := range unitSkillCtors {
-		ast := parsec.NewAST(unit+"_SKILL", 20)
-		asts[unit] = ast
-		parsers[unit] = ast.Kleene("TEXT", nil,
-			ast.OrdChoice("SKILL", nil,
-				makeUnitSkillParsers(ctors, ast)...),
-			ast.End("END"))
-	}
-	return asts, parsers
-}
-
-func makeSkillCommand(ctx Context, query parsec.Queryable) (Command, error) {
-	if len(query.GetChildren()) != 1 {
-		return nil, fmt.Errorf("invalid skill")
-	}
-	var skill Command
-	var err error
-	for _, skillCtor := range unitSkillCtors[ctx.Unit] {
-		newSkill := skillCtor()
-		if query.GetChildren()[0].GetName() == newSkill.Name() {
-			err = newSkill.Init(ctx, query.GetChildren()[0])
-			if err != nil {
-				err = fmt.Errorf("init skill %s error: %w", newSkill.Name(), err)
-			} else {
-				skill = newSkill
-			}
-			break
-		}
-	}
-	return skill, err
-}
-
-func parseUnitSkill(ctx Context, text string) (Command, error) {
-	ast, ok := skillASTs[ctx.Unit]
-	if !ok {
-		return nil, nil
-	}
-	parser := skillParsers[ctx.Unit]
-	query := parseText(ast, parser, text)
-	return makeSkillCommand(ctx, query)
 }
 
 func parsecInt(name string, maxLen int) parsec.Parser {
