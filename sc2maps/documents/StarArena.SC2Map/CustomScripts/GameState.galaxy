@@ -94,7 +94,7 @@ bool AddUnitPlayer(UnitPlayerRef player) {
     player.points = 200;
     player.rewardTime = CurrentDateTimeGet();
     player.deadTime = IntToDateTime(0);
-    player.unitType = "MengskHellion";
+    player.unitType = "Hellion";
     player.servants = 2;
     gamestate_SaveUnitPlayerByIndex(index, player);
     gv_gamestate_unitPlayersCount += 1;

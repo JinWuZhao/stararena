@@ -107,13 +107,6 @@ func (m *Director) handleCommand(cmd command.Command) *sc2proto.Action {
 			log.Println(cmd.Player(), "joined game player", cmd.SC2PlayerId())
 		}
 		return nil
-	case *command.SetUnitCmd:
-		player := m.gameState.GetPlayer(cmd.Player())
-		if player != nil {
-			player.SetUnit(cmd.Unit())
-		} else {
-			return nil
-		}
 	default:
 	}
 	return &sc2proto.Action{

@@ -61,6 +61,13 @@ bool gameplay_initMap_Func(bool testConds, bool runActions) {
     unitgroup unitGroup4;
     int unitGroup4Count;
     unit unitGroup4Unit;
+    unitgroup unitGroup5;
+    int unitGroup5Count;
+    unit unitGroup5Unit;
+    unitgroup unitGroup6;
+    int unitGroup6Count;
+    unit unitGroup6Unit;
+    
 
     if (!runActions) {
         return true;
@@ -83,7 +90,7 @@ bool gameplay_initMap_Func(bool testConds, bool runActions) {
         if (unitGroup2Unit == null) { break; }
         libNtve_gf_MakeUnitInvulnerable(unitGroup2Unit, true);
         UnitSetScale(unitGroup2Unit, 200.0, 200.0, 200.0);
-        libNtve_gf_ChangeUnitDamage(unitGroup2Unit, libNtve_ge_UnitDamageTakenDealt_Damage_Deal, libNtve_ge_UnitDamageChangeOption_Mega);
+        UnitBehaviorAdd(unitGroup2Unit, "StarArenaUnitEnhance", unitGroup2Unit, 99);
     }
     unitGroup3 = UnitGroupFromId(3);
     unitGroup3Count = UnitGroupCount(unitGroup3, c_unitCountAll);
@@ -92,9 +99,9 @@ bool gameplay_initMap_Func(bool testConds, bool runActions) {
         if (unitGroup3Unit == null) { break; }
         if ((UnitGetType(unitGroup3Unit) == "AutoTurret")) {
             UnitSetScale(unitGroup3Unit, 200.0, 200.0, 200.0);
-            libNtve_gf_ChangeUnitDamage(unitGroup3Unit, libNtve_ge_UnitDamageTakenDealt_Damage_Deal, libNtve_ge_UnitDamageChangeOption_Mega2);
+            UnitBehaviorAdd(unitGroup3Unit, "StarArenaUnitEnhance", unitGroup2Unit, 10);
         }
-
+        UnitSetPropertyInt(unitGroup3Unit, c_unitPropLifeMax, 10000);
     }
     unitGroup4 = UnitGroupFromId(4);
     unitGroup4Count = UnitGroupCount(unitGroup4, c_unitCountAll);
@@ -103,14 +110,30 @@ bool gameplay_initMap_Func(bool testConds, bool runActions) {
         if (unitGroup4Unit == null) { break; }
         if ((UnitGetType(unitGroup4Unit) == "AutoTurret")) {
             UnitSetScale(unitGroup4Unit, 200.0, 200.0, 200.0);
-            libNtve_gf_ChangeUnitDamage(unitGroup4Unit, libNtve_ge_UnitDamageTakenDealt_Damage_Deal, libNtve_ge_UnitDamageChangeOption_Mega2);
+            UnitBehaviorAdd(unitGroup4Unit, "StarArenaUnitEnhance", unitGroup2Unit, 10);
         }
-
+        UnitSetPropertyInt(unitGroup4Unit, c_unitPropLifeMax, 10000);
+    }
+    unitGroup5 = UnitGroupFromId(5);
+    unitGroup5Count = UnitGroupCount(unitGroup5, c_unitCountAll);
+    for (;; unitGroup5Count -= 1) {
+        unitGroup5Unit = UnitGroupUnitFromEnd(unitGroup5, unitGroup5Count);
+        if (unitGroup5Unit == null) { break; }
+        UnitSetPropertyInt(unitGroup5Unit, c_unitPropLifeMax, 20000);
+    }
+    unitGroup6 = UnitGroupFromId(6);
+    unitGroup6Count = UnitGroupCount(unitGroup6, c_unitCountAll);
+    for (;; unitGroup6Count -= 1) {
+        unitGroup6Unit = UnitGroupUnitFromEnd(unitGroup6, unitGroup6Count);
+        if (unitGroup6Unit == null) { break; }
+        UnitSetPropertyInt(unitGroup6Unit, c_unitPropLifeMax, 20000);
     }
     TechTreeRequirementsEnable(1, false);
     TechTreeRequirementsEnable(2, false);
     TechTreeRequirementsEnable(3, false);
     TechTreeRequirementsEnable(4, false);
+
+    CameraLockInput(arena_gv_audiencePlayer, true);
     return true;
 }
 
@@ -324,7 +347,7 @@ bool gameplay_ShowUnitPlayerPoints_Func(bool testConds, bool runActions) {
         return false;
     }
 
-    arena_gf_ShowMessage(lv_player.name + " 拥有点数 " + IntToString(lv_player.points));
+    arena_gf_ShowMessage(lv_player.name + " 拥有点数 " + IntToString(lv_player.points) + "pt");
 
     return true;
 }
@@ -400,7 +423,7 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
         if (!arena_gf_StringIsEmpty(lv_attacker) && UnitPlayerFromName(lv_attacker, lv_player) && !lv_player.isBot) {
             lv_killMsg += " " + lv_attacker + " ";
         }
-        lv_killMsg += "摧毁了";
+        lv_killMsg += "击杀";
         arena_gf_ShowMessage(lv_killMsg);
     }
 
@@ -469,19 +492,7 @@ bool gameplay_RechargePoints_Func(bool testConds, bool runActions) {
     lv_player.points += lv_points;
     SaveUnitPlayer(lv_player);
 
-    lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_name);
-    if (!UnitIsValid(lv_unit)) {
-        return true;
-    }
-
-    lv_rewardText = TextTagCreate(StringToText("+"+IntToString(lv_player.points)), 24, UnitGetPosition(lv_unit), 3.0, true, false, PlayerGroupAll());
-    TextTagSetColor(lv_rewardText, c_textTagColorText, Color(0, 255, 0));
-    TextTagAttachToUnit(lv_rewardText, lv_unit, 3.0);
-    TextTagSetGravity(lv_rewardText, 2.0);
-    lv_rewardTimer = TimerCreate();
-    TimerStart(lv_rewardTimer, 2.0, false, c_timeReal);
-    libNtve_gf_WaitForTimer(lv_rewardTimer, 0.0, false);
-    TextTagDestroy(lv_rewardText);
+    arena_gf_ShowMessage(lv_player.name + " 充值了 " + IntToString(lv_points) + "pt，总计 " + IntToString(lv_player.points) + "pt");
 
     return true;
 }

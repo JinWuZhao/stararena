@@ -17,7 +17,6 @@ type Context struct {
 	SC2RedPlayer  uint32
 	SC2BluePlayer uint32
 	Player        string
-	Unit          string
 }
 
 type Command interface {

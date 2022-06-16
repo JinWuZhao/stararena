@@ -6,7 +6,6 @@ type Player struct {
 	name        string        // 玩家名字
 	isBot       bool          // 是否为机器人
 	sc2PlayerId atomic.Uint32 // SC2玩家ID
-	unit        atomic.String // 操作单位
 }
 
 func NewPlayer(name string, sc2PlayerId uint32) *Player {
@@ -36,12 +35,4 @@ func (m *Player) SetSC2PlayerId(playerId uint32) {
 
 func (m *Player) GetSC2PlayerId() uint32 {
 	return m.sc2PlayerId.Load()
-}
-
-func (m *Player) SetUnit(unit string) {
-	m.unit.Store(unit)
-}
-
-func (m *Player) GetUnit() string {
-	return m.unit.Load()
 }

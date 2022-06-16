@@ -52,7 +52,8 @@ static void unitctrl_SetAIMode_Init() {
 
 bool unitctrl_SetUnit_Func(bool testConds, bool runActions) {
     string lv_name = arena_gf_CurrentCommandArgument(1);
-    string lv_unitType = arena_gf_CurrentCommandArgument(2);
+    int lv_race = StringToInt(arena_gf_CurrentCommandArgument(2));
+    int lv_index = StringToInt(arena_gf_CurrentCommandArgument(3));
     UnitPlayer lv_player;
     UnitData lv_unitData;
 
@@ -63,10 +64,10 @@ bool unitctrl_SetUnit_Func(bool testConds, bool runActions) {
     if (!UnitPlayerFromName(lv_name, lv_player)) {
         return false;
     }
-    if (!UnitDataGetByUnitType(lv_unitType, lv_unitData)) {
+    if (!UnitDataGetByRace(lv_race, lv_index, lv_unitData)) {
         return false;
     }
-    lv_player.unitType = lv_unitType;
+    lv_player.unitType = lv_unitData.unitType;
     SaveUnitPlayer(lv_player);
 
     return true;
@@ -78,25 +79,26 @@ static void unitctrl_SetUnit_Init() {
 }
 
 bool unitctrl_SetServants_Func(bool testConds, bool runActions) {
-    string lv_playerName = arena_gf_CurrentCommandArgument(1);
+    string lv_name = arena_gf_CurrentCommandArgument(1);
     int lv_servantsNum = StringToInt(arena_gf_CurrentCommandArgument(2));
-    string lv_servantType = arena_gf_CurrentCommandArgument(3);
-    UnitPlayer lv_unitPlayer;
+    string lv_race = arena_gf_CurrentCommandArgument(3);
+    string lv_index = arena_gf_CurrentCommandArgument(4);
+    UnitPlayer lv_player;
     UnitData lv_unitData;
 
     if (!runActions) {
         return true;
     }
 
-    if (!UnitPlayerFromName(lv_playerName, lv_unitPlayer)) {
+    if (!UnitPlayerFromName(lv_name, lv_player)) {
         return false;
     }
 
-    lv_unitPlayer.servants = lv_servantsNum;
-    if (UnitDataGetByUnitType(lv_servantType, lv_unitData)) {
-        lv_unitPlayer.servantType = lv_servantType;
+    lv_player.servants = lv_servantsNum;
+    if (UnitDataGetByRace(StringToInt(lv_race), StringToInt(lv_index), lv_unitData)) {
+        lv_player.servantType = lv_unitData.unitType;
     }
-    SaveUnitPlayer(lv_unitPlayer);
+    SaveUnitPlayer(lv_player);
 
     return true;
 }

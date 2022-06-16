@@ -55,10 +55,6 @@ func (s *Controller) ReceiveMessage(message bilidanmu.Message) {
 			SC2BluePlayer: s.config.BluePlayer,
 			Player:        m.Uname,
 		}
-		player := s.gameState.GetPlayer(m.Uname)
-		if player != nil {
-			ctx.Unit = player.GetUnit()
-		}
 		cmd, err := command.ParseCommand(ctx, m.Text)
 		if err == nil {
 			if !s.cmdQueue.Push(cmd) {

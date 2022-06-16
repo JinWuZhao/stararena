@@ -5,23 +5,65 @@ const int c_UnitDataTypeAliasCount = 5;
 struct UnitData {
     int dataType;
     string unitType;
+    string name;
     string[c_UnitDataTypeAliasCount] typeAlias;
     int costPoints;
     int rewardPoints;
-    string servantType;
     int willPoints;
 };
 typedef structref<UnitData> UnitDataRef;
 
 const int c_UnitDataTypesNone = -1;
-const int c_UnitDataTypesMengskHellion = 0;
-const int c_UnitDataTypesSiegeTank = 1;
-const int c_UnitDataTypesThorAP = 2;
-const int c_UnitDataTypesBattlecruiser = 3;
-const int c_UnitDataTypesCount = 4;
+// 人类
+const int c_UnitDataTypeMarine = 0; // 陆战队员
+const int c_UnitDataTypeMarauder = 1; // 劫掠者
+const int c_UnitDataTypeReaper = 2; // 收割者
+const int c_UnitDataTypeGhost = 3; // 幽灵
+const int c_UnitDataTypesHellion = 4; // 恶火
+const int c_UnitDataTypesSiegeTank = 5; // 攻城坦克
+const int c_UnitDataTypesThor = 6; // 雷神
+const int c_UnitDataTypeViking = 7; // 维京战机
+const int c_UnitDataTypeBanshee = 8; // 女妖
+const int c_UnitDataTypesBattlecruiser = 9; // 战列巡航舰
+const int c_UnitDataTypeHellbat = 10; // 恶蝠
+const int c_UnitDataTypeWidowMine = 11; // 寡妇雷
+const int c_UnitDataTypeLiberator = 12; // 解放者
+const int c_UnitDataTypeCyclone = 13; // 飓风
+// 异虫
+const int c_UnitDataTypeZergling = 14; // 跳虫
+const int c_UnitDataTypeQueen = 15; // 虫后
+const int c_UnitDataTypeHydralisk = 16; // 刺蛇
+const int c_UnitDataTypeBaneling = 17; // 爆虫
+const int c_UnitDataTypeRoach = 18; // 蟑螂
+const int c_UnitDataTypeInfestor = 19; // 感染者
+const int c_UnitDataTypeMutalisk = 20; // 异龙
+const int c_UnitDataTypeCorruptor = 21; // 腐化者
+const int c_UnitDataTypeUltralisk = 22; // 雷兽
+const int c_UnitDataTypeBroodLord = 23; // 巢虫领主
+const int c_UnitDataTypeSwarmHost = 24; // 虫群宿主
+const int c_UnitDataTypeViper = 25; // 飞蛇
+const int c_UnitDataTypeRavager = 26; // 破坏者
+// 星灵
+const int c_UnitDataTypeZealot = 27; // 狂热者
+const int c_UnitDataTypeStalker = 28; // 追猎者
+const int c_UnitDataTypeSentry = 29; // 机械哨兵
+const int c_UnitDataTypeImmortal = 30; // 不朽者
+const int c_UnitDataTypeColossus = 31; // 巨像
+const int c_UnitDataTypePhoenix = 32; // 凤凰
+const int c_UnitDataTypeVoidRay = 33; // 虚空辉光舰
+const int c_UnitDataTypeHighTemplar = 34; // 高阶圣堂武士
+const int c_UnitDataTypeArchon = 35; // 执政官
+const int c_UnitDataTypeCarrier = 36; // 航母
+const int c_UnitDataTypeMothership = 37; // 母舰
+const int c_UnitDataTypeOracle = 38; // 先知
+const int c_UnitDataTypeTempest = 39; // 风暴战舰
+const int c_UnitDataTypeAdept = 40; // 使徒
+const int c_UnitDataTypeDisruptor = 41; // 干扰者
 
-const int c_UnitDataLevelsCount = 5;
-const int c_UnitDataCapPerLevel = 5;
+const int c_UnitDataTypesCount = 42;
+
+const int c_UnitDataLevelsCount = 3;
+const int c_UnitDataCapPerLevel = 15;
 
 typedef UnitData[c_UnitDataTypesCount] UnitDataArray;
 
@@ -32,7 +74,7 @@ static int[c_UnitDataLevelsCount][c_UnitDataCapPerLevel] gv_unitdata_unitMatrix;
 void UnitDataCopy(UnitDataRef dest, UnitDataRef source);
 void UnitDataGet(int unitDataType, UnitDataRef outData);
 bool UnitDataGetByUnitType(string unitType, UnitDataRef outData);
-bool UnitDataGetByLevel(int level, int index, UnitDataRef outData);
+bool UnitDataGetByRace(int race, int index, UnitDataRef outData);
 void InitUnitData();
 
 static void unitdata_InitUnitMatrix();
@@ -43,9 +85,9 @@ void UnitDataCopy(UnitDataRef dest, UnitDataRef source) {
 
     dest.dataType = source.dataType;
     dest.unitType = source.unitType;
+    dest.name = source.name;
     dest.costPoints = source.costPoints;
     dest.rewardPoints = source.rewardPoints;
-    dest.servantType = source.servantType;
     dest.willPoints = source.willPoints;
 
     for (lv_index = 0; lv_index < c_UnitDataTypeAliasCount; lv_index += 1) {
@@ -68,11 +110,12 @@ bool UnitDataGetByUnitType(string unitType, UnitDataRef outData) {
     return true;
 }
 
-bool UnitDataGetByLevel(int level, int index, UnitDataRef outData) {
+bool UnitDataGetByRace(int race, int index, UnitDataRef outData) {
     int lv_dataType;
 
-    if (level < c_UnitDataLevelsCount && index < c_UnitDataCapPerLevel) {
-        lv_dataType = gv_unitdata_unitMatrix[level][index];
+    if (race >= 0 && race < c_UnitDataLevelsCount && 
+        index >= 0 && index < c_UnitDataCapPerLevel) {
+        lv_dataType = gv_unitdata_unitMatrix[race][index];
         if (lv_dataType > c_UnitDataTypesNone) {
             UnitDataCopy(outData, gv_unitdata_unitTypes[lv_dataType]);
         }
@@ -87,46 +130,432 @@ void InitUnitData() {
     UnitData emptyData;
     UnitData data;
 
-    data.dataType = c_UnitDataTypesMengskHellion;
-    data.unitType = "MengskHellion";
+    // 人类
+    data.dataType = c_UnitDataTypeMarine;
+    data.unitType = "Marine";
+    data.name = "陆战队员";
     data.costPoints = 50;
     data.rewardPoints = 100;
-    data.servantType = "MengskHellion";
     data.willPoints = 10;
-    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypesMengskHellion], data);
-    gv_unitdata_unitMatrix[0][0] = c_UnitDataTypesMengskHellion;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeMarine], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeMarauder;
+    data.unitType = "Marauder";
+    data.name = "劫掠者";
+    data.costPoints = 50;
+    data.rewardPoints = 100;
+    data.willPoints = 10;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeMarauder], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeReaper;
+    data.unitType = "Reaper";
+    data.name = "收割者";
+    data.costPoints = 50;
+    data.rewardPoints = 100;
+    data.willPoints = 10;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeReaper], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeGhost;
+    data.unitType = "Ghost";
+    data.name = "幽灵";
+    data.costPoints = 50;
+    data.rewardPoints = 100;
+    data.willPoints = 10;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeGhost], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypesHellion;
+    data.unitType = "Hellion";
+    data.name = "恶火";
+    data.costPoints = 50;
+    data.rewardPoints = 100;
+    data.willPoints = 10;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypesHellion], data);
 
     UnitDataCopy(data, emptyData);
     data.dataType = c_UnitDataTypesSiegeTank;
     data.unitType = "SiegeTank";
+    data.name = "攻城坦克";
     data.typeAlias[0] = "SiegeTankSieged";
     data.costPoints = 100;
     data.rewardPoints = 150;
-    data.servantType = "SiegeTank";
     data.willPoints = 20;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypesSiegeTank], data);
-    gv_unitdata_unitMatrix[1][0] = c_UnitDataTypesSiegeTank;
 
     UnitDataCopy(data, emptyData);
-    data.dataType = c_UnitDataTypesThorAP;
+    data.dataType = c_UnitDataTypesThor;
     data.unitType = "ThorAP";
-    data.typeAlias[0] = "Thor";
+    data.name = "雷神";
     data.costPoints = 300;
     data.rewardPoints = 200;
-    data.servantType = "ThorAP";
     data.willPoints = 30;
-    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypesThorAP], data);
-    gv_unitdata_unitMatrix[2][0] = c_UnitDataTypesThorAP;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypesThor], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeViking;
+    data.unitType = "VikingAssault";
+    data.name = "维京战机";
+    data.costPoints = 300;
+    data.rewardPoints = 200;
+    data.willPoints = 30;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeViking], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeBanshee;
+    data.unitType = "Banshee";
+    data.name = "女妖";
+    data.costPoints = 300;
+    data.rewardPoints = 200;
+    data.willPoints = 30;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeBanshee], data);
 
     UnitDataCopy(data, emptyData);
     data.dataType = c_UnitDataTypesBattlecruiser;
     data.unitType = "Battlecruiser";
+    data.name = "战列巡航舰";
     data.costPoints = 500;
     data.rewardPoints = 300;
-    data.servantType = "Battlecruiser";
     data.willPoints = 40;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypesBattlecruiser], data);
-    gv_unitdata_unitMatrix[3][0] = c_UnitDataTypesBattlecruiser;
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeHellbat;
+    data.unitType = "HellionTank";
+    data.name = "恶蝠";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeHellbat], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeWidowMine;
+    data.unitType = "WidowMineAirWeapon";
+    data.name = "寡妇雷";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeWidowMine], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeLiberator;
+    data.unitType = "Liberator";
+    data.name = "解放者";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeLiberator], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeCyclone;
+    data.unitType = "Cyclone";
+    data.name = "飓风";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeCyclone], data);
+
+    // 异虫
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeZergling;
+    data.unitType = "Zergling";
+    data.name = "跳虫";
+    data.costPoints = 50;
+    data.rewardPoints = 100;
+    data.willPoints = 10;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeZergling], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeQueen;
+    data.unitType = "Queen";
+    data.name = "虫后";
+    data.costPoints = 50;
+    data.rewardPoints = 100;
+    data.willPoints = 10;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeQueen], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeHydralisk;
+    data.unitType = "Hydralisk";
+    data.name = "刺蛇";
+    data.costPoints = 50;
+    data.rewardPoints = 100;
+    data.willPoints = 10;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeHydralisk], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeBaneling;
+    data.unitType = "Baneling";
+    data.name = "爆虫";
+    data.costPoints = 50;
+    data.rewardPoints = 100;
+    data.willPoints = 10;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeBaneling], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeRoach;
+    data.unitType = "Roach";
+    data.name = "蟑螂";
+    data.costPoints = 50;
+    data.rewardPoints = 100;
+    data.willPoints = 10;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeRoach], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeInfestor;
+    data.unitType = "Infestor";
+    data.name = "感染者";
+    data.costPoints = 100;
+    data.rewardPoints = 150;
+    data.willPoints = 20;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeInfestor], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeMutalisk;
+    data.unitType = "Mutalisk";
+    data.name = "异龙";
+    data.costPoints = 300;
+    data.rewardPoints = 200;
+    data.willPoints = 30;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeMutalisk], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeCorruptor;
+    data.unitType = "Corruptor";
+    data.name = "腐化者";
+    data.costPoints = 300;
+    data.rewardPoints = 200;
+    data.willPoints = 30;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeCorruptor], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeUltralisk;
+    data.unitType = "Ultralisk";
+    data.name = "雷兽";
+    data.costPoints = 300;
+    data.rewardPoints = 200;
+    data.willPoints = 30;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeUltralisk], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeBroodLord;
+    data.unitType = "BroodLord";
+    data.name = "巢虫领主";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeBroodLord], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeSwarmHost;
+    data.unitType = "SwarmHostMP";
+    data.name = "虫群宿主";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeSwarmHost], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeViper;
+    data.unitType = "Viper";
+    data.name = "飞蛇";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeViper], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeRavager;
+    data.unitType = "Ravager";
+    data.name = "破坏者";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeRavager], data);
+
+    // 星灵
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeZealot;
+    data.unitType = "Zealot";
+    data.name = "狂热者";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeZealot], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeStalker;
+    data.unitType = "Stalker";
+    data.name = "追猎者";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeStalker], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeSentry;
+    data.unitType = "Sentry";
+    data.name = "机械哨兵";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeSentry], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeImmortal;
+    data.unitType = "Immortal";
+    data.name = "不朽者";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeImmortal], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeColossus;
+    data.unitType = "Colossus";
+    data.name = "巨像";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeColossus], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypePhoenix;
+    data.unitType = "Phoenix";
+    data.name = "凤凰";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypePhoenix], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeVoidRay;
+    data.unitType = "VoidRay";
+    data.name = "虚空辉光舰";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeVoidRay], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeHighTemplar;
+    data.unitType = "HighTemplar";
+    data.name = "高阶圣堂武士";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeHighTemplar], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeArchon;
+    data.unitType = "Archon";
+    data.name = "执政官";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeArchon], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeCarrier;
+    data.unitType = "Carrier";
+    data.name = "航母";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeCarrier], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeMothership;
+    data.unitType = "Mothership";
+    data.name = "母舰";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeMothership], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeOracle;
+    data.unitType = "Oracle";
+    data.name = "先知";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeOracle], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeTempest;
+    data.unitType = "Tempest";
+    data.name = "风暴战舰";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeTempest], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeAdept;
+    data.unitType = "Adept";
+    data.name = "使徒";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeAdept], data);
+
+    UnitDataCopy(data, emptyData);
+    data.dataType = c_UnitDataTypeDisruptor;
+    data.unitType = "Disruptor";
+    data.name = "干扰者";
+    data.costPoints = 500;
+    data.rewardPoints = 300;
+    data.willPoints = 40;
+    UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeDisruptor], data);
+
+    unitdata_InitUnitMatrix();
+    gv_unitdata_unitMatrix[0][0] = c_UnitDataTypeMarine;
+    gv_unitdata_unitMatrix[0][1] = c_UnitDataTypeMarauder;
+    gv_unitdata_unitMatrix[0][2] = c_UnitDataTypeReaper;
+    gv_unitdata_unitMatrix[0][3] = c_UnitDataTypeGhost;
+    gv_unitdata_unitMatrix[0][4] = c_UnitDataTypesHellion;
+    gv_unitdata_unitMatrix[0][5] = c_UnitDataTypesSiegeTank;
+    gv_unitdata_unitMatrix[0][6] = c_UnitDataTypesThor;
+    gv_unitdata_unitMatrix[0][7] = c_UnitDataTypeViking;
+    gv_unitdata_unitMatrix[0][8] = c_UnitDataTypeBanshee;
+    gv_unitdata_unitMatrix[0][9] = c_UnitDataTypesBattlecruiser;
+    gv_unitdata_unitMatrix[0][10] = c_UnitDataTypeHellbat;
+    gv_unitdata_unitMatrix[0][11] = c_UnitDataTypeWidowMine;
+    gv_unitdata_unitMatrix[0][12] = c_UnitDataTypeLiberator;
+    gv_unitdata_unitMatrix[0][13] = c_UnitDataTypeCyclone;
+
+    gv_unitdata_unitMatrix[1][0] = c_UnitDataTypeZergling;
+    gv_unitdata_unitMatrix[1][1] = c_UnitDataTypeQueen;
+    gv_unitdata_unitMatrix[1][2] = c_UnitDataTypeHydralisk;
+    gv_unitdata_unitMatrix[1][3] = c_UnitDataTypeBaneling;
+    gv_unitdata_unitMatrix[1][4] = c_UnitDataTypeRoach;
+    gv_unitdata_unitMatrix[1][5] = c_UnitDataTypeInfestor;
+    gv_unitdata_unitMatrix[1][6] = c_UnitDataTypeMutalisk;
+    gv_unitdata_unitMatrix[1][7] = c_UnitDataTypeCorruptor;
+    gv_unitdata_unitMatrix[1][8] = c_UnitDataTypeUltralisk;
+    gv_unitdata_unitMatrix[1][9] = c_UnitDataTypeBroodLord;
+    gv_unitdata_unitMatrix[1][10] = c_UnitDataTypeSwarmHost;
+    gv_unitdata_unitMatrix[1][11] = c_UnitDataTypeViper;
+    gv_unitdata_unitMatrix[1][12] = c_UnitDataTypeRavager;
+
+    gv_unitdata_unitMatrix[2][0] = c_UnitDataTypeZealot;
+    gv_unitdata_unitMatrix[2][1] = c_UnitDataTypeStalker;
+    gv_unitdata_unitMatrix[2][2] = c_UnitDataTypeSentry;
+    gv_unitdata_unitMatrix[2][3] = c_UnitDataTypeImmortal;
+    gv_unitdata_unitMatrix[2][4] = c_UnitDataTypeColossus;
+    gv_unitdata_unitMatrix[2][5] = c_UnitDataTypePhoenix;
+    gv_unitdata_unitMatrix[2][6] = c_UnitDataTypeVoidRay;
+    gv_unitdata_unitMatrix[2][7] = c_UnitDataTypeHighTemplar;
+    gv_unitdata_unitMatrix[2][8] = c_UnitDataTypeArchon;
+    gv_unitdata_unitMatrix[2][9] = c_UnitDataTypeCarrier;
+    gv_unitdata_unitMatrix[2][10] = c_UnitDataTypeMothership;
+    gv_unitdata_unitMatrix[2][11] = c_UnitDataTypeOracle;
+    gv_unitdata_unitMatrix[2][12] = c_UnitDataTypeTempest;
+    gv_unitdata_unitMatrix[2][13] = c_UnitDataTypeAdept;
+    gv_unitdata_unitMatrix[2][14] = c_UnitDataTypeDisruptor;
 
     DataTableInstanceCreate();
     gv_unitdata_dataTypeOfUnitType = DataTableInstanceLastCreated();

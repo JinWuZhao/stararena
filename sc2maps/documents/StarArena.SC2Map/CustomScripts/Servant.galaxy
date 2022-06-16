@@ -33,7 +33,7 @@ unitgroup ServantSpawnUnits(UnitPlayerRef player) {
     if (!arena_gf_StringIsEmpty(player.servantType)) {
         lv_servantType = player.servantType;
     } else {
-        lv_servantType = lv_masterUnitData.servantType;
+        lv_servantType = lv_masterUnitData.unitType;
     }
     lv_servants = UnitCreate(player.servants, lv_servantType, 0, player.playerId, lv_masterPosition, lv_masterFacing);
     for (lv_index = UnitGroupCount(lv_servants, c_unitCountAll); lv_index > 0; lv_index -= 1) {

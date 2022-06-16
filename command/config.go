@@ -9,10 +9,3 @@ var cmdCtors = []Constructor{
 	MakeCmdCtor[*JoinGameCmd](),
 	MakeCmdCtor[*ShowPointsCmd](),
 }
-
-var unitDataAcc = map[string]string{
-	"aa": "MengskHellion",
-	"ba": "SiegeTank",
-	"ca": "ThorAP",
-	"da": "Battlecruiser",
-}

@@ -201,6 +201,11 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
                     if (lv_servants != null && UnitGroupCount(lv_servants, c_unitCountAlive) > 0) {
                         UnitGroupIssueOrder(lv_servants, lv_initOrder, c_orderQueueReplace);
                     }
+
+                    if (!refPlayer.isBot) {
+                        arena_gf_ShowMessage(refPlayer.name + " 消耗 " + IntToString(lv_reviveCostPoints) + 
+                    "pt 派出了 " + lv_unitData.name + " 与随从 " + lv_servantData.name + "×" + IntToString(refPlayer.servants));
+                    }
                 }
             }
         }
@@ -469,7 +474,7 @@ bool aimode_KillUnit_Func(bool testConds, bool runActions) {
     string lv_attackerMaster;
     unitgroup lv_attackerServants;
     unitgroup lv_servantTargets;
-    int lv_unitLevel;
+    int lv_unitRace;
     int lv_index;
     UnitData lv_unitData;
 
@@ -495,14 +500,14 @@ bool aimode_KillUnit_Func(bool testConds, bool runActions) {
     }
     if (lv_player.isBot) {
         AIModeSetMode(lv_player, c_AIModeNone);
-        lv_unitLevel = RandomInt(0, c_UnitDataLevelsCount-1);
+        lv_unitRace = RandomInt(0, c_UnitDataLevelsCount-1);
         for (lv_index = 0; lv_index < c_UnitDataCapPerLevel; lv_index += 1) {
-            if (!UnitDataGetByLevel(lv_unitLevel, lv_index, lv_unitData)) {
+            if (!UnitDataGetByRace(lv_unitRace, lv_index, lv_unitData)) {
                 break;
             }
         }
         lv_index = RandomInt(0, lv_index-1);
-        UnitDataGetByLevel(lv_unitLevel, lv_index, lv_unitData);
+        UnitDataGetByRace(lv_unitRace, lv_index, lv_unitData);
         lv_player.unitType = lv_unitData.unitType;
         lv_player.servants = RandomInt(2, 8);
     }

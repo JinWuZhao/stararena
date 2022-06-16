@@ -224,7 +224,8 @@ func (c *ChangeModeCmd) String() string {
 
 type SetUnitCmd struct {
 	player string
-	unit   string
+	race   int32
+	index  int32
 }
 
 func (*SetUnitCmd) New() Command {
@@ -239,35 +240,44 @@ func (c *SetUnitCmd) Player() string {
 	return c.player
 }
 
-func (c *SetUnitCmd) Unit() string {
-	return c.unit
-}
-
 func (c *SetUnitCmd) Parser(ast *parsec.AST) parsec.Parser {
 	return ast.And(c.Name(), nil,
 		parsec.AtomExact(`u`, "OP"),
-		parsec.Token(`[a-zA-Z0-9-]{1,3}`, "UNIT"))
+		parsec.Token(`[tzp]`, "UNIT"),
+		parsec.Token(`[0-9]{1,2}`, "UNIT"))
 }
 
 func (c *SetUnitCmd) Init(ctx Context, query parsec.Queryable) error {
-	name := query.GetChildren()[1].GetValue()
-	unit, ok := unitDataAcc[name]
-	if !ok {
-		return fmt.Errorf("invalid unit name: %s", name)
+	var race int32
+	switch query.GetChildren()[1].GetValue() {
+	case "t":
+		race = 0
+	case "z":
+		race = 1
+	case "p":
+		race = 2
+	default:
+		return fmt.Errorf("invalid race")
 	}
-	c.unit = unit
+	index, err := strconv.ParseInt(query.GetChildren()[2].GetValue(), 10, 32)
+	if err != nil {
+		return fmt.Errorf("strconv.ParseInt(index) error: %w", err)
+	}
+	c.race = race
+	c.index = int32(index)
 	c.player = ctx.Player
 	return nil
 }
 
 func (c *SetUnitCmd) String() string {
-	return fmt.Sprintf("cmd-set-unit %s %s", c.player, c.unit)
+	return fmt.Sprintf("cmd-set-unit %s %d %d", c.player, c.race, c.index)
 }
 
 type SetServantsCmd struct {
 	player string
-	unit   string
 	num    int32
+	race   int32
+	index  int32
 }
 
 func (*SetServantsCmd) New() Command {
@@ -282,10 +292,6 @@ func (c *SetServantsCmd) Player() string {
 	return c.player
 }
 
-func (c *SetServantsCmd) Unit() string {
-	return c.unit
-}
-
 func (c *SetServantsCmd) Num() int32 {
 	return c.num
 }
@@ -295,7 +301,9 @@ func (c *SetServantsCmd) Parser(ast *parsec.AST) parsec.Parser {
 		parsec.AtomExact(`i`, "OP"),
 		parsecUint("NUM", 2),
 		ast.Maybe("OPTION", nil,
-			parsec.Token(`[a-zA-Z0-9-]{1,2}`, "UNIT")))
+			ast.And("UNIT", nil,
+				parsec.Token(`[tzp]`, "UNIT"),
+				parsec.Token(`[0-9]{1,2}`, "UNIT"))))
 }
 
 func (c *SetServantsCmd) Init(ctx Context, query parsec.Queryable) error {
@@ -303,23 +311,39 @@ func (c *SetServantsCmd) Init(ctx Context, query parsec.Queryable) error {
 	if err != nil {
 		return fmt.Errorf("strconv.ParseInt(num) error: %w", err)
 	}
-	var unit string
-	if name := query.GetChildren()[2].GetValue(); name != "" {
-		var ok bool
-		unit, ok = unitDataAcc[name]
-		if !ok {
-			return fmt.Errorf("invalid unit name: %s", name)
+	race := int32(-1)
+	index := int64(-1)
+	if !query.GetChildren()[2].IsTerminal() {
+		raceValue := query.GetChildren()[2].GetChildren()[0].GetValue()
+		indexValue := query.GetChildren()[2].GetChildren()[1].GetValue()
+		if raceValue != "" && indexValue != "" {
+			switch raceValue {
+			case "t":
+				race = 0
+			case "z":
+				race = 1
+			case "p":
+				race = 2
+			default:
+				return fmt.Errorf("invalid race")
+			}
+			var err error
+			index, err = strconv.ParseInt(indexValue, 10, 32)
+			if err != nil {
+				return fmt.Errorf("strconv.ParseInt(index) error: %w", err)
+			}
 		}
 	}
 	c.num = int32(num)
-	c.unit = unit
+	c.race = race
+	c.index = int32(index)
 	c.player = ctx.Player
 	return nil
 }
 
 func (c *SetServantsCmd) String() string {
-	if c.unit != "" {
-		return fmt.Sprintf("cmd-set-servants %s %d %s", c.player, c.num, c.unit)
+	if c.race >= 0 && c.index >= 0 {
+		return fmt.Sprintf("cmd-set-servants %s %d %d %d", c.player, c.num, c.race, c.index)
 	}
 	return fmt.Sprintf("cmd-set-servants %s %d", c.player, c.num)
 }
