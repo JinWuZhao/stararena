@@ -95,7 +95,8 @@ bool unitctrl_SetServants_Func(bool testConds, bool runActions) {
     }
 
     lv_player.servants = lv_servantsNum;
-    if (UnitDataGetByRace(StringToInt(lv_race), StringToInt(lv_index), lv_unitData)) {
+    if (!arena_gf_StringIsEmpty(lv_race) && !arena_gf_StringIsEmpty(lv_index) && 
+    UnitDataGetByRace(StringToInt(lv_race), StringToInt(lv_index), lv_unitData)) {
         lv_player.servantType = lv_unitData.unitType;
     }
     SaveUnitPlayer(lv_player);

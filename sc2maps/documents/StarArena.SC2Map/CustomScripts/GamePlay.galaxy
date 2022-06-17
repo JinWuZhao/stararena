@@ -470,9 +470,6 @@ bool gameplay_RechargePoints_Func(bool testConds, bool runActions) {
     string lv_name;
     int lv_points;
     UnitPlayer lv_player;
-    int lv_rewardText;
-    timer lv_rewardTimer;
-    unit lv_unit;
 
     lv_name = arena_gf_CurrentCommandArgument(1);
     lv_points = StringToInt(arena_gf_CurrentCommandArgument(2));

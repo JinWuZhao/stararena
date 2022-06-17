@@ -2,6 +2,7 @@ package game
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/JinWuZhao/sc2client"
@@ -105,6 +106,13 @@ func (m *Director) handleCommand(cmd command.Command) *sc2proto.Action {
 	case *command.JoinGameCmd:
 		if m.gameState.Join(state.NewPlayer(cmd.Player(), cmd.SC2PlayerId())) {
 			log.Println(cmd.Player(), "joined game player", cmd.SC2PlayerId())
+			joinMsg := fmt.Sprintf("%s 已加入等待队列", cmd.Player())
+			if m.gameState.GetPlayerCount() >= m.config.PlayerCap {
+				joinMsg += "，当前玩家数量已满，请等待至下一局开始，无需重新排队"
+			} else {
+				joinMsg += "，即将进入游戏"
+			}
+			m.msgQueue.Push(joinMsg)
 		}
 		return nil
 	default:

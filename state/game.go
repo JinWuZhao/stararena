@@ -145,6 +145,13 @@ func (m *Game) GetPlayer(name string) *Player {
 	return m.players[name]
 }
 
+func (m *Game) GetPlayerCount() int {
+	m.m.RLock()
+	defer m.m.RUnlock()
+
+	return len(m.players)
+}
+
 func (m *Game) RemovePlayer(name string) *Player {
 	m.m.Lock()
 	defer m.m.Unlock()

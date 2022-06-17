@@ -168,7 +168,7 @@ unit arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed l
     UnitCreate(1, lp_type, 0, lp_player, lp_point, lp_angle);
     lv_createdUnit = UnitLastCreated();
     UnitGroupAdd(arena_gv_playerUnitGroup, lv_createdUnit);
-    UnitSetScale(lv_createdUnit, (lp_scale * 100.0), (lp_scale * 100.0), (lp_scale * 100.0));
+    UnitSetScale(lv_createdUnit, lp_scale, lp_scale, lp_scale);
     UnitSetTeamColorIndex(lv_createdUnit, PlayerGetColorIndex(lp_player, false));
     if (!arena_gf_StringIsEmpty(lp_textTag)) {
         if (StringLength(lp_textTag) < arena_c_maxUnitNameLength) {
@@ -176,7 +176,6 @@ unit arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed l
             lv_unitHealth = UnitGetPropertyFixed(lv_createdUnit, c_unitPropLifePercent, c_unitPropCurrent);
             lv_unitText = lp_textTag + " " + FixedToString(lv_unitHealth, 0) + "%";
             lv_textTag = TextTagCreate(StringToText(lv_unitText), 22, UnitGetPosition(lv_createdUnit), lv_realTagHeight, true, false, PlayerGroupAll());
-            //TextTagSetColor(lv_textTag, c_textTagColorText, libNtve_gf_ConvertPlayerColorToColor(PlayerGetColorIndex(lp_player, false)));
             TextTagAttachToUnit(lv_textTag, lv_createdUnit, lv_realTagHeight);
             DataTableInstanceSetInt(arena_gv_textTagByUnitTag, IntToString(UnitGetTag(lv_createdUnit)), lv_textTag);
         }

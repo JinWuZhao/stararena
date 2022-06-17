@@ -64,6 +64,7 @@ func main() {
 		&game.Services{
 			CmdQueue:  cmdQueue,
 			GameState: gameState,
+			MsgQueue:  msgQueue,
 		})
 	audience := game.NewAudience(msgQueue)
 

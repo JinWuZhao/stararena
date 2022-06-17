@@ -91,11 +91,11 @@ bool AddUnitPlayer(UnitPlayerRef player) {
     if (index == c_unitPlayersCap) {
         return false;
     }
-    player.points = 200;
+    player.points = 100;
     player.rewardTime = CurrentDateTimeGet();
     player.deadTime = IntToDateTime(0);
-    player.unitType = "Hellion";
-    player.servants = 2;
+    player.unitType = "Marine";
+    player.servants = 6;
     gamestate_SaveUnitPlayerByIndex(index, player);
     gv_gamestate_unitPlayersCount += 1;
     return true;

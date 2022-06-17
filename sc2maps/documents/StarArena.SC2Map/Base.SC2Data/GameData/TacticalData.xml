@@ -28,4 +28,8 @@
         <Abil value=""/>
         <Validator value=""/>
     </CTacticalOrder>
+    <CTacticalOrder id="SwarmHostMP">
+        <Abil value=""/>
+        <Validator value=""/>
+    </CTacticalOrder>
 </Catalog>

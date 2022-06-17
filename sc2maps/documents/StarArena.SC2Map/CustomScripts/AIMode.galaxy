@@ -156,7 +156,7 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
         if (lv_willBrokenTime == 0) {
             UnitDataGetByUnitType(UnitGetType(inUnit), lv_unitData);
 
-            if (refPlayer.aiStates[c_aimode_stateTotalTakenDamage] >= lv_unitData.willPoints) {
+            if (refPlayer.aiStates[c_aimode_stateTotalTakenDamage] >= lv_unitData.willPoints * refPlayer.servants / 3) {
                 refPlayer.aiStates[c_aimode_stateWillBrokenTime] = DateTimeToInt(CurrentDateTimeGet());
                 refPlayer.aiStates[c_aimode_stateOriginAIMode] = refPlayer.aiMode;
                 AIModeSetMode(refPlayer, c_AIModeDefence);
@@ -173,7 +173,7 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
         } else {
             lv_servantsCount = 0;
         }
-        UnitBehaviorAdd(inUnit, "StarArenaUnitEnhance", inUnit, refPlayer.servants - lv_servantsCount);
+        UnitBehaviorAdd(inUnit, "StarArenaUnitEnhance", inUnit, (refPlayer.servants - lv_servantsCount) / 10);
 
     } else {
         if (DateTimeToInt(CurrentDateTimeGet()) - DateTimeToInt(refPlayer.deadTime) >= c_aimode_reviveInterval) {
@@ -190,8 +190,10 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
                     }
                     SaveUnitPlayer(refPlayer);
             
-                    inUnit = arena_gf_CreatePlayerUnit(refPlayer.playerId, lv_unitData.unitType, refPlayer.name, 2.0, 3.0);
-                    UnitSetPropertyInt(inUnit, c_unitPropLifeMax, UnitGetPropertyInt(inUnit, c_unitPropLifeMax, false) * refPlayer.servants);
+                    inUnit = arena_gf_CreatePlayerUnit(refPlayer.playerId, lv_unitData.unitType, refPlayer.name, 
+                        lv_unitData.baseScale + IntToFixed(refPlayer.servants) * 100 / 30, 2.0);
+                    UnitSetPropertyInt(inUnit, c_unitPropLifeMax, lv_unitData.lifeMax + lv_servantData.lifeMax * refPlayer.servants);
+                    UnitSetPropertyInt(inUnit, c_unitPropShieldsMax, lv_unitData.shieldsMax + lv_servantData.shieldsMax * refPlayer.servants);
                     lv_servants = ServantSpawnUnits(refPlayer);
         
                     lv_initOrder = OrderTargetingPoint(
@@ -230,7 +232,8 @@ static void aimode_AttackStep(UnitPlayerRef refPlayer, unit inUnit, unitgroup lp
         lv_minDistance = -1;
         for (lv_unitIndex = UnitGroupCount(arena_gv_playerUnitGroup, c_unitCountAll); lv_unitIndex > 0; lv_unitIndex -= 1) {
             lv_unit = UnitGroupUnit(arena_gv_playerUnitGroup, lv_unitIndex);
-            if (UnitIsValid(lv_unit) && UnitGetOwner(lv_unit) != refPlayer.playerId && refPlayer.aiMode == c_AIModeAttack) {
+            if (UnitIsValid(lv_unit) && UnitGetOwner(lv_unit) != refPlayer.playerId && 
+            UnitCanAttackTarget(inUnit, lv_unit) && refPlayer.aiMode == c_AIModeAttack) {
                 lv_distance = DistanceBetweenPoints(UnitGetPosition(lv_unit), UnitGetPosition(inUnit));
                 if (lv_minDistance == -1 || lv_distance < lv_minDistance) {
                     lv_minDistance = lv_distance;
@@ -311,7 +314,7 @@ static void aimode_HunterStep(UnitPlayerRef refPlayer, unit inUnit, unitgroup lp
         for (lv_unitIndex = UnitGroupCount(arena_gv_playerUnitGroup, c_unitCountAll); lv_unitIndex > 0; lv_unitIndex -= 1) {
             lv_unit = UnitGroupUnit(arena_gv_playerUnitGroup, lv_unitIndex);
     
-            if (UnitIsValid(lv_unit) && UnitGetOwner(lv_unit) != refPlayer.playerId) {
+            if (UnitIsValid(lv_unit) && UnitGetOwner(lv_unit) != refPlayer.playerId && UnitCanAttackTarget(inUnit, lv_unit)) {
                 lv_distance = DistanceBetweenPoints(UnitGetPosition(lv_unit), UnitGetPosition(inUnit));
                 lv_weight = lv_distance * 10;
     
@@ -500,8 +503,8 @@ bool aimode_KillUnit_Func(bool testConds, bool runActions) {
     }
     if (lv_player.isBot) {
         AIModeSetMode(lv_player, c_AIModeNone);
-        lv_unitRace = RandomInt(0, c_UnitDataLevelsCount-1);
-        for (lv_index = 0; lv_index < c_UnitDataCapPerLevel; lv_index += 1) {
+        lv_unitRace = RandomInt(0, c_UnitDataRaceCount-1);
+        for (lv_index = 0; lv_index < c_UnitDataCapPerRace; lv_index += 1) {
             if (!UnitDataGetByRace(lv_unitRace, lv_index, lv_unitData)) {
                 break;
             }
@@ -509,7 +512,7 @@ bool aimode_KillUnit_Func(bool testConds, bool runActions) {
         lv_index = RandomInt(0, lv_index-1);
         UnitDataGetByRace(lv_unitRace, lv_index, lv_unitData);
         lv_player.unitType = lv_unitData.unitType;
-        lv_player.servants = RandomInt(2, 8);
+        lv_player.servants = RandomInt(5, 20);
     }
     lv_player.deadTime = CurrentDateTimeGet();
     SaveUnitPlayer(lv_player);
