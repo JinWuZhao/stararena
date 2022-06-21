@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/BurntSushi/toml v1.1.0
-	github.com/JinWuZhao/bilidanmu v0.0.0-20220507054202-d5d89dcf88ea
+	github.com/JinWuZhao/bilidanmu v0.0.0-20220621092530-a0d12594fbd3
 	github.com/JinWuZhao/sc2client v0.0.0-20220607071023-2ac1830cdabb
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/prataprc/goparsec v0.0.0-20211219142520-daac0e635e7e

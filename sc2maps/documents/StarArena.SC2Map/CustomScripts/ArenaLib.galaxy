@@ -172,7 +172,7 @@ unit arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed l
     UnitSetTeamColorIndex(lv_createdUnit, PlayerGetColorIndex(lp_player, false));
     if (!arena_gf_StringIsEmpty(lp_textTag)) {
         if (StringLength(lp_textTag) < arena_c_maxUnitNameLength) {
-            lv_realTagHeight = (UnitGetHeight(lv_createdUnit) + (lp_scale * lp_tagHeight));
+            lv_realTagHeight = (UnitGetHeight(lv_createdUnit) + lp_scale / 100 + lp_tagHeight);
             lv_unitHealth = UnitGetPropertyFixed(lv_createdUnit, c_unitPropLifePercent, c_unitPropCurrent);
             lv_unitText = lp_textTag + " " + FixedToString(lv_unitHealth, 0) + "%";
             lv_textTag = TextTagCreate(StringToText(lv_unitText), 22, UnitGetPosition(lv_createdUnit), lv_realTagHeight, true, false, PlayerGroupAll());

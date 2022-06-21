@@ -191,7 +191,7 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
                     SaveUnitPlayer(refPlayer);
             
                     inUnit = arena_gf_CreatePlayerUnit(refPlayer.playerId, lv_unitData.unitType, refPlayer.name, 
-                        lv_unitData.baseScale + IntToFixed(refPlayer.servants) * 100 / 30, 2.0);
+                        lv_unitData.baseScale + IntToFixed(refPlayer.servants) * 100 / 30, 2);
                     UnitSetPropertyInt(inUnit, c_unitPropLifeMax, lv_unitData.lifeMax + lv_servantData.lifeMax * refPlayer.servants);
                     UnitSetPropertyInt(inUnit, c_unitPropShieldsMax, lv_unitData.shieldsMax + lv_servantData.shieldsMax * refPlayer.servants);
                     lv_servants = ServantSpawnUnits(refPlayer);
