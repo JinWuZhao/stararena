@@ -98,10 +98,9 @@ bool gameplay_initMap_Func(bool testConds, bool runActions) {
         unitGroup3Unit = UnitGroupUnitFromEnd(unitGroup3, unitGroup3Count);
         if (unitGroup3Unit == null) { break; }
         if ((UnitGetType(unitGroup3Unit) == "AutoTurret")) {
-            UnitSetScale(unitGroup3Unit, 200.0, 200.0, 200.0);
             UnitBehaviorAdd(unitGroup3Unit, "StarArenaUnitEnhance", unitGroup2Unit, 10);
         }
-        UnitSetPropertyInt(unitGroup3Unit, c_unitPropLifeMax, 10000);
+        UnitDataInitUnitProps(unitGroup3Unit);
     }
     unitGroup4 = UnitGroupFromId(4);
     unitGroup4Count = UnitGroupCount(unitGroup4, c_unitCountAll);
@@ -109,24 +108,23 @@ bool gameplay_initMap_Func(bool testConds, bool runActions) {
         unitGroup4Unit = UnitGroupUnitFromEnd(unitGroup4, unitGroup4Count);
         if (unitGroup4Unit == null) { break; }
         if ((UnitGetType(unitGroup4Unit) == "AutoTurret")) {
-            UnitSetScale(unitGroup4Unit, 200.0, 200.0, 200.0);
             UnitBehaviorAdd(unitGroup4Unit, "StarArenaUnitEnhance", unitGroup2Unit, 10);
         }
-        UnitSetPropertyInt(unitGroup4Unit, c_unitPropLifeMax, 10000);
+        UnitDataInitUnitProps(unitGroup4Unit);
     }
     unitGroup5 = UnitGroupFromId(5);
     unitGroup5Count = UnitGroupCount(unitGroup5, c_unitCountAll);
     for (;; unitGroup5Count -= 1) {
         unitGroup5Unit = UnitGroupUnitFromEnd(unitGroup5, unitGroup5Count);
         if (unitGroup5Unit == null) { break; }
-        UnitSetPropertyInt(unitGroup5Unit, c_unitPropLifeMax, 20000);
+        UnitDataInitUnitProps(unitGroup5Unit);
     }
     unitGroup6 = UnitGroupFromId(6);
     unitGroup6Count = UnitGroupCount(unitGroup6, c_unitCountAll);
     for (;; unitGroup6Count -= 1) {
         unitGroup6Unit = UnitGroupUnitFromEnd(unitGroup6, unitGroup6Count);
         if (unitGroup6Unit == null) { break; }
-        UnitSetPropertyInt(unitGroup6Unit, c_unitPropLifeMax, 20000);
+        UnitDataInitUnitProps(unitGroup6Unit);
     }
     TechTreeRequirementsEnable(1, false);
     TechTreeRequirementsEnable(2, false);
