@@ -24,6 +24,7 @@ type Game struct {
 	redPlayersNum  int
 	bluePlayersNum int
 	newPlayers     []string
+	removePlayers  []string
 	joinQueue      chan *Player
 	joinSet        map[string]struct{}
 	m              sync.RWMutex
@@ -83,6 +84,7 @@ func (m *Game) Start() {
 	m.redPlayersNum = 0
 	m.bluePlayersNum = 0
 	m.newPlayers = nil
+	m.removePlayers = nil
 	m.m.Unlock()
 
 	m.setProgress(GameProgressStarted)
@@ -98,16 +100,19 @@ func (m *Game) HandleJoinPlayers() {
 			break
 		}
 
-		m.m.RLock()
-		if len(m.players) >= m.config.PlayerCap {
-			m.m.RUnlock()
+		if m.GetPlayerCount() >= m.config.PlayerCap && m.FindOneBotPlayer() == nil {
 			break
 		}
-		m.m.RUnlock()
 
 		var player *Player
 		select {
 		case player = <-m.joinQueue:
+			if m.GetPlayerCount() >= m.config.PlayerCap {
+				botPlayer := m.FindOneBotPlayer()
+				if botPlayer != nil {
+					m.RemovePlayer(botPlayer.name)
+				}
+			}
 		default:
 			player = NewBotPlayer(m.botIdGen.Generate().String(), randSC2PlayerId[rand.Intn(2)])
 		}
@@ -164,6 +169,7 @@ func (m *Game) RemovePlayer(name string) *Player {
 	} else if player.GetSC2PlayerId() == m.config.BluePlayer {
 		m.bluePlayersNum--
 	}
+	m.removePlayers = append(m.removePlayers, name)
 	return player
 }
 
@@ -180,6 +186,17 @@ func (m *Game) GetNewPlayers() []*Player {
 	return players
 }
 
+func (m *Game) GetRemovePlayers() []string {
+	m.m.RLock()
+	defer m.m.RUnlock()
+
+	var players []string
+	for _, name := range m.removePlayers {
+		players = append(players, name)
+	}
+	return players
+}
+
 func (m *Game) ClearNewPlayers() {
 	m.m.Lock()
 	defer m.m.Unlock()
@@ -187,15 +204,23 @@ func (m *Game) ClearNewPlayers() {
 	m.newPlayers = nil
 }
 
-func (m *Game) GetBotPlayers() []*Player {
+func (m *Game) ClearRemovePlayers() {
+	m.m.Lock()
+	defer m.m.Unlock()
+
+	m.removePlayers = nil
+}
+
+func (m *Game) FindOneBotPlayer() *Player {
 	m.m.RLock()
 	defer m.m.RUnlock()
 
-	var players []*Player
+	var bot *Player
 	for _, p := range m.players {
 		if p.IsBot() {
-			players = append(players, p)
+			bot = p
+			break
 		}
 	}
-	return players
+	return bot
 }

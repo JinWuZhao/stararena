@@ -18,5 +18,5 @@ cmd_queue_cap = 100 # 弹幕操作指令队列容量
 msg_queue_cap = 100 # “观众”消息队列容量
 
 [state]
-player_cap = 40 # 参与玩家人数上限
-join_cap = 40 # 加入游戏队列容量
+player_cap = 30 # 参与玩家人数上限
+join_cap = 30 # 加入游戏队列容量

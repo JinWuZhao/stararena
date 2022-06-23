@@ -80,10 +80,14 @@ cmdLoop:
 
 	if st.Steps%50 == 0 {
 		m.gameState.HandleJoinPlayers()
+		for _, player := range m.gameState.GetRemovePlayers() {
+			sc2Actions = append(sc2Actions, m.makeLeaveAction(player))
+		}
 		for _, player := range m.gameState.GetNewPlayers() {
 			sc2Actions = append(sc2Actions, m.makeJoinAction(player))
 		}
 		m.gameState.ClearNewPlayers()
+		m.gameState.ClearRemovePlayers()
 	}
 
 	if len(sc2Actions) > 0 {
@@ -107,7 +111,7 @@ func (m *Director) handleCommand(cmd command.Command) *sc2proto.Action {
 		if m.gameState.Join(state.NewPlayer(cmd.Player(), cmd.SC2PlayerId())) {
 			log.Println(cmd.Player(), "joined game player", cmd.SC2PlayerId())
 			joinMsg := fmt.Sprintf("%s 已加入等待队列", cmd.Player())
-			if m.gameState.GetPlayerCount() >= m.config.PlayerCap {
+			if m.gameState.GetPlayerCount() >= m.config.PlayerCap && m.gameState.FindOneBotPlayer() == nil {
 				joinMsg += "，当前玩家数量已满，请等待至下一局开始，无需重新排队"
 			} else {
 				joinMsg += "，即将进入游戏"
@@ -133,6 +137,16 @@ func (m *Director) makeJoinAction(player *state.Player) *sc2proto.Action {
 		opts = append(opts, command.JoinGameOptsBot())
 	}
 	cmd := (*command.JoinGameCmd)(nil).NewWithOpts(opts...)
+	return &sc2proto.Action{
+		ActionChat: &sc2proto.ActionChat{
+			Channel: sc2proto.ActionChat_Team.Enum(),
+			Message: proto.String(cmd.String()),
+		},
+	}
+}
+
+func (m *Director) makeLeaveAction(player string) *sc2proto.Action {
+	cmd := (*command.LeaveGameCmd)(nil).NewWithOpts(command.LeaveGameOptsPlayer(player))
 	return &sc2proto.Action{
 		ActionChat: &sc2proto.ActionChat{
 			Channel: sc2proto.ActionChat_Team.Enum(),

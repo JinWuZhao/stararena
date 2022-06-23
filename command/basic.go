@@ -78,6 +78,46 @@ func (c *JoinGameCmd) String() string {
 	return fmt.Sprintf("cmd-add-player %s %d", c.player, c.sc2PlayerId)
 }
 
+type LeaveGameCmd struct {
+	player string
+}
+
+func (c *LeaveGameCmd) New() Command {
+	return new(LeaveGameCmd)
+}
+
+type LeaveGameOpts func(*LeaveGameCmd)
+
+func LeaveGameOptsPlayer(player string) LeaveGameOpts {
+	return func(cmd *LeaveGameCmd) {
+		cmd.player = player
+	}
+}
+
+func (c *LeaveGameCmd) NewWithOpts(opts ...LeaveGameOpts) Command {
+	cmd := new(LeaveGameCmd)
+	for _, opt := range opts {
+		opt(cmd)
+	}
+	return cmd
+}
+
+func (c *LeaveGameCmd) Name() string {
+	return "LEAVE_GAME"
+}
+
+func (c *LeaveGameCmd) Parser(_ *parsec.AST) parsec.Parser {
+	panic("not support")
+}
+
+func (c *LeaveGameCmd) Init(_ Context, _ parsec.Queryable) error {
+	panic("not support")
+}
+
+func (c *LeaveGameCmd) String() string {
+	return fmt.Sprintf("cmd-remove-player %s", c.player)
+}
+
 type MoveCmd struct {
 	player   string
 	distance int32

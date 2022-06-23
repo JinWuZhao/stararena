@@ -312,6 +312,8 @@ static void gameplay_AddUnitPlayer_Init() {
 
 bool gameplay_RemoveUnitPlayer_Func(bool testConds, bool runActions) {
     string lv_name;
+    UnitPlayer lv_player;
+    unit lv_unit;
 
     lv_name = arena_gf_CurrentCommandArgument(1);
 
@@ -319,9 +321,15 @@ bool gameplay_RemoveUnitPlayer_Func(bool testConds, bool runActions) {
         return true;
     }
 
-    if (!RemoveUnitPlayer(lv_name)) {
+    if (!UnitPlayerFromName(lv_name, lv_player)) {
         return false;
     }
+    lv_unit = arena_gf_UnitFromName(lv_name);
+    if (UnitIsValid(lv_unit)) {
+        UnitKill(lv_unit);
+    }
+
+    RemoveUnitPlayer(lv_name);
 
     return true;
 }

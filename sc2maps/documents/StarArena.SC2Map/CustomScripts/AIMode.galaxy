@@ -475,7 +475,6 @@ bool aimode_KillUnit_Func(bool testConds, bool runActions) {
     unitgroup lv_attackerServants;
     unitgroup lv_servantTargets;
     int lv_unitRace;
-    int lv_index;
     UnitData lv_unitData;
 
     lv_target = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_targetUnit))));
@@ -501,13 +500,9 @@ bool aimode_KillUnit_Func(bool testConds, bool runActions) {
     if (lv_player.isBot) {
         AIModeSetMode(lv_player, c_AIModeNone);
         lv_unitRace = RandomInt(0, c_UnitDataRaceCount-1);
-        for (lv_index = 0; lv_index < c_UnitDataCapPerRace; lv_index += 1) {
-            if (!UnitDataGetByRace(lv_unitRace, lv_index, lv_unitData)) {
-                break;
-            }
+        if (!UnitDataGetByRace(lv_unitRace, RandomInt(0, c_UnitDataCapPerRace-1), lv_unitData) || !lv_unitData.allowBot) {
+            UnitDataGetByRace(lv_unitRace, 0, lv_unitData);
         }
-        lv_index = RandomInt(0, lv_index-1);
-        UnitDataGetByRace(lv_unitRace, lv_index, lv_unitData);
         lv_player.unitType = lv_unitData.unitType;
         lv_player.servants = RandomInt(5, 20);
     }

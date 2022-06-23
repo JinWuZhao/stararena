@@ -12,6 +12,7 @@ struct UnitData {
     int costPoints;
     int rewardPoints;
     fixed baseScale;
+    bool allowBot;
 };
 typedef structref<UnitData> UnitDataRef;
 
@@ -97,6 +98,7 @@ void UnitDataCopy(UnitDataRef dest, UnitDataRef source) {
     dest.costPoints = source.costPoints;
     dest.rewardPoints = source.rewardPoints;
     dest.baseScale = source.baseScale;
+    dest.allowBot = source.allowBot;
 
     for (lv_index = 0; lv_index < c_UnitDataTypeAliasCount; lv_index += 1) {
         dest.typeAlias[lv_index] = source.typeAlias[lv_index];
@@ -410,6 +412,7 @@ void InitUnitData() {
     data.unitType = "Mothership";
     data.name = "母舰";
     data.costPoints = 600;
+    data.allowBot = false;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeMothership], data);
 
     UnitDataCopy(data, emptyData);
@@ -471,7 +474,7 @@ void InitUnitData() {
 
     for (lv_index = 0; lv_index < c_UnitDataTypesCount; lv_index += 1) {
         if (gv_unitdata_unitTypes[lv_index].costPoints > 0) {
-            gv_unitdata_unitTypes[lv_index].rewardPoints = gv_unitdata_unitTypes[lv_index].costPoints * 2 / 3;
+            gv_unitdata_unitTypes[lv_index].rewardPoints = gv_unitdata_unitTypes[lv_index].costPoints * 1 / 3;
         }
         if (gv_unitdata_unitTypes[lv_index].baseScale <= 0) {
             gv_unitdata_unitTypes[lv_index].baseScale = 100;
