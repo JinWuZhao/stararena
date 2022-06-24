@@ -79,6 +79,7 @@ bool ServantCleanUnit(unit inUnit) {
                     lv_servantUnit = UnitGroupUnit(lv_servants, lv_index);
                     if (UnitIsValid(lv_servantUnit)) {
                         DataTableInstanceValueRemove(gv_servant_masterByServantUnit, IntToString(UnitGetTag(lv_servantUnit)));
+                        UnitRemove(lv_servantUnit);
                     }
                 }
             }
