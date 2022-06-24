@@ -81,6 +81,7 @@ void UnitDataCopy(UnitDataRef dest, UnitDataRef source);
 void UnitDataGet(int unitDataType, UnitDataRef outData);
 bool UnitDataGetByUnitType(string unitType, UnitDataRef outData);
 bool UnitDataGetByRace(int race, int index, UnitDataRef outData);
+bool UnitDataExistsByRace(int race, int index);
 bool UnitDataInitUnitProps(unit inUnit);
 void InitUnitData();
 
@@ -128,8 +129,21 @@ bool UnitDataGetByRace(int race, int index, UnitDataRef outData) {
         lv_dataType = gv_unitdata_unitMatrix[race][index];
         if (lv_dataType > c_UnitDataTypesNone) {
             UnitDataCopy(outData, gv_unitdata_unitTypes[lv_dataType]);
+            return true;
         }
-        return true;
+    }
+    return false;
+}
+
+bool UnitDataExistsByRace(int race, int index) {
+    int lv_dataType;
+
+    if (race >= 0 && race < c_UnitDataRaceCount && 
+        index >= 0 && index < c_UnitDataCapPerRace) {
+        lv_dataType = gv_unitdata_unitMatrix[race][index];
+        if (lv_dataType > c_UnitDataTypesNone) {
+            return true;
+        }
     }
     return false;
 }
@@ -530,7 +544,7 @@ void InitUnitData() {
     gv_unitdata_unitMatrix[2][11] = c_UnitDataTypeOracle;
     gv_unitdata_unitMatrix[2][12] = c_UnitDataTypeTempest;
     gv_unitdata_unitMatrix[2][13] = c_UnitDataTypeAdept;
-    gv_unitdata_unitMatrix[2][14] = c_UnitDataTypeDisruptor;
+    //gv_unitdata_unitMatrix[2][14] = c_UnitDataTypeDisruptor;
 
     DataTableInstanceCreate();
     gv_unitdata_dataTypeOfUnitType = DataTableInstanceLastCreated();
