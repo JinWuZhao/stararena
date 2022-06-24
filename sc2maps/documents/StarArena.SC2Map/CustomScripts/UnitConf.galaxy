@@ -178,6 +178,7 @@ void InitUnitData() {
     data.unitType = "Marauder";
     data.name = "劫掠者";
     data.costPoints = 60;
+    data.baseScale = 200;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeMarauder], data);
 
     UnitDataCopy(data, emptyData);
@@ -185,6 +186,7 @@ void InitUnitData() {
     data.unitType = "Reaper";
     data.name = "收割者";
     data.costPoints = 45;
+    data.baseScale = 200;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeReaper], data);
 
     UnitDataCopy(data, emptyData);
@@ -192,6 +194,7 @@ void InitUnitData() {
     data.unitType = "Ghost";
     data.name = "幽灵";
     data.costPoints = 80;
+    data.baseScale = 200;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeGhost], data);
 
     UnitDataCopy(data, emptyData);
@@ -264,6 +267,7 @@ void InitUnitData() {
     data.unitType = "Zergling";
     data.name = "跳虫";
     data.costPoints = 24;
+    data.baseScale = 200;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeZergling], data);
 
     UnitDataCopy(data, emptyData);
@@ -271,6 +275,7 @@ void InitUnitData() {
     data.unitType = "Queen";
     data.name = "虫后";
     data.costPoints = 100;
+    data.baseScale = 150;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeQueen], data);
 
     UnitDataCopy(data, emptyData);
@@ -278,6 +283,7 @@ void InitUnitData() {
     data.unitType = "Hydralisk";
     data.name = "刺蛇";
     data.costPoints = 66;
+    data.baseScale = 150;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeHydralisk], data);
 
     UnitDataCopy(data, emptyData);
@@ -285,6 +291,7 @@ void InitUnitData() {
     data.unitType = "Baneling";
     data.name = "爆虫";
     data.costPoints = 20;
+    data.baseScale = 200;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeBaneling], data);
 
     UnitDataCopy(data, emptyData);
@@ -292,6 +299,7 @@ void InitUnitData() {
     data.unitType = "Roach";
     data.name = "蟑螂";
     data.costPoints = 54;
+    data.baseScale = 150;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeRoach], data);
 
     UnitDataCopy(data, emptyData);
@@ -356,6 +364,7 @@ void InitUnitData() {
     data.unitType = "Zealot";
     data.name = "狂热者";
     data.costPoints = 76;
+    data.baseScale = 200;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeZealot], data);
 
     UnitDataCopy(data, emptyData);
@@ -363,6 +372,7 @@ void InitUnitData() {
     data.unitType = "Stalker";
     data.name = "追猎者";
     data.costPoints = 84;
+    data.baseScale = 150;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeStalker], data);
 
     UnitDataCopy(data, emptyData);
@@ -370,6 +380,7 @@ void InitUnitData() {
     data.unitType = "Sentry";
     data.name = "机械哨兵";
     data.costPoints = 74;
+    data.baseScale = 150;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeSentry], data);
 
     UnitDataCopy(data, emptyData);
@@ -391,6 +402,7 @@ void InitUnitData() {
     data.unitType = "Phoenix";
     data.name = "凤凰";
     data.costPoints = 70;
+    data.baseScale = 200;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypePhoenix], data);
 
     UnitDataCopy(data, emptyData);
@@ -398,6 +410,7 @@ void InitUnitData() {
     data.unitType = "VoidRay";
     data.name = "虚空辉光舰";
     data.costPoints = 240;
+    data.baseScale = 150;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeVoidRay], data);
 
     UnitDataCopy(data, emptyData);
@@ -405,6 +418,7 @@ void InitUnitData() {
     data.unitType = "HighTemplar";
     data.name = "高阶圣堂武士";
     data.costPoints = 110;
+    data.baseScale = 200;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeHighTemplar], data);
 
     UnitDataCopy(data, emptyData);
@@ -434,6 +448,7 @@ void InitUnitData() {
     data.unitType = "Oracle";
     data.name = "先知";
     data.costPoints = 150;
+    data.baseScale = 150;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeOracle], data);
 
     UnitDataCopy(data, emptyData);
@@ -448,6 +463,7 @@ void InitUnitData() {
     data.unitType = "Adept";
     data.name = "使徒";
     data.costPoints = 76;
+    data.baseScale = 200;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeAdept], data);
 
     UnitDataCopy(data, emptyData);
