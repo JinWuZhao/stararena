@@ -36,8 +36,8 @@ unitgroup ServantSpawnUnits(UnitPlayerRef player) {
             lv_position = PointWithOffsetPolar(
                 UnitGetPosition(lv_masterUnit), 
                 RandomFixed(5, 10), 
-                UnitGetFacing(lv_masterUnit)+RandomFixed(-60, 60));
-            UnitCreate(1, lv_servantType, 0, player.playerId, lv_position, UnitGetFacing(lv_masterUnit));
+                PointGetFacing(PlayerStartLocation(player.playerId))+RandomFixed(-30, 30));
+            UnitCreate(1, lv_servantType, 0, player.playerId, lv_position, PointGetFacing(PlayerStartLocation(player.playerId)));
             lv_unit = UnitLastCreated();
             UnitSetScale(lv_unit, lv_servantData.baseScale, lv_servantData.baseScale, lv_servantData.baseScale);
             UnitSetPropertyInt(lv_unit, c_unitPropLifeMax, lv_servantData.lifeMax);

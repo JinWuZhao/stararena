@@ -10,6 +10,7 @@ static trigger gt_gameplay_DamageUnit;
 static trigger gt_gameplay_KillUnit;
 static trigger gt_gameplay_RechargePoints;
 static trigger gt_gameplay_AutoRewardLoop;
+static trigger gt_gameplay_UnitSelected;
 
 // Variable Declarations
 static int gv_gameplay_winnerPlayer;
@@ -29,6 +30,7 @@ static void gameplay_DamageUnit_Init();
 static void gameplay_KillUnit_Init();
 static void gameplay_RechargePoints_Init();
 static void gameplay_AutoRewardLoop_Init();
+static void gameplay_UnitSelected_Init();
 
 // Functions
 void InitGamePlay() {
@@ -46,6 +48,7 @@ void InitGamePlay() {
     gameplay_KillUnit_Init();
     gameplay_RechargePoints_Init();
     gameplay_AutoRewardLoop_Init();
+    gameplay_UnitSelected_Init();
 }
 
 bool gameplay_initMap_Func(bool testConds, bool runActions) {
@@ -524,4 +527,49 @@ bool gameplay_AutoRewardLoop_Func(bool testConds, bool runActions) {
 static void gameplay_AutoRewardLoop_Init() {
     gt_gameplay_AutoRewardLoop = TriggerCreate("gameplay_AutoRewardLoop_Func");
     TriggerAddEventTimer(gt_gameplay_AutoRewardLoop, gv_gameplay_loopTimer);
+}
+
+bool gameplay_UnitSelected_Func(bool testConds, bool runActions) {
+    unit lv_unit = EventUnit();
+    string lv_name = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_unit))));
+    UnitPlayer lv_player;
+    order lv_order;
+    string lv_huntTarget;
+    unit lv_huntTargetUnit;
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (arena_gf_StringIsEmpty(lv_name) || !UnitPlayerFromName(lv_name, lv_player)) {
+        return false;
+    }
+    arena_gf_InfoLog(lv_name + " aiMode: " + IntToString(lv_player.aiMode));
+    arena_gf_InfoLog(lv_name + " TotalTakenDamage: " + IntToString(lv_player.aiStates[0]));
+    arena_gf_InfoLog(lv_name + " WillBrokenTime: " + IntToString(lv_player.aiStates[1]));
+    arena_gf_InfoLog(lv_name + " OriginAIMode: " + IntToString(lv_player.aiStates[2]));
+    arena_gf_InfoLog(lv_name + " ModeEntered: " + IntToString(lv_player.aiStates[3]));
+    arena_gf_InfoLog(lv_name + " HuntTarget: " + IntToString(lv_player.aiStates[4]));
+    lv_huntTarget = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(lv_player.aiStates[4])));
+    if (!arena_gf_StringIsEmpty(lv_huntTarget)) {
+        arena_gf_InfoLog(lv_name + " HuntTarget: " + lv_huntTarget);
+        lv_huntTargetUnit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_huntTarget);
+        if (UnitIsValid(lv_huntTargetUnit)) {
+            arena_gf_InfoLog(lv_name + " HuntTarget unit: " + UnitGetType(lv_huntTargetUnit) + ", " + IntToString(UnitGetTag(lv_huntTargetUnit)));
+        }
+    }
+    lv_order = UnitOrder(lv_unit, 0);
+    if (lv_order != null) {
+        arena_gf_InfoLog(lv_name + " order ability: " + AbilityCommandGetAbility(OrderGetAbilityCommand(lv_order)));
+        if (OrderGetTargetType(lv_order) == c_orderTargetUnit) {
+            arena_gf_InfoLog(lv_name + " order target unit: " + UnitGetType(OrderGetTargetUnit(lv_order)) + ", " + IntToString(UnitGetTag(OrderGetTargetUnit(lv_order))));
+        }
+    }
+    
+    return true;
+}
+
+static void gameplay_UnitSelected_Init() {
+    gt_gameplay_UnitSelected = TriggerCreate("gameplay_UnitSelected_Func");
+    TriggerAddEventUnitSelected(gt_gameplay_UnitSelected, null, c_playerAny, true);
 }

@@ -69,7 +69,7 @@ const int c_UnitDataTypeShadowShieldGenerator = 43; // 暗影护盾生成器
 const int c_UnitDataTypesCount = 44;
 
 const int c_UnitDataRaceCount = 3;
-const int c_UnitDataCapPerRace = 15;
+const int c_UnitDataCapPerRace = 13;
 
 typedef UnitData[c_UnitDataTypesCount] UnitDataArray;
 
@@ -271,6 +271,7 @@ void InitUnitData() {
     UnitDataCopy(data, emptyData);
     data.dataType = c_UnitDataTypeZergling;
     data.unitType = "Zergling";
+    data.typeAlias[0] = "ZerglingBurrowed";
     data.name = "跳虫";
     data.costPoints = 24;
     data.baseScale = 200;
@@ -279,6 +280,7 @@ void InitUnitData() {
     UnitDataCopy(data, emptyData);
     data.dataType = c_UnitDataTypeQueen;
     data.unitType = "Queen";
+    data.unitType = "QueenBurrowed";
     data.name = "虫后";
     data.costPoints = 100;
     data.baseScale = 200;
@@ -287,6 +289,7 @@ void InitUnitData() {
     UnitDataCopy(data, emptyData);
     data.dataType = c_UnitDataTypeHydralisk;
     data.unitType = "Hydralisk";
+    data.typeAlias[0] = "HydraliskBurrowed";
     data.name = "刺蛇";
     data.costPoints = 66;
     data.baseScale = 200;
@@ -295,6 +298,7 @@ void InitUnitData() {
     UnitDataCopy(data, emptyData);
     data.dataType = c_UnitDataTypeBaneling;
     data.unitType = "Baneling";
+    data.typeAlias[0] = "BanelingBurrowed";
     data.name = "爆虫";
     data.costPoints = 20;
     data.baseScale = 200;
@@ -303,6 +307,7 @@ void InitUnitData() {
     UnitDataCopy(data, emptyData);
     data.dataType = c_UnitDataTypeRoach;
     data.unitType = "Roach";
+    data.typeAlias[0] = "RoachBurrowed";
     data.name = "蟑螂";
     data.costPoints = 54;
     data.baseScale = 200;
@@ -311,6 +316,7 @@ void InitUnitData() {
     UnitDataCopy(data, emptyData);
     data.dataType = c_UnitDataTypeInfestor;
     data.unitType = "Infestor";
+    data.typeAlias[0] = "InfestorBurrowed";
     data.name = "感染者";
     data.costPoints = 100;
     data.baseScale = 200;
@@ -335,6 +341,7 @@ void InitUnitData() {
     UnitDataCopy(data, emptyData);
     data.dataType = c_UnitDataTypeUltralisk;
     data.unitType = "Ultralisk";
+    data.typeAlias[0] = "UltraliskBurrowed";
     data.name = "雷兽";
     data.costPoints = 330;
     data.baseScale = 150;
@@ -350,6 +357,7 @@ void InitUnitData() {
     UnitDataCopy(data, emptyData);
     data.dataType = c_UnitDataTypeSwarmHost;
     data.unitType = "SwarmHostMP";
+    data.typeAlias[0] = "SwarmHostBurrowedMP";
     data.name = "虫群宿主";
     data.costPoints = 120;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeSwarmHost], data);
@@ -364,6 +372,7 @@ void InitUnitData() {
     UnitDataCopy(data, emptyData);
     data.dataType = c_UnitDataTypeRavager;
     data.unitType = "Ravager";
+    data.typeAlias[0] = "RavagerBurrowed";
     data.name = "破坏者";
     data.costPoints = 27;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeRavager], data);
@@ -549,14 +558,12 @@ void InitUnitData() {
     gv_unitdata_unitMatrix[1][2] = c_UnitDataTypeHydralisk;
     gv_unitdata_unitMatrix[1][3] = c_UnitDataTypeBaneling;
     gv_unitdata_unitMatrix[1][4] = c_UnitDataTypeRoach;
-    gv_unitdata_unitMatrix[1][5] = c_UnitDataTypeInfestor;
-    gv_unitdata_unitMatrix[1][6] = c_UnitDataTypeMutalisk;
-    gv_unitdata_unitMatrix[1][7] = c_UnitDataTypeCorruptor;
-    gv_unitdata_unitMatrix[1][8] = c_UnitDataTypeUltralisk;
-    gv_unitdata_unitMatrix[1][9] = c_UnitDataTypeBroodLord;
-    gv_unitdata_unitMatrix[1][10] = c_UnitDataTypeSwarmHost;
-    gv_unitdata_unitMatrix[1][11] = c_UnitDataTypeViper;
-    gv_unitdata_unitMatrix[1][12] = c_UnitDataTypeRavager;
+    gv_unitdata_unitMatrix[1][5] = c_UnitDataTypeMutalisk;
+    gv_unitdata_unitMatrix[1][6] = c_UnitDataTypeCorruptor;
+    gv_unitdata_unitMatrix[1][7] = c_UnitDataTypeUltralisk;
+    gv_unitdata_unitMatrix[1][8] = c_UnitDataTypeBroodLord;
+    gv_unitdata_unitMatrix[1][9] = c_UnitDataTypeViper;
+    gv_unitdata_unitMatrix[1][10] = c_UnitDataTypeRavager;
 
     gv_unitdata_unitMatrix[2][0] = c_UnitDataTypeZealot;
     gv_unitdata_unitMatrix[2][1] = c_UnitDataTypeStalker;
@@ -568,11 +575,9 @@ void InitUnitData() {
     gv_unitdata_unitMatrix[2][7] = c_UnitDataTypeHighTemplar;
     gv_unitdata_unitMatrix[2][8] = c_UnitDataTypeArchon;
     gv_unitdata_unitMatrix[2][9] = c_UnitDataTypeCarrier;
-    //gv_unitdata_unitMatrix[2][10] = c_UnitDataTypeMothership;
-    gv_unitdata_unitMatrix[2][11] = c_UnitDataTypeOracle;
-    gv_unitdata_unitMatrix[2][12] = c_UnitDataTypeTempest;
-    gv_unitdata_unitMatrix[2][13] = c_UnitDataTypeAdept;
-    //gv_unitdata_unitMatrix[2][14] = c_UnitDataTypeDisruptor;
+    gv_unitdata_unitMatrix[2][10] = c_UnitDataTypeMothership;
+    gv_unitdata_unitMatrix[2][11] = c_UnitDataTypeTempest;
+    gv_unitdata_unitMatrix[2][12] = c_UnitDataTypeAdept;
 
     DataTableInstanceCreate();
     gv_unitdata_dataTypeOfUnitType = DataTableInstanceLastCreated();
