@@ -11,6 +11,7 @@ static trigger gt_gameplay_KillUnit;
 static trigger gt_gameplay_RechargePoints;
 static trigger gt_gameplay_AutoRewardLoop;
 static trigger gt_gameplay_UnitSelected;
+static trigger gt_gameplay_QueryUnitInfo;
 
 // Variable Declarations
 static int gv_gameplay_winnerPlayer;
@@ -31,6 +32,7 @@ static void gameplay_KillUnit_Init();
 static void gameplay_RechargePoints_Init();
 static void gameplay_AutoRewardLoop_Init();
 static void gameplay_UnitSelected_Init();
+static void gameplay_QueryUnitInfo_Init();
 
 // Functions
 void InitGamePlay() {
@@ -49,6 +51,7 @@ void InitGamePlay() {
     gameplay_RechargePoints_Init();
     gameplay_AutoRewardLoop_Init();
     gameplay_UnitSelected_Init();
+    gameplay_QueryUnitInfo_Init();
 }
 
 bool gameplay_initMap_Func(bool testConds, bool runActions) {
@@ -407,7 +410,8 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
     unit lv_targetUnit;
     string lv_target;
     string lv_unitType;
-    UnitPlayer lv_player;
+    UnitPlayer lv_attackerPlayer;
+    UnitPlayer lv_targetPlayer;
     int lv_rewardText;
     timer lv_rewardTimer;
     UnitData lv_unitData;
@@ -427,9 +431,9 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
         return true;
     }
 
-    if (!arena_gf_StringIsEmpty(lv_target) && UnitPlayerFromName(lv_target, lv_player) && !lv_player.isBot) {
+    if (!arena_gf_StringIsEmpty(lv_target) && UnitPlayerFromName(lv_target, lv_targetPlayer) && !lv_targetPlayer.isBot) {
         lv_killMsg = lv_target + " 被";
-        if (!arena_gf_StringIsEmpty(lv_attacker) && UnitPlayerFromName(lv_attacker, lv_player) && !lv_player.isBot) {
+        if (!arena_gf_StringIsEmpty(lv_attacker) && UnitPlayerFromName(lv_attacker, lv_attackerPlayer) && !lv_attackerPlayer.isBot) {
             lv_killMsg += " " + lv_attacker + " ";
         }
         lv_killMsg += "击杀";
@@ -443,17 +447,21 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
         return false;
     }
 
-    if (!UnitPlayerFromName(lv_attacker, lv_player)) {
+    if (!UnitPlayerFromName(lv_attacker, lv_attackerPlayer)) {
         return false;
     }
     if (!UnitDataGetByUnitType(lv_unitType, lv_unitData)) {
         return false;
     }
 
-    lv_player.points += lv_unitData.rewardPoints;
-    SaveUnitPlayer(lv_player);
+    if (!arena_gf_StringIsEmpty(lv_target) && UnitPlayerFromName(lv_target, lv_targetPlayer)) {
+        lv_attackerPlayer.points += lv_unitData.rewardPoints * (lv_targetPlayer.servants + 1);
+    } else {
+        lv_attackerPlayer.points += lv_unitData.rewardPoints;
+    }
+    SaveUnitPlayer(lv_attackerPlayer);
 
-    if (!lv_player.isBot) {
+    if (!lv_attackerPlayer.isBot) {
         lv_attackerUnit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_attacker);
         if (UnitIsValid(lv_attackerUnit)) {
             lv_rewardText = TextTagCreate(StringToText("+"+IntToString(lv_unitData.rewardPoints)), 24, UnitGetPosition(lv_attackerUnit), 3.0, true, false, PlayerGroupAll());
@@ -572,4 +580,30 @@ bool gameplay_UnitSelected_Func(bool testConds, bool runActions) {
 static void gameplay_UnitSelected_Init() {
     gt_gameplay_UnitSelected = TriggerCreate("gameplay_UnitSelected_Func");
     TriggerAddEventUnitSelected(gt_gameplay_UnitSelected, null, c_playerAny, true);
+}
+
+bool gameplay_QueryUnitInfo_Func(bool testConds, bool runActions) {
+    string lv_race = arena_gf_CurrentCommandArgument(1);
+    string lv_index = arena_gf_CurrentCommandArgument(2);
+    UnitData lv_unitData;
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (arena_gf_StringIsEmpty(lv_race) || arena_gf_StringIsEmpty(lv_index)) {
+        return false;
+    }
+    if (!UnitDataGetByRace(StringToInt(lv_race), StringToInt(lv_index), lv_unitData)) {
+        return false;
+    }
+    arena_gf_ShowMessage(UnitDataGetRaceName(StringToInt(lv_race)) + ", " + 
+        lv_unitData.name + "(" + lv_index + "): 召唤主人消耗" + IntToString(lv_unitData.costPoints) + "pt, 召唤随从半价");
+
+    return true;
+}
+
+static void gameplay_QueryUnitInfo_Init() {
+    gt_gameplay_QueryUnitInfo = TriggerCreate("gameplay_QueryUnitInfo_Func");
+    TriggerAddEventGeneric(gt_gameplay_QueryUnitInfo, arena_gv_commandPrefix + "query-unit");
 }

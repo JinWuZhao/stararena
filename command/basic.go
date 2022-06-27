@@ -283,8 +283,8 @@ func (c *SetUnitCmd) Player() string {
 func (c *SetUnitCmd) Parser(ast *parsec.AST) parsec.Parser {
 	return ast.And(c.Name(), nil,
 		parsec.AtomExact(`u`, "OP"),
-		parsec.Token(`[tzp]`, "UNIT"),
-		parsec.Token(`[0-9]{1,2}`, "UNIT"))
+		parsec.Token(`[tzp]`, "RACE"),
+		parsec.Token(`[0-9]{1,2}`, "INDEX"))
 }
 
 func (c *SetUnitCmd) Init(ctx Context, query parsec.Queryable) error {
@@ -342,8 +342,8 @@ func (c *SetServantsCmd) Parser(ast *parsec.AST) parsec.Parser {
 		parsecUint("NUM", 2),
 		ast.Maybe("OPTION", nil,
 			ast.And("UNIT", nil,
-				parsec.Token(`[tzp]`, "UNIT"),
-				parsec.Token(`[0-9]{1,2}`, "UNIT"))))
+				parsec.Token(`[tzp]`, "RACE"),
+				parsec.Token(`[0-9]{1,2}`, "INDEX"))))
 }
 
 func (c *SetServantsCmd) Init(ctx Context, query parsec.Queryable) error {
@@ -412,4 +412,49 @@ func (c *ShowPointsCmd) Init(ctx Context, query parsec.Queryable) error {
 
 func (c *ShowPointsCmd) String() string {
 	return fmt.Sprintf("cmd-show-points %s", c.player)
+}
+
+type QueryUnitCmd struct {
+	race  int32
+	index int32
+}
+
+func (c *QueryUnitCmd) New() Command {
+	return new(QueryUnitCmd)
+}
+
+func (c *QueryUnitCmd) Name() string {
+	return "QUERY_UNIT"
+}
+
+func (c *QueryUnitCmd) Parser(ast *parsec.AST) parsec.Parser {
+	return ast.And(c.Name(), nil,
+		parsec.AtomExact(`q`, "OP"),
+		parsec.Token(`[tzp]`, "UNIT"),
+		parsec.Token(`[0-9]{1,2}`, "UNIT"))
+}
+
+func (c *QueryUnitCmd) Init(_ Context, query parsec.Queryable) error {
+	var race int32
+	switch query.GetChildren()[1].GetValue() {
+	case "t":
+		race = 0
+	case "z":
+		race = 1
+	case "p":
+		race = 2
+	default:
+		return fmt.Errorf("invalid race")
+	}
+	index, err := strconv.ParseInt(query.GetChildren()[2].GetValue(), 10, 32)
+	if err != nil {
+		return fmt.Errorf("strconv.ParseInt(index) error: %w", err)
+	}
+	c.race = race
+	c.index = int32(index)
+	return nil
+}
+
+func (c *QueryUnitCmd) String() string {
+	return fmt.Sprintf("cmd-query-unit %d %d", c.race, c.index)
 }

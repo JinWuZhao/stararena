@@ -19,7 +19,7 @@ static int[c_aimode_metricsPlayers][c_AIModeEnd] gv_aimode_metrics;
 static int[c_AIModeEnd] gv_aimode_balance;
 
 static const int c_aimode_reviveInterval = 4;
-static const int c_aimode_willRechargeCD = 4;
+static const int c_aimode_willRechargeCD = 2;
 
 static const int c_aimode_stateTotalTakenDamage = 0;
 static const int c_aimode_stateWillBrokenTime = 1;
@@ -153,6 +153,7 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
     int lv_currLife;
     int lv_index;
     unit lv_servantUnit;
+    unitgroup lv_unitGroup;
 
     if (UnitIsValid(inUnit)) {
         lv_servants = ServantGetUnits(refPlayer.name);
@@ -214,8 +215,7 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
                     }
                     SaveUnitPlayer(refPlayer);
             
-                    inUnit = arena_gf_CreatePlayerUnit(refPlayer.playerId, lv_unitData.unitType, refPlayer.name, 
-                        lv_unitData.baseScale + IntToFixed(refPlayer.servants) * 100 / 30, 2);
+                    inUnit = arena_gf_CreatePlayerUnit(refPlayer.playerId, lv_unitData.unitType, refPlayer.name, lv_unitData.baseScale, 2);
                     UnitSetPropertyInt(inUnit, c_unitPropLifeMax, lv_unitData.lifeMax + lv_servantData.lifeMax * refPlayer.servants);
                     UnitSetPropertyInt(inUnit, c_unitPropShieldsMax, lv_unitData.shieldsMax + lv_servantData.shieldsMax * refPlayer.servants);
                     lv_servants = ServantSpawnUnits(refPlayer);
@@ -223,10 +223,12 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
                     lv_initOrder = OrderTargetingPoint(
                         AbilityCommand("move", 0), 
                         PointWithOffsetPolar(UnitGetPosition(inUnit), RandomInt(15, 25), RandomFixed(-30, 30)+PointGetFacing(PlayerStartLocation(refPlayer.playerId))));
-                    UnitIssueOrder(inUnit, lv_initOrder, c_orderQueueReplace);
+                    lv_unitGroup = UnitGroupEmpty();
+                    UnitGroupAdd(lv_unitGroup, inUnit);
                     if (lv_servants != null && UnitGroupCount(lv_servants, c_unitCountAlive) > 0) {
-                        UnitGroupIssueOrder(lv_servants, lv_initOrder, c_orderQueueReplace);
+                        UnitGroupAddUnitGroup(lv_unitGroup, lv_servants);
                     }
+                    UnitGroupIssueOrder(lv_unitGroup, lv_initOrder, c_orderQueueReplace);
 
                     if (!refPlayer.isBot) {
                         arena_gf_ShowMessage(refPlayer.name + " 消耗 " + IntToString(lv_reviveCostPoints) + 
@@ -250,6 +252,7 @@ static void aimode_AttackStep(UnitPlayerRef refPlayer, unit inUnit, unitgroup lp
     fixed lv_angle;
     fixed lv_weight;
     fixed lv_minWeight;
+    unitgroup lv_unitGroup;
 
     lv_targetPlayer = DataTableGetString(true, arena_gv_unitTagPrefix + IntToString(refPlayer.aiStates[c_aimode_stateHuntTarget]));
     if (!arena_gf_StringIsEmpty(lv_targetPlayer)) {
@@ -293,12 +296,14 @@ static void aimode_AttackStep(UnitPlayerRef refPlayer, unit inUnit, unitgroup lp
     }
 
     if (UnitIsValid(lv_targetUnit) && lv_targetUnit != OrderGetTargetUnit(UnitOrder(inUnit, 0))) {
+        lv_unitGroup = UnitGroupEmpty();
+        UnitGroupAdd(lv_unitGroup, inUnit);
+        if (lp_servants != null && UnitGroupCount(lp_servants, c_unitCountAlive) > 0) {
+            UnitGroupAddUnitGroup(lv_unitGroup, lp_servants);
+        }
         if (arena_gf_StringIsEmpty(lv_targetPlayer)) {
             lv_order = OrderTargetingUnit(AbilityCommand("attack", 0), lv_targetUnit);
-            UnitIssueOrder(inUnit, lv_order, c_orderQueueReplace);
-            if (lp_servants != null && UnitGroupCount(lp_servants, c_unitCountAlive) > 0) {
-                UnitGroupIssueOrder(lp_servants, lv_order, c_orderQueueReplace);
-            }
+            UnitGroupIssueOrder(lv_unitGroup, lv_order, c_orderQueueReplace);
         } else {
             lv_targetGroup = UnitGroupEmpty();
             UnitGroupAdd(lv_targetGroup, lv_targetUnit);
@@ -309,10 +314,7 @@ static void aimode_AttackStep(UnitPlayerRef refPlayer, unit inUnit, unitgroup lp
             }
     
             lv_order = OrderTargetingUnitGroup(AbilityCommand("attack", 0), lv_targetGroup);
-            UnitIssueOrder(inUnit, lv_order, c_orderQueueReplace);
-            if (lp_servants != null && UnitGroupCount(lp_servants, c_unitCountAlive) > 0) {
-                UnitGroupIssueOrder(lp_servants, lv_order, c_orderQueueReplace);
-            }
+            UnitGroupIssueOrder(lv_unitGroup, lv_order, c_orderQueueReplace);
         }
     }
 }
@@ -328,6 +330,7 @@ static void aimode_HunterStep(UnitPlayerRef refPlayer, unit inUnit, unitgroup lp
     unitgroup lv_targetGroup;
     string lv_targetPlayer;
     UnitPlayer lv_targetUnitPlayer;
+    unitgroup lv_unitGroup;
 
     lv_targetPlayer = DataTableGetString(true, arena_gv_unitTagPrefix + IntToString(refPlayer.aiStates[c_aimode_stateHuntTarget]));
     if (!arena_gf_StringIsEmpty(lv_targetPlayer)) {
@@ -363,6 +366,12 @@ static void aimode_HunterStep(UnitPlayerRef refPlayer, unit inUnit, unitgroup lp
     }
 
     if (UnitIsValid(lv_targetUnit) && lv_targetUnit != OrderGetTargetUnit(UnitOrder(inUnit, 0))) {
+        lv_unitGroup = UnitGroupEmpty();
+        UnitGroupAdd(lv_unitGroup, inUnit);
+        if (lp_servants != null && UnitGroupCount(lp_servants, c_unitCountAlive) > 0) {
+            UnitGroupAddUnitGroup(lv_unitGroup, lp_servants);
+        }
+
         lv_targetGroup = UnitGroupEmpty();
         UnitGroupAdd(lv_targetGroup, lv_targetUnit);
 
@@ -372,10 +381,7 @@ static void aimode_HunterStep(UnitPlayerRef refPlayer, unit inUnit, unitgroup lp
         }
 
         lv_order = OrderTargetingUnitGroup(AbilityCommand("attack", 0), lv_targetGroup);
-        UnitIssueOrder(inUnit, lv_order, c_orderQueueReplace);
-        if (lp_servants != null && UnitGroupCount(lp_servants, c_unitCountAlive) > 0) {
-            UnitGroupIssueOrder(lp_servants, lv_order, c_orderQueueReplace);
-        }
+        UnitGroupIssueOrder(lv_unitGroup, lv_order, c_orderQueueReplace);
     }
 }
 
@@ -414,6 +420,7 @@ static void aimode_RetreatStep(UnitPlayerRef refPlayer, unit inUnit, unitgroup l
     unit lv_targetStructure;
     int defenceRadius = 10;
     order lv_order;
+    unitgroup lv_unitGroup;
 
     if (refPlayer.aiStates[c_aimode_stateModeEntered] == 0) {
         refPlayer.aiStates[c_aimode_stateModeEntered] = refPlayer.aiMode;
@@ -439,15 +446,16 @@ static void aimode_RetreatStep(UnitPlayerRef refPlayer, unit inUnit, unitgroup l
             }
         
             if (lv_targetStructure != null) {
+                lv_unitGroup = UnitGroupEmpty();
+                UnitGroupAdd(lv_unitGroup, inUnit);
+                if (lp_servants != null && UnitGroupCount(lp_servants, c_unitCountAlive) > 0) {
+                    UnitGroupAddUnitGroup(lv_unitGroup, lp_servants);
+                }
+
                 lv_order = OrderTargetingPoint(
                     AbilityCommand("move", 0), 
                     PointWithOffsetPolar(UnitGetPosition(lv_targetStructure), RandomInt(5, defenceRadius), RandomFixed(0, 360)));
-    
-                UnitIssueOrder(inUnit, lv_order, c_orderQueueReplace);
-    
-                if (lp_servants != null && UnitGroupCount(lp_servants, c_unitCountAlive) > 0) {
-                    UnitGroupIssueOrder(lp_servants, lv_order, c_orderQueueReplace);
-                }
+                UnitGroupIssueOrder(lv_unitGroup, lv_order, c_orderQueueReplace);
             }
         }
     }
@@ -532,7 +540,7 @@ bool aimode_KillUnit_Func(bool testConds, bool runActions) {
         }
         UnitDataGetByRace(lv_unitRace, lv_index, lv_unitData);
         lv_player.unitType = lv_unitData.unitType;
-        lv_player.servants = RandomInt(5, 10);
+        lv_player.servants = RandomInt(6, 20);
     }
     lv_player.deadTime = CurrentDateTimeGet();
     SaveUnitPlayer(lv_player);

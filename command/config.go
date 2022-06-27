@@ -8,4 +8,5 @@ var cmdCtors = []Constructor{
 	MakeCmdCtor[*ChangeModeCmd](),
 	MakeCmdCtor[*JoinGameCmd](),
 	MakeCmdCtor[*ShowPointsCmd](),
+	MakeCmdCtor[*QueryUnitCmd](),
 }
