@@ -2,12 +2,10 @@
 <Preload>
 <Actor id="SYSTEM_ActorConfig"/>
 <Terrain id="Zerus"/>
-<Unit id="MissileTurret"/>
-<Unit id="AutoTurret"/>
-<Unit id="Beacon_Terran"/>
-<Unit id="KorhalBaseDoor"/>
+<Unit id="CommandCenter"/>
+<Unit id="SiegeTank"/>
+<Unit id="DestructibleGarage" Variations="0,1"/>
 <Unit id="XelNagaDestructibleBlocker8S"/>
 <Unit id="XelNagaDestructibleBlocker8E"/>
 <Unit id="XelNagaDestructibleBlocker8N"/>
-<Unit id="ShadowShieldGenerator"/>
 </Preload>
