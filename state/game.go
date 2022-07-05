@@ -1,7 +1,6 @@
 package state
 
 import (
-	"math/rand"
 	"sync"
 
 	"github.com/bwmarrin/snowflake"
@@ -100,7 +99,8 @@ func (m *Game) HandleJoinPlayers() {
 			break
 		}
 
-		if m.GetPlayerCount() >= m.config.PlayerCap && m.FindOneBotPlayer() == nil {
+		if m.GetPlayerCount() >= m.config.PlayerCap &&
+			m.FindOneBotPlayer(0) == nil {
 			break
 		}
 
@@ -108,13 +108,13 @@ func (m *Game) HandleJoinPlayers() {
 		select {
 		case player = <-m.joinQueue:
 			if m.GetPlayerCount() >= m.config.PlayerCap {
-				botPlayer := m.FindOneBotPlayer()
+				botPlayer := m.FindOneBotPlayer(player.GetSC2PlayerId())
 				if botPlayer != nil {
 					m.RemovePlayer(botPlayer.name)
 				}
 			}
 		default:
-			player = NewBotPlayer(m.botIdGen.Generate().String(), randSC2PlayerId[rand.Intn(2)])
+			player = NewBotPlayer(m.botIdGen.Generate().String(), randSC2PlayerId[i])
 		}
 		if player == nil {
 			break
@@ -211,7 +211,7 @@ func (m *Game) ClearRemovePlayers() {
 	m.removePlayers = nil
 }
 
-func (m *Game) FindOneBotPlayer() *Player {
+func (m *Game) FindOneBotPlayer(sc2PlayerId uint32) *Player {
 	m.m.RLock()
 	defer m.m.RUnlock()
 
@@ -219,7 +219,9 @@ func (m *Game) FindOneBotPlayer() *Player {
 	for _, p := range m.players {
 		if p.IsBot() {
 			bot = p
-			break
+			if sc2PlayerId == 0 || p.GetSC2PlayerId() == sc2PlayerId {
+				break
+			}
 		}
 	}
 	return bot

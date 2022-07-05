@@ -7,7 +7,6 @@ include "TriggerLibs/NativeLib"
 const string arena_gv_commandPrefix = "cmd-";
 const string arena_gv_unitNamePrefix = "unit-name-";
 const string arena_gv_unitTagPrefix = "unit-tag-";
-static const int arena_c_maxUnitNameLength = 19;
 
 // Variable Declarations
 int arena_gv_directorPlayer;
@@ -27,8 +26,7 @@ void arena_gf_InfoLog (string lp_message);
 void arena_gf_ShowMessage (string lp_message);
 void arena_gf_ProcessCommand (string lp_commandMessage);
 void arena_gf_DispatchCommand (string lp_name, string lp_arguments);
-unit arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed lp_angle, fixed lp_scale, string lp_textTag, fixed lp_tagHeight);
-unit arena_gf_CreatePlayerUnit (int lp_player, string lp_type, string lp_textTag, fixed lp_scale, fixed lp_tagHeight);
+unit arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed lp_angle, fixed lp_scale, string lp_textTag, fixed lp_tagHeight, bool showTextTag);
 unit arena_gf_UnitFromName (string lp_name);
 bool arena_gf_StringIsEmpty(string lp_str);
 
@@ -153,7 +151,7 @@ void arena_gf_DispatchCommand (string lp_name, string lp_arguments) {
     TriggerSendEvent(lp_name);
 }
 
-unit arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed lp_angle, fixed lp_scale, string lp_textTag, fixed lp_tagHeight) {
+unit arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed lp_angle, fixed lp_scale, string lp_textTag, fixed lp_tagHeight, bool showTextTag) {
     // Variable Declarations
     fixed lv_realTagHeight;
     fixed lv_unitHealth;
@@ -171,7 +169,7 @@ unit arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed l
     UnitSetScale(lv_createdUnit, lp_scale, lp_scale, lp_scale);
     UnitSetTeamColorIndex(lv_createdUnit, PlayerGetColorIndex(lp_player, false));
     if (!arena_gf_StringIsEmpty(lp_textTag)) {
-        if (StringLength(lp_textTag) < arena_c_maxUnitNameLength) {
+        if (showTextTag) {
             lv_realTagHeight = (UnitGetHeight(lv_createdUnit) + lp_scale / 100 + lp_tagHeight);
             lv_unitHealth = UnitGetPropertyFixed(lv_createdUnit, c_unitPropLifePercent, c_unitPropCurrent);
             lv_unitText = lp_textTag + " " + FixedToString(lv_unitHealth, 0) + "%";
@@ -183,18 +181,6 @@ unit arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed l
         DataTableSetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_createdUnit))), lp_textTag);
     }
     return lv_createdUnit;
-}
-
-unit arena_gf_CreatePlayerUnit (int lp_player, string lp_type, string lp_textTag, fixed lp_scale, fixed lp_tagHeight) {
-    // Variable Declarations
-    point lv_startLocation;
-
-    // Automatic Variable Declarations
-    // Variable Initialization
-
-    // Implementation
-    lv_startLocation = PlayerStartLocation(lp_player);
-    return arena_gf_CreateUnit(lp_player, lv_startLocation, lp_type, PointGetFacing(lv_startLocation), lp_scale, lp_textTag, lp_tagHeight);
 }
 
 unit arena_gf_UnitFromName (string lp_name) {

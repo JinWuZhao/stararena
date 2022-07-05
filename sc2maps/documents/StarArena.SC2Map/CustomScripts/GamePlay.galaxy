@@ -6,16 +6,16 @@ static trigger gt_gameplay_EndGame;
 static trigger gt_gameplay_AddUnitPlayer;
 static trigger gt_gameplay_RemoveUnitPlayer;
 static trigger gt_gameplay_ShowUnitPlayerPoints;
-static trigger gt_gameplay_DamageUnit;
 static trigger gt_gameplay_KillUnit;
 static trigger gt_gameplay_RechargePoints;
-static trigger gt_gameplay_AutoRewardLoop;
 static trigger gt_gameplay_UnitSelected;
-static trigger gt_gameplay_QueryUnitInfo;
 
 // Variable Declarations
 static int gv_gameplay_winnerPlayer;
 static timer gv_gameplay_loopTimer;
+
+static const int c_gameplay_UnitRedCenter = 177235035;
+static const int c_gameplay_UnitBlueCenter = 1585478384;
 
 // Function Declarations
 void InitGamePlay();
@@ -27,12 +27,9 @@ static void gameplay_EndGame_Init();
 static void gameplay_AddUnitPlayer_Init();
 static void gameplay_RemoveUnitPlayer_Init();
 static void gameplay_ShowUnitPlayerPoints();
-static void gameplay_DamageUnit_Init();
 static void gameplay_KillUnit_Init();
 static void gameplay_RechargePoints_Init();
-static void gameplay_AutoRewardLoop_Init();
 static void gameplay_UnitSelected_Init();
-static void gameplay_QueryUnitInfo_Init();
 
 // Functions
 void InitGamePlay() {
@@ -46,34 +43,16 @@ void InitGamePlay() {
     gameplay_AddUnitPlayer_Init();
     gameplay_RemoveUnitPlayer_Init();
     gameplay_ShowUnitPlayerPoints();
-    gameplay_DamageUnit_Init();
     gameplay_KillUnit_Init();
     gameplay_RechargePoints_Init();
-    gameplay_AutoRewardLoop_Init();
     gameplay_UnitSelected_Init();
-    gameplay_QueryUnitInfo_Init();
 }
 
 bool gameplay_initMap_Func(bool testConds, bool runActions) {
-    unitgroup unitGroup1;
-    int unitGroup1Count;
-    unit unitGroup1Unit;
-    unitgroup unitGroup2;
-    int unitGroup2Count;
-    unit unitGroup2Unit;
-    unitgroup unitGroup3;
-    int unitGroup3Count;
-    unit unitGroup3Unit;
-    unitgroup unitGroup4;
-    int unitGroup4Count;
-    unit unitGroup4Unit;
-    unitgroup unitGroup5;
-    int unitGroup5Count;
-    unit unitGroup5Unit;
-    unitgroup unitGroup6;
-    int unitGroup6Count;
-    unit unitGroup6Unit;
-    
+    unitgroup lv_sepWalls = UnitGroupFromId(1);
+    unitgroup lv_structures = UnitGroupFromId(3);
+    int lv_index;
+    unit lv_unit;
 
     if (!runActions) {
         return true;
@@ -82,56 +61,26 @@ bool gameplay_initMap_Func(bool testConds, bool runActions) {
     arena_gv_directorPlayer = 1;
     arena_gv_audiencePlayer = 2;
     arena_gf_InitbaseMap(CameraInfoFromId(2107835186));
-    unitGroup1 = UnitGroupFromId(1);
-    unitGroup1Count = UnitGroupCount(unitGroup1, c_unitCountAll);
-    for (;; unitGroup1Count -= 1) {
-        unitGroup1Unit = UnitGroupUnitFromEnd(unitGroup1, unitGroup1Count);
-        if (unitGroup1Unit == null) { break; }
-        libNtve_gf_MakeUnitInvulnerable(unitGroup1Unit, true);
-    }
-    unitGroup2 = UnitGroupFromId(2);
-    unitGroup2Count = UnitGroupCount(unitGroup2, c_unitCountAll);
-    for (;; unitGroup2Count -= 1) {
-        unitGroup2Unit = UnitGroupUnitFromEnd(unitGroup2, unitGroup2Count);
-        if (unitGroup2Unit == null) { break; }
-        libNtve_gf_MakeUnitInvulnerable(unitGroup2Unit, true);
-        UnitSetScale(unitGroup2Unit, 200.0, 200.0, 200.0);
-        UnitBehaviorAdd(unitGroup2Unit, "StarArenaUnitEnhance", unitGroup2Unit, 99);
-    }
-    unitGroup3 = UnitGroupFromId(3);
-    unitGroup3Count = UnitGroupCount(unitGroup3, c_unitCountAll);
-    for (;; unitGroup3Count -= 1) {
-        unitGroup3Unit = UnitGroupUnitFromEnd(unitGroup3, unitGroup3Count);
-        if (unitGroup3Unit == null) { break; }
-        if ((UnitGetType(unitGroup3Unit) == "AutoTurret")) {
-            UnitBehaviorAdd(unitGroup3Unit, "StarArenaUnitEnhance", unitGroup2Unit, 10);
+
+    for (lv_index = UnitGroupCount(lv_sepWalls, c_unitCountAll); lv_index > 0; lv_index -= 1) {
+        lv_unit = UnitGroupUnitFromEnd(lv_sepWalls, lv_index);
+        if (UnitIsValid(lv_unit)) {
+            libNtve_gf_MakeUnitInvulnerable(lv_unit, true);
         }
-        UnitDataInitUnitProps(unitGroup3Unit);
     }
-    unitGroup4 = UnitGroupFromId(4);
-    unitGroup4Count = UnitGroupCount(unitGroup4, c_unitCountAll);
-    for (;; unitGroup4Count -= 1) {
-        unitGroup4Unit = UnitGroupUnitFromEnd(unitGroup4, unitGroup4Count);
-        if (unitGroup4Unit == null) { break; }
-        if ((UnitGetType(unitGroup4Unit) == "AutoTurret")) {
-            UnitBehaviorAdd(unitGroup4Unit, "StarArenaUnitEnhance", unitGroup2Unit, 10);
+
+    lv_unit = UnitFromId(c_gameplay_UnitRedCenter);
+    UnitSetFacing(lv_unit, 0, 0);
+    lv_unit = UnitFromId(c_gameplay_UnitBlueCenter);
+    UnitSetFacing(lv_unit, 180, 0);
+
+    for (lv_index = UnitGroupCount(lv_structures, c_unitCountAll); lv_index > 0; lv_index -= 1) {
+        lv_unit = UnitGroupUnitFromEnd(lv_structures, lv_index);
+        if (UnitIsValid(lv_unit)) {
+            UnitDataInitUnitProps(lv_unit);
         }
-        UnitDataInitUnitProps(unitGroup4Unit);
     }
-    unitGroup5 = UnitGroupFromId(5);
-    unitGroup5Count = UnitGroupCount(unitGroup5, c_unitCountAll);
-    for (;; unitGroup5Count -= 1) {
-        unitGroup5Unit = UnitGroupUnitFromEnd(unitGroup5, unitGroup5Count);
-        if (unitGroup5Unit == null) { break; }
-        UnitDataInitUnitProps(unitGroup5Unit);
-    }
-    unitGroup6 = UnitGroupFromId(6);
-    unitGroup6Count = UnitGroupCount(unitGroup6, c_unitCountAll);
-    for (;; unitGroup6Count -= 1) {
-        unitGroup6Unit = UnitGroupUnitFromEnd(unitGroup6, unitGroup6Count);
-        if (unitGroup6Unit == null) { break; }
-        UnitDataInitUnitProps(unitGroup6Unit);
-    }
+
     TechTreeRequirementsEnable(1, false);
     TechTreeRequirementsEnable(2, false);
     TechTreeRequirementsEnable(3, false);
@@ -147,6 +96,7 @@ static void gameplay_initMap_Init() {
 }
 
 bool gameplay_Victory_Func(bool testConds, bool runActions) {
+    unit lv_unit = EventUnit();
     text lv_winText;
     timer scoreTimer;
     UnitPlayerArray rankedUnitPlayers;
@@ -154,29 +104,32 @@ bool gameplay_Victory_Func(bool testConds, bool runActions) {
     int lv_rankLength;
     string lv_playerName;
 
-    if (gv_gameplay_winnerPlayer == 3 || gv_gameplay_winnerPlayer == 4) {
-        return false;
-    }
-
-    if (!UnitGroupHasUnit(UnitGroupFromId(5), EventUnit()) && !UnitGroupHasUnit(UnitGroupFromId(6), EventUnit())) {
-        return false;
-    }
-
     if (!runActions) {
         return true;
     }
 
-    if (UnitGroupCount(UnitGroupFromId(5), c_unitCountAlive) == 0) {
+    if (gv_gameplay_winnerPlayer == c_GameStatePlayerIdBlue || gv_gameplay_winnerPlayer == c_GameStatePlayerIdRed) {
+        return false;
+    }
+
+    if (!UnitGroupHasUnit(UnitGroupFromId(2), lv_unit)) {
+        return false;
+    }
+
+    if (UnitGetOwner(lv_unit) == c_GameStatePlayerIdBlue) {
         gv_gameplay_winnerPlayer = 4;
         lv_winText = StringExternal("Param/Value/1CF2F4A4");
     }
-    else if (UnitGroupCount(UnitGroupFromId(6), c_unitCountAlive) == 0) {
+    else {
         gv_gameplay_winnerPlayer = 3;
         lv_winText = StringExternal("Param/Value/6A0F2AB2");
     }
     if (lv_winText != null) {
         DialogCreate(500, 400, c_anchorCenter, 0, 0, true);
-        libNtve_gf_CreateDialogItemLabel(DialogLastCreated(), 400, 50, c_anchorCenter, 70, 0, lv_winText, libNtve_gf_ConvertPlayerColorToColor(PlayerGetColorIndex(gv_gameplay_winnerPlayer, false)), false, 2.0);
+        libNtve_gf_CreateDialogItemLabel(
+            DialogLastCreated(), 400, 50, c_anchorCenter, 70, 0, lv_winText, 
+            libNtve_gf_ConvertPlayerColorToColor(PlayerGetColorIndex(gv_gameplay_winnerPlayer, false)), 
+            false, 2.0);
         DialogSetVisible(DialogLastCreated(), PlayerGroupAll(), true);
 
         arena_gf_ShowMessage("排行榜:");
@@ -212,12 +165,6 @@ static void gameplay_Victory_Init() {
 
 bool gameplay_DestroyCenters_Func(bool testConds, bool runActions) {
     string lv_side;
-    unitgroup unitGroup5;
-    int unitGroup5Count;
-    unit unitGroup5Unit;
-    unitgroup unitGroup6;
-    int unitGroup6Count;
-    unit unitGroup6Unit;
 
     lv_side = arena_gf_CurrentCommandArgument(1);
 
@@ -225,28 +172,11 @@ bool gameplay_DestroyCenters_Func(bool testConds, bool runActions) {
         return true;
     }
 
-    if (lv_side == "left") {
-        unitGroup5 = UnitGroupFromId(5);
-        unitGroup5Count = UnitGroupCount(unitGroup5, c_unitCountAll);
-        for (;; unitGroup5Count -= 1) {
-            unitGroup5Unit = UnitGroupUnitFromEnd(unitGroup5, unitGroup5Count);
-            if (unitGroup5Unit == null) { break; }
-            UnitKill(unitGroup5Unit);
-        }
-
+    if (lv_side == "red") {
+        UnitKill(UnitFromId(c_gameplay_UnitRedCenter));
     }
-    else if (lv_side == "right") {
-        unitGroup6 = UnitGroupFromId(6);
-        unitGroup6Count = UnitGroupCount(unitGroup6, c_unitCountAll);
-        for (;; unitGroup6Count -= 1) {
-            unitGroup6Unit = UnitGroupUnitFromEnd(unitGroup6, unitGroup6Count);
-            if (unitGroup6Unit == null) { break; }
-            UnitKill(unitGroup6Unit);
-        }
-
-    }
-    else {
-
+    else if (lv_side == "blue") {
+        UnitKill(UnitFromId(c_gameplay_UnitBlueCenter));
     }
     return true;
 }
@@ -300,9 +230,9 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
     }
 
     if (!lv_player.isBot) {
-        if (lv_player.playerId == 3) {
+        if (lv_player.playerId == c_GameStatePlayerIdBlue) {
             lv_teamName = "蓝方";
-        } else if (lv_player.playerId == 4) {
+        } else if (lv_player.playerId == c_GameStatePlayerIdRed) {
             lv_teamName = "红方";
         }
         arena_gf_ShowMessage(lv_player.name + " 加入了 " + lv_teamName + " 队伍");
@@ -369,41 +299,6 @@ static void gameplay_ShowUnitPlayerPoints() {
     TriggerAddEventGeneric(gt_gameplay_ShowUnitPlayerPoints, (arena_gv_commandPrefix + "show-points"));
 }
 
-bool gameplay_DamageUnit_Func(bool testConds, bool runActions) {
-    string lv_attacker;
-    int lv_damage;
-    UnitPlayer lv_player;
-    unit lv_attackerUnit = EventUnitDamageSourceUnit();
-
-    lv_attacker = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_attackerUnit))));
-    lv_damage = FixedToInt(EventUnitDamageAmount());
-
-    if (arena_gf_StringIsEmpty(lv_attacker)) {
-        lv_attacker = ServantGetMaster(lv_attackerUnit);
-        if (arena_gf_StringIsEmpty(lv_attacker)) {
-            return false;
-        }
-    }
-
-    if (!runActions) {
-        return true;
-    }
-
-    if (!UnitPlayerFromName(lv_attacker, lv_player)) {
-        return false;
-    }
-
-    lv_player.score += lv_damage;
-    SaveUnitPlayer(lv_player);
-
-    return true;
-}
-
-static void gameplay_DamageUnit_Init() {
-    gt_gameplay_DamageUnit = TriggerCreate("gameplay_DamageUnit_Func");
-    TriggerAddEventUnitDamaged(gt_gameplay_DamageUnit, null, c_unitDamageTypeAny, c_unitDamageEither, null);
-}
-
 bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
     unit lv_attackerUnit;
     string lv_attacker;
@@ -412,10 +307,13 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
     string lv_unitType;
     UnitPlayer lv_attackerPlayer;
     UnitPlayer lv_targetPlayer;
+    int lv_rewardPoints;
     int lv_rewardText;
     timer lv_rewardTimer;
     UnitData lv_unitData;
-    string lv_killMsg;
+    string lv_killMsg = "";
+    int lv_levelUpCosts;
+    string lv_levelUpText;
 
     lv_attackerUnit = EventUnitDamageSourceUnit();
     lv_attacker = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_attackerUnit))));
@@ -424,23 +322,13 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
     lv_unitType = UnitGetType(lv_targetUnit);
 
     if (arena_gf_StringIsEmpty(lv_attacker)) {
-        lv_attacker = ServantGetMaster(lv_attackerUnit);
+        return false;
     }
 
     if (!runActions) {
         return true;
     }
 
-    if (!arena_gf_StringIsEmpty(lv_target) && UnitPlayerFromName(lv_target, lv_targetPlayer) && !lv_targetPlayer.isBot) {
-        lv_killMsg = lv_target + " 被";
-        if (!arena_gf_StringIsEmpty(lv_attacker) && UnitPlayerFromName(lv_attacker, lv_attackerPlayer) && !lv_attackerPlayer.isBot) {
-            lv_killMsg += " " + lv_attacker + " ";
-        }
-        lv_killMsg += "击杀";
-        arena_gf_ShowMessage(lv_killMsg);
-    }
-
-    ServantCleanUnit(lv_targetUnit);
     arena_gf_CleanPlayerUnit(lv_targetUnit);
 
     if (arena_gf_StringIsEmpty(lv_attacker) || UnitGetOwner(lv_attackerUnit) == UnitGetOwner(lv_targetUnit)) {
@@ -455,21 +343,57 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
     }
 
     if (!arena_gf_StringIsEmpty(lv_target) && UnitPlayerFromName(lv_target, lv_targetPlayer)) {
-        lv_attackerPlayer.points += lv_unitData.rewardPoints * (lv_targetPlayer.servants + 1);
+        lv_rewardPoints = lv_unitData.rewardPoints * (lv_targetPlayer.combo + 1);
     } else {
-        lv_attackerPlayer.points += lv_unitData.rewardPoints;
+        lv_rewardPoints = lv_unitData.rewardPoints;
     }
+    lv_attackerPlayer.points += lv_rewardPoints;
+    lv_levelUpCosts = lv_unitData.costPoints * (lv_attackerPlayer.level + 1);
+    if (lv_attackerPlayer.points >= lv_levelUpCosts) {
+        lv_attackerPlayer.level += 1;
+        lv_attackerPlayer.points -= lv_levelUpCosts;
+        lv_levelUpText = "UP Lv." + IntToString(lv_attackerPlayer.level) + "！";
+    }
+    lv_attackerPlayer.score += 1;
+    lv_attackerPlayer.combo += 1;
     SaveUnitPlayer(lv_attackerPlayer);
 
+    if (!arena_gf_StringIsEmpty(lv_targetPlayer.name)) {
+        if (lv_attackerPlayer.isBot) {
+            lv_killMsg += "Bot ";
+        } else {
+            lv_killMsg += lv_attacker + " ";
+        }
+        lv_killMsg += "击杀了 ";
+        if (lv_targetPlayer.isBot) {
+            lv_killMsg += "Bot";
+        } else {
+            lv_killMsg += lv_target;
+        }
+        if (!lv_attackerPlayer.isBot || !lv_targetPlayer.isBot) {
+            arena_gf_ShowMessage(lv_killMsg);
+    
+            if (!lv_attackerPlayer.isBot && lv_attackerPlayer.combo > 1) {
+                arena_gf_ShowMessage(lv_attacker + " 完成了 " + IntToString(lv_attackerPlayer.combo) + " 连杀！");
+            }
+        }
+    }
+
     if (!lv_attackerPlayer.isBot) {
-        lv_attackerUnit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_attacker);
-        if (UnitIsValid(lv_attackerUnit)) {
-            lv_rewardText = TextTagCreate(StringToText("+"+IntToString(lv_unitData.rewardPoints)), 24, UnitGetPosition(lv_attackerUnit), 3.0, true, false, PlayerGroupAll());
+        lv_rewardText = TextTagCreate(StringToText("+"+IntToString(lv_rewardPoints)), 24, UnitGetPosition(lv_attackerUnit), 3.0, true, false, PlayerGroupAll());
+        TextTagSetColor(lv_rewardText, c_textTagColorText, Color(0, 255, 0));
+        TextTagAttachToUnit(lv_rewardText, lv_attackerUnit, 3.0);
+        TextTagSetGravity(lv_rewardText, 2.0);
+        lv_rewardTimer = TimerCreate();
+        TimerStart(lv_rewardTimer, 2.0, false, c_timeReal);
+        libNtve_gf_WaitForTimer(lv_rewardTimer, 0.0, false);
+        TextTagDestroy(lv_rewardText);
+
+        if (!arena_gf_StringIsEmpty(lv_levelUpText)) {
+            lv_rewardText = TextTagCreate(StringToText(lv_levelUpText), 28, UnitGetPosition(lv_attackerUnit), 5.0, true, false, PlayerGroupAll());
             TextTagSetColor(lv_rewardText, c_textTagColorText, Color(0, 255, 0));
-            TextTagAttachToUnit(lv_rewardText, lv_attackerUnit, 3.0);
-            TextTagSetGravity(lv_rewardText, 2.0);
-            lv_rewardTimer = TimerCreate();
-            TimerStart(lv_rewardTimer, 2.0, false, c_timeReal);
+            TextTagAttachToUnit(lv_rewardText, lv_attackerUnit, 5.0);
+            TimerStart(lv_rewardTimer, 4.0, false, c_timeReal);
             libNtve_gf_WaitForTimer(lv_rewardTimer, 0.0, false);
             TextTagDestroy(lv_rewardText);
         }
@@ -516,27 +440,6 @@ static void gameplay_RechargePoints_Init() {
     TriggerAddEventGeneric(gt_gameplay_RechargePoints, (arena_gv_commandPrefix + "recharge-points"));
 }
 
-bool gameplay_AutoRewardLoop_Func(bool testConds, bool runActions) {
-    UnitPlayerArray players;
-    int lv_index;
-
-    if (!runActions) {
-        return true;
-    }
-
-    UnitPlayersGetAll(players);
-    for (lv_index = 0; lv_index < UnitPlayersCount(); lv_index += 1) {
-        UnitPlayerAutoRewardPoints(players[lv_index]);
-    }
-
-    return true;
-}
-
-static void gameplay_AutoRewardLoop_Init() {
-    gt_gameplay_AutoRewardLoop = TriggerCreate("gameplay_AutoRewardLoop_Func");
-    TriggerAddEventTimer(gt_gameplay_AutoRewardLoop, gv_gameplay_loopTimer);
-}
-
 bool gameplay_UnitSelected_Func(bool testConds, bool runActions) {
     unit lv_unit = EventUnit();
     string lv_name = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_unit))));
@@ -552,12 +455,16 @@ bool gameplay_UnitSelected_Func(bool testConds, bool runActions) {
     if (arena_gf_StringIsEmpty(lv_name) || !UnitPlayerFromName(lv_name, lv_player)) {
         return false;
     }
+    arena_gf_InfoLog(lv_name + " level: " + IntToString(lv_player.level));
+    arena_gf_InfoLog(lv_name + " points: " + IntToString(lv_player.points));
+    arena_gf_InfoLog(lv_name + " score: " + IntToString(lv_player.score));
+    arena_gf_InfoLog(lv_name + " combo: " + IntToString(lv_player.combo));
     arena_gf_InfoLog(lv_name + " aiMode: " + IntToString(lv_player.aiMode));
-    arena_gf_InfoLog(lv_name + " TotalTakenDamage: " + IntToString(lv_player.aiStates[0]));
-    arena_gf_InfoLog(lv_name + " WillBrokenTime: " + IntToString(lv_player.aiStates[1]));
-    arena_gf_InfoLog(lv_name + " OriginAIMode: " + IntToString(lv_player.aiStates[2]));
-    arena_gf_InfoLog(lv_name + " ModeEntered: " + IntToString(lv_player.aiStates[3]));
-    arena_gf_InfoLog(lv_name + " HuntTarget: " + IntToString(lv_player.aiStates[4]));
+    // arena_gf_InfoLog(lv_name + " TotalTakenDamage: " + IntToString(lv_player.aiStates[0]));
+    // arena_gf_InfoLog(lv_name + " WillBrokenTime: " + IntToString(lv_player.aiStates[1]));
+    // arena_gf_InfoLog(lv_name + " OriginAIMode: " + IntToString(lv_player.aiStates[2]));
+    // arena_gf_InfoLog(lv_name + " ModeEntered: " + IntToString(lv_player.aiStates[3]));
+    // arena_gf_InfoLog(lv_name + " HuntTarget: " + IntToString(lv_player.aiStates[4]));
     lv_huntTarget = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(lv_player.aiStates[4])));
     if (!arena_gf_StringIsEmpty(lv_huntTarget)) {
         arena_gf_InfoLog(lv_name + " HuntTarget: " + lv_huntTarget);
@@ -580,30 +487,4 @@ bool gameplay_UnitSelected_Func(bool testConds, bool runActions) {
 static void gameplay_UnitSelected_Init() {
     gt_gameplay_UnitSelected = TriggerCreate("gameplay_UnitSelected_Func");
     TriggerAddEventUnitSelected(gt_gameplay_UnitSelected, null, c_playerAny, true);
-}
-
-bool gameplay_QueryUnitInfo_Func(bool testConds, bool runActions) {
-    string lv_race = arena_gf_CurrentCommandArgument(1);
-    string lv_index = arena_gf_CurrentCommandArgument(2);
-    UnitData lv_unitData;
-
-    if (!runActions) {
-        return true;
-    }
-
-    if (arena_gf_StringIsEmpty(lv_race) || arena_gf_StringIsEmpty(lv_index)) {
-        return false;
-    }
-    if (!UnitDataGetByRace(StringToInt(lv_race), StringToInt(lv_index), lv_unitData)) {
-        return false;
-    }
-    arena_gf_ShowMessage(UnitDataGetRaceName(StringToInt(lv_race)) + ", " + 
-        lv_unitData.name + "(" + lv_index + "): 召唤主人消耗" + IntToString(lv_unitData.costPoints) + "pt, 召唤随从半价");
-
-    return true;
-}
-
-static void gameplay_QueryUnitInfo_Init() {
-    gt_gameplay_QueryUnitInfo = TriggerCreate("gameplay_QueryUnitInfo_Func");
-    TriggerAddEventGeneric(gt_gameplay_QueryUnitInfo, arena_gv_commandPrefix + "query-unit");
 }

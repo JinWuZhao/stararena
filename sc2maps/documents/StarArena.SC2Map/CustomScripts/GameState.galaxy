@@ -3,18 +3,21 @@ const int c_unitPlayerAIStatesCap = 5;
 const int c_unitPlayersCap = 20;
 static const int c_gamestate_autoRewardPointsPerSecond = 20;
 
+const int c_GameStatePlayerIdRed = 4;
+const int c_GameStatePlayerIdBlue = 3;
+
 // Type Declarations
 struct UnitPlayer {
     string name;
     string unitType;
-    datetime rewardTime;
     datetime deadTime;
     int playerId;
     int score;
+    int combo;
     int points;
     int aiMode;
-    int servants;
-    string servantType;
+    int level;
+    int revivePoint;
     bool isBot;
     int[c_unitPlayerAIStatesCap] aiStates;
 };
@@ -34,7 +37,6 @@ bool AddUnitPlayer(UnitPlayerRef player);
 bool RemoveUnitPlayer(string name);
 bool SaveUnitPlayer(UnitPlayerRef player);
 bool UnitPlayerFromName(string name, UnitPlayerRef player);
-int UnitPlayerAutoRewardPoints(UnitPlayerRef player);
 void UnitPlayersGetAll(UnitPlayerArrayRef outPlayers);
 int UnitPlayersCount();
 void UnitPlayersOfRanked(UnitPlayerArrayRef outPlayers);
@@ -59,11 +61,11 @@ static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source) {
     dest.points = source.points;
     dest.score = source.score;
     dest.unitType = source.unitType;
-    dest.rewardTime = source.rewardTime;
     dest.deadTime = source.deadTime;
     dest.aiMode = source.aiMode;
-    dest.servants = source.servants;
-    dest.servantType = source.servantType;
+    dest.level = source.level;
+    dest.combo = source.combo;
+    dest.revivePoint = source.revivePoint;
     dest.isBot = source.isBot;
     for (lv_aiStatesIndex = 0; lv_aiStatesIndex < c_unitPlayerAIStatesCap; lv_aiStatesIndex += 1) {
         dest.aiStates[lv_aiStatesIndex] = source.aiStates[lv_aiStatesIndex];
@@ -91,11 +93,10 @@ bool AddUnitPlayer(UnitPlayerRef player) {
     if (index == c_unitPlayersCap) {
         return false;
     }
-    player.points = 100;
-    player.rewardTime = CurrentDateTimeGet();
     player.deadTime = IntToDateTime(0);
-    player.unitType = "Marine";
-    player.servants = 6;
+    player.unitType = "SiegeTank";
+    player.level = 1;
+    player.revivePoint = RandomInt(1, 4);
     gamestate_SaveUnitPlayerByIndex(index, player);
     gv_gamestate_unitPlayersCount += 1;
     return true;
@@ -135,26 +136,6 @@ bool UnitPlayerFromName(string name, UnitPlayerRef player) {
     lv_player = gv_gamestate_unitPlayers[DataTableInstanceGetInt(gv_gamestate_unitPlayerIndexOfName, name)];
     gamestate_CopyUnitPlayer(player, lv_player);
     return true;
-}
-
-int UnitPlayerAutoRewardPoints(UnitPlayerRef player) {
-    datetime lv_currentTime;
-    int lv_duration;
-    int lv_reward;
-
-    lv_currentTime = CurrentDateTimeGet();
-
-    if (!UnitIsValid(DataTableGetUnit(true, arena_gv_unitNamePrefix + player.name))) {
-        lv_duration = DateTimeToInt(lv_currentTime) - DateTimeToInt(player.rewardTime);
-        if (lv_duration > 0) {
-            lv_reward = lv_duration * c_gamestate_autoRewardPointsPerSecond;
-        }
-        player.points += lv_reward;            
-    }
-
-    player.rewardTime = lv_currentTime;
-    SaveUnitPlayer(player);
-    return lv_reward;
 }
 
 int UnitPlayersCount() {

@@ -60,26 +60,6 @@ func TestParseCommand(t *testing.T) {
 			Want: "cmd-set-aimode player 4",
 		},
 		{
-			Text: "u t0",
-			Want: "cmd-set-unit player 0 0",
-		},
-		{
-			Text: "u z1",
-			Want: "cmd-set-unit player 1 1",
-		},
-		{
-			Text: "u p2",
-			Want: "cmd-set-unit player 2 2",
-		},
-		{
-			Text: "i 20 t0",
-			Want: "cmd-set-servants player 20 0 0",
-		},
-		{
-			Text: "i 20",
-			Want: "cmd-set-servants player 20",
-		},
-		{
 			Text: "pt",
 			Want: "cmd-show-points player",
 		},
