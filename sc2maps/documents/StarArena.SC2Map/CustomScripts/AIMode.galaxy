@@ -145,6 +145,7 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
     int lv_currShields;
     int lv_currLife;
     string lv_pointName;
+    int lv_levelUpCosts;
 
     if (UnitIsValid(inUnit)) {
         lv_willBrokenTime = refPlayer.aiStates[c_aimode_stateWillBrokenTime];
@@ -173,6 +174,19 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
             }
         }
 
+        if (UnitDataGetByUnitType(refPlayer.unitType, lv_unitData)) {
+            lv_levelUpCosts = lv_unitData.costPoints * (refPlayer.level + 1);
+            if (refPlayer.points >= lv_levelUpCosts) {
+                refPlayer.level += 1;
+                refPlayer.points -= lv_levelUpCosts;
+                SaveUnitPlayer(refPlayer);
+                UnitDataInitPlayerUnitProps(refPlayer.level, inUnit);
+                if (!refPlayer.isBot) {
+                    arena_gf_ShowMessage(refPlayer.name + " 到达 " + IntToString(refPlayer.level) + " 级");
+                }
+            }
+        }
+
     } else {
         if (DateTimeToInt(CurrentDateTimeGet()) - DateTimeToInt(refPlayer.deadTime) >= c_aimode_reviveInterval) {
             if (UnitDataGetByUnitType(refPlayer.unitType, lv_unitData)) {
@@ -191,8 +205,7 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
                 }
                 inUnit = arena_gf_CreateUnit(refPlayer.playerId, PointFromName(lv_pointName), lv_unitData.unitType, 
                     PointGetFacing(PointFromName(lv_pointName)), lv_unitData.baseScale, refPlayer.name, 2, !refPlayer.isBot);
-                UnitSetPropertyInt(inUnit, c_unitPropLifeMax, lv_unitData.lifeMax * refPlayer.level);
-                UnitBehaviorAdd(inUnit, "StarArenaUnitEnhance", inUnit, refPlayer.level / 3 + 1);
+                UnitDataInitPlayerUnitProps(refPlayer.level, inUnit);
 
                 lv_initOrder = OrderTargetingPoint(
                     AbilityCommand("move", 0), 

@@ -8,6 +8,7 @@ struct UnitData {
     string name;
     string[c_UnitDataTypeAliasCount] typeAlias;
     int lifeMax;
+    fixed moveSpeed;
     int costPoints;
     int rewardPoints;
     fixed baseScale;
@@ -37,6 +38,7 @@ void UnitDataCopy(UnitDataRef dest, UnitDataRef source);
 bool UnitDataGet(int unitDataType, UnitDataRef outData);
 bool UnitDataGetByUnitType(string unitType, UnitDataRef outData);
 bool UnitDataInitUnitProps(unit inUnit);
+bool UnitDataInitPlayerUnitProps(int level, unit inUnit);
 void InitUnitData();
 
 static void unitdata_InitUnitMatrix();
@@ -49,6 +51,7 @@ void UnitDataCopy(UnitDataRef dest, UnitDataRef source) {
     dest.unitType = source.unitType;
     dest.name = source.name;
     dest.lifeMax = source.lifeMax;
+    dest.moveSpeed = source.moveSpeed;
     dest.costPoints = source.costPoints;
     dest.rewardPoints = source.rewardPoints;
     dest.baseScale = source.baseScale;
@@ -84,6 +87,18 @@ bool UnitDataInitUnitProps(unit inUnit) {
     }
     UnitSetScale(inUnit, lv_unitData.baseScale, lv_unitData.baseScale, lv_unitData.baseScale);
     UnitSetPropertyInt(inUnit, c_unitPropLifeMax, lv_unitData.lifeMax);
+    return true;
+}
+
+bool UnitDataInitPlayerUnitProps(int level, unit inUnit) {
+    UnitData lv_unitData;
+    if (!UnitDataGetByUnitType(UnitGetType(inUnit), lv_unitData)) {
+        return false;
+    }
+    UnitSetScale(inUnit, lv_unitData.baseScale, lv_unitData.baseScale, lv_unitData.baseScale);
+    UnitSetPropertyInt(inUnit, c_unitPropLifeMax, lv_unitData.lifeMax * level);
+    UnitSetPropertyFixed(inUnit, c_unitPropBaseMovementSpeed, lv_unitData.moveSpeed * (IntToFixed(level) / 5 + 1));
+    UnitBehaviorAdd(inUnit, "StarArenaUnitEnhance", inUnit, level / 3 + 1);
     return true;
 }
 
@@ -167,6 +182,9 @@ void InitUnitData() {
         }
         if (gv_unitdata_unitTypes[lv_index].lifeMax <= 0) {
             gv_unitdata_unitTypes[lv_index].lifeMax = CatalogReferenceGetAsInt("Unit," + gv_unitdata_unitTypes[lv_index].unitType + ",LifeMax", arena_gv_directorPlayer);
+        }
+        if (gv_unitdata_unitTypes[lv_index].moveSpeed <= 0) {
+            gv_unitdata_unitTypes[lv_index].moveSpeed = libNtve_gf_CatalogReferenceGetAsReal("Unit," + gv_unitdata_unitTypes[lv_index].unitType + ",Speed", arena_gv_directorPlayer);
         }
     }
 

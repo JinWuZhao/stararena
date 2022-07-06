@@ -7,6 +7,7 @@ static trigger gt_gameplay_AddUnitPlayer;
 static trigger gt_gameplay_RemoveUnitPlayer;
 static trigger gt_gameplay_ShowUnitPlayerPoints;
 static trigger gt_gameplay_KillUnit;
+static trigger gt_gameplay_DamageUnit;
 static trigger gt_gameplay_RechargePoints;
 static trigger gt_gameplay_UnitSelected;
 
@@ -28,6 +29,7 @@ static void gameplay_AddUnitPlayer_Init();
 static void gameplay_RemoveUnitPlayer_Init();
 static void gameplay_ShowUnitPlayerPoints();
 static void gameplay_KillUnit_Init();
+static void gameplay_DamageUnit_Init();
 static void gameplay_RechargePoints_Init();
 static void gameplay_UnitSelected_Init();
 
@@ -44,6 +46,7 @@ void InitGamePlay() {
     gameplay_RemoveUnitPlayer_Init();
     gameplay_ShowUnitPlayerPoints();
     gameplay_KillUnit_Init();
+    gameplay_DamageUnit_Init();
     gameplay_RechargePoints_Init();
     gameplay_UnitSelected_Init();
 }
@@ -146,7 +149,7 @@ bool gameplay_Victory_Func(bool testConds, bool runActions) {
             if (rankedUnitPlayers[index].isBot) {
                 lv_playerName = "Bot";
             }
-            arena_gf_ShowMessage("第" + IntToString(index+1) + "名：" + lv_playerName + " -------------------------------------- " + IntToString(rankedUnitPlayers[index].score) + "分");
+            arena_gf_ShowMessage("第" + IntToString(index+1) + "名：" + lv_playerName + " -------------------------------------- " + IntToString(rankedUnitPlayers[index].score) + "击杀");
         }
 
         arena_gf_ShowMessage("10秒后游戏结束");
@@ -312,8 +315,6 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
     timer lv_rewardTimer;
     UnitData lv_unitData;
     string lv_killMsg = "";
-    int lv_levelUpCosts;
-    string lv_levelUpText;
 
     lv_attackerUnit = EventUnitDamageSourceUnit();
     lv_attacker = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_attackerUnit))));
@@ -348,12 +349,6 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
         lv_rewardPoints = lv_unitData.rewardPoints;
     }
     lv_attackerPlayer.points += lv_rewardPoints;
-    lv_levelUpCosts = lv_unitData.costPoints * (lv_attackerPlayer.level + 1);
-    if (lv_attackerPlayer.points >= lv_levelUpCosts) {
-        lv_attackerPlayer.level += 1;
-        lv_attackerPlayer.points -= lv_levelUpCosts;
-        lv_levelUpText = "UP Lv." + IntToString(lv_attackerPlayer.level) + "！";
-    }
     lv_attackerPlayer.score += 1;
     lv_attackerPlayer.combo += 1;
     SaveUnitPlayer(lv_attackerPlayer);
@@ -388,15 +383,6 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
         TimerStart(lv_rewardTimer, 2.0, false, c_timeReal);
         libNtve_gf_WaitForTimer(lv_rewardTimer, 0.0, false);
         TextTagDestroy(lv_rewardText);
-
-        if (!arena_gf_StringIsEmpty(lv_levelUpText)) {
-            lv_rewardText = TextTagCreate(StringToText(lv_levelUpText), 28, UnitGetPosition(lv_attackerUnit), 5.0, true, false, PlayerGroupAll());
-            TextTagSetColor(lv_rewardText, c_textTagColorText, Color(0, 255, 0));
-            TextTagAttachToUnit(lv_rewardText, lv_attackerUnit, 5.0);
-            TimerStart(lv_rewardTimer, 4.0, false, c_timeReal);
-            libNtve_gf_WaitForTimer(lv_rewardTimer, 0.0, false);
-            TextTagDestroy(lv_rewardText);
-        }
     }
 
     return true;
@@ -405,6 +391,39 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
 static void gameplay_KillUnit_Init() {
     gt_gameplay_KillUnit = TriggerCreate("gameplay_KillUnit_Func");
     TriggerAddEventUnitDied(gt_gameplay_KillUnit, null);
+}
+
+bool gameplay_DamageUnit_Func(bool testConds, bool runActions) {
+    unit lv_attackerUnit = EventUnitDamageSourceUnit();
+    string lv_attacker = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_attackerUnit))));
+    unit lv_targetUnit = EventUnit();
+    int lv_damage = FixedToInt(EventUnitDamageAmount());
+    UnitPlayer lv_attackerPlayer;
+    UnitData lv_targetUnitData;
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (arena_gf_StringIsEmpty(lv_attacker) || !UnitPlayerFromName(lv_attacker, lv_attackerPlayer)) {
+        return false;
+    }
+
+    if (!UnitDataGetByUnitType(UnitGetType(lv_targetUnit), lv_targetUnitData)) {
+        return false;
+    }
+
+    if (lv_targetUnitData.rewardPoints > 0) {
+        lv_attackerPlayer.points += lv_damage * lv_targetUnitData.rewardPoints / UnitGetPropertyInt(lv_targetUnit, c_unitPropLifeMax, true) + 1;
+        SaveUnitPlayer(lv_attackerPlayer);
+    }
+
+    return true;
+}
+
+static void gameplay_DamageUnit_Init() {
+    gt_gameplay_DamageUnit = TriggerCreate("gameplay_DamageUnit_Func");
+    TriggerAddEventUnitDamaged(gt_gameplay_DamageUnit, null, c_unitDamageTypeAny, c_unitDamageEither, null);
 }
 
 bool gameplay_RechargePoints_Func(bool testConds, bool runActions) {
