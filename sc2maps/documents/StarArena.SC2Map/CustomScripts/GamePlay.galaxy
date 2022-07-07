@@ -474,6 +474,7 @@ bool gameplay_UnitSelected_Func(bool testConds, bool runActions) {
     if (arena_gf_StringIsEmpty(lv_name) || !UnitPlayerFromName(lv_name, lv_player)) {
         return false;
     }
+    arena_gf_InfoLog(lv_name + " weapon: " + lv_player.weaponType);
     arena_gf_InfoLog(lv_name + " level: " + IntToString(lv_player.level));
     arena_gf_InfoLog(lv_name + " points: " + IntToString(lv_player.points));
     arena_gf_InfoLog(lv_name + " score: " + IntToString(lv_player.score));
@@ -484,21 +485,21 @@ bool gameplay_UnitSelected_Func(bool testConds, bool runActions) {
     // arena_gf_InfoLog(lv_name + " OriginAIMode: " + IntToString(lv_player.aiStates[2]));
     // arena_gf_InfoLog(lv_name + " ModeEntered: " + IntToString(lv_player.aiStates[3]));
     // arena_gf_InfoLog(lv_name + " HuntTarget: " + IntToString(lv_player.aiStates[4]));
-    lv_huntTarget = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(lv_player.aiStates[4])));
-    if (!arena_gf_StringIsEmpty(lv_huntTarget)) {
-        arena_gf_InfoLog(lv_name + " HuntTarget: " + lv_huntTarget);
-        lv_huntTargetUnit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_huntTarget);
-        if (UnitIsValid(lv_huntTargetUnit)) {
-            arena_gf_InfoLog(lv_name + " HuntTarget unit: " + UnitGetType(lv_huntTargetUnit) + ", " + IntToString(UnitGetTag(lv_huntTargetUnit)));
-        }
-    }
-    lv_order = UnitOrder(lv_unit, 0);
-    if (lv_order != null) {
-        arena_gf_InfoLog(lv_name + " order ability: " + AbilityCommandGetAbility(OrderGetAbilityCommand(lv_order)));
-        if (OrderGetTargetType(lv_order) == c_orderTargetUnit) {
-            arena_gf_InfoLog(lv_name + " order target unit: " + UnitGetType(OrderGetTargetUnit(lv_order)) + ", " + IntToString(UnitGetTag(OrderGetTargetUnit(lv_order))));
-        }
-    }
+    // lv_huntTarget = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(lv_player.aiStates[4])));
+    // if (!arena_gf_StringIsEmpty(lv_huntTarget)) {
+    //     arena_gf_InfoLog(lv_name + " HuntTarget: " + lv_huntTarget);
+    //     lv_huntTargetUnit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_huntTarget);
+    //     if (UnitIsValid(lv_huntTargetUnit)) {
+    //         arena_gf_InfoLog(lv_name + " HuntTarget unit: " + UnitGetType(lv_huntTargetUnit) + ", " + IntToString(UnitGetTag(lv_huntTargetUnit)));
+    //     }
+    // }
+    // lv_order = UnitOrder(lv_unit, 0);
+    // if (lv_order != null) {
+    //     arena_gf_InfoLog(lv_name + " order ability: " + AbilityCommandGetAbility(OrderGetAbilityCommand(lv_order)));
+    //     if (OrderGetTargetType(lv_order) == c_orderTargetUnit) {
+    //         arena_gf_InfoLog(lv_name + " order target unit: " + UnitGetType(OrderGetTargetUnit(lv_order)) + ", " + IntToString(UnitGetTag(OrderGetTargetUnit(lv_order))));
+    //     }
+    // }
     
     return true;
 }

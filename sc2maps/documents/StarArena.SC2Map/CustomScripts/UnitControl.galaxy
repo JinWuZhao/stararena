@@ -1,17 +1,23 @@
 // Trigger Declarations
 static trigger gt_unitctrl_SetAIMode;
 static trigger gt_unitctrl_MoveToward;
+static trigger gt_unitctrl_SetWeapon;
+static trigger gt_unitctrl_SetWeaponTest;
 
 // Function Declarations
 void InitUnitControl();
 
 static void unitctrl_SetAIMode_Init();
 static void unitctrl_MoveToward_Init();
+static void unitctrl_SetWeapon_Init();
+static void unitctrl_SetWeaponTest_Init();
 
 // Functions
 void InitUnitControl() {
     unitctrl_SetAIMode_Init();
     unitctrl_MoveToward_Init();
+    unitctrl_SetWeapon_Init();
+    unitctrl_SetWeaponTest_Init();
 }
 
 bool unitctrl_SetAIMode_Func(bool testConds, bool runActions) {
@@ -80,4 +86,70 @@ bool unitctrl_MoveToward_Func(bool testConds, bool runActions) {
 static void unitctrl_MoveToward_Init() {
     gt_unitctrl_MoveToward = TriggerCreate("unitctrl_MoveToward_Func");
     TriggerAddEventGeneric(gt_unitctrl_MoveToward, (arena_gv_commandPrefix + "move-toward"));
+}
+
+bool unitctrl_SetWeapon_Func(bool testConds, bool runActions) {
+    string lv_name = arena_gf_CurrentCommandArgument(1);
+    string lv_weaponType = WeaponDataGetType(StringToInt(arena_gf_CurrentCommandArgument(2)));
+    UnitPlayer lv_player;
+    unit lv_unit;
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (arena_gf_StringIsEmpty(lv_weaponType)) {
+        return false;
+    }
+    if (arena_gf_StringIsEmpty(lv_name) || !UnitPlayerFromName(lv_name, lv_player)) {
+        return false;
+    }
+
+    lv_player.weaponType = lv_weaponType;
+    SaveUnitPlayer(lv_player);
+
+    lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
+    if (UnitIsValid(lv_unit)) {
+        WeaponDataApplyUnit(lv_weaponType, lv_unit);
+    }
+
+    return true;
+}
+
+static void unitctrl_SetWeapon_Init() {
+    gt_unitctrl_SetWeapon = TriggerCreate("unitctrl_SetWeapon_Func");
+    TriggerAddEventGeneric(gt_unitctrl_SetWeapon, (arena_gv_commandPrefix + "set-weapon"));
+}
+
+bool unitctrl_SetWeaponTest_Func(bool testConds, bool runActions) {
+    string lv_name = arena_gf_CurrentCommandArgument(1);
+    string lv_weaponType = arena_gf_CurrentCommandArgument(2);
+    UnitPlayer lv_player;
+    unit lv_unit;
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (arena_gf_StringIsEmpty(lv_weaponType)) {
+        return false;
+    }
+    if (arena_gf_StringIsEmpty(lv_name) || !UnitPlayerFromName(lv_name, lv_player)) {
+        return false;
+    }
+
+    lv_player.weaponType = lv_weaponType;
+    SaveUnitPlayer(lv_player);
+
+    lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
+    if (UnitIsValid(lv_unit)) {
+        WeaponDataApplyUnit(lv_weaponType, lv_unit);
+    }
+
+    return true;
+}
+
+static void unitctrl_SetWeaponTest_Init() {
+    gt_unitctrl_SetWeaponTest = TriggerCreate("unitctrl_SetWeaponTest_Func");
+    TriggerAddEventGeneric(gt_unitctrl_SetWeaponTest, (arena_gv_commandPrefix + "set-weapon-test"));
 }

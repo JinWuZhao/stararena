@@ -1,4 +1,5 @@
 include "CustomScripts/ArenaLib"
+include "CustomScripts/WeaponConf"
 include "CustomScripts/UnitConf"
 include "CustomScripts/GameState"
 include "CustomScripts/AIMode"
@@ -7,6 +8,7 @@ include "CustomScripts/GamePlay"
 
 void InitCustomScripts() {
     InitArenaLib();
+    InitWeaponData();
     InitUnitData();
     InitGameState();
     InitAIMode();

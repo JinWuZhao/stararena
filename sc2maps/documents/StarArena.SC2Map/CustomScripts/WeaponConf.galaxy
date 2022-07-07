@@ -1,0 +1,73 @@
+const int c_WeaponDataTypeNone = -1;
+const int c_WeaponDataTypePunisherGrenades = 0; // 惩罚者榴弹
+const int c_WeaponDataTypeInfernalFlameThrower = 1; // 地狱火喷射器
+const int c_WeaponDataType90mmCannons = 2; // 90毫米口径火炮
+const int c_WeaponDataTypeBacklashRockets = 3; // 反冲火箭
+const int c_WeaponDataTypeLanzerTorpedoes = 4; // 兰泽尔飞雷
+const int c_WeaponDataTypeMengskThorsHammer = 5; // 雷神之锤
+const int c_WeaponDataTypeLiberatorAGWeapon = 6; // 康科德火炮
+const int c_WeaponDataTypeLiberatorMissileLaunchers = 7; // 列克星敦火箭
+const int c_WeaponDataTypeATSLaserBattery = 8; // 空对地激光炮组
+const int c_WeaponDataTypeTyphoonMissilePod = 9; // 台风飞弹舱
+const int c_WeaponDataTypeParticleDisruptors = 10; // 粒子碎裂炮
+const int c_WeaponDataTypeDisruptionBeam = 11; // 瓦解射线
+const int c_WeaponDataTypeIonCannons = 12; // 离子炮
+const int c_WeaponDataTypePhaseDisruptors = 13; // 相位碎裂炮
+const int c_WeaponDataTypeThermalLances = 14; // 热能射线枪
+const int c_WeaponDataTypeVoidRayChargeBeamBase = 15; // 棱镜光束
+const int c_WeaponDataTypePsionicShockwave = 16; // 灵能冲击波
+const int c_WeaponDataTypeMothershipBeam = 17; // 净化光束
+const int c_WeaponDataTypeTempestGround = 18; // 谐振盘
+const int c_WeaponDataTypeAdept = 19; // 刃炮
+const int c_WeaponDataTypeAcidSaliva = 20; // 酸性唾液
+const int c_WeaponDataTypeGlaiveWurm = 21; // 刃虫
+const int c_WeaponDataTypeParasiteSpore = 22; // 寄生孢子
+const int c_WeaponDataTypeRavagerWeapon = 23; // 等离子发射
+const int c_WeaponDataTypeCount = 24;
+
+static string[c_WeaponDataTypeCount] gv_weapondata_types;
+
+string WeaponDataGetType(int inIndex);
+void InitWeaponData();
+
+string WeaponDataGetType(int inIndex) {
+    if (inIndex > c_WeaponDataTypeNone && inIndex < c_WeaponDataTypeCount) {
+        return gv_weapondata_types[inIndex];
+    }
+    return "";
+}
+
+void WeaponDataApplyUnit(string inWeapon, unit inUnit) {
+    int lv_index;
+    for (lv_index = UnitWeaponCount(inUnit); lv_index > 0; lv_index -= 1) {
+        UnitWeaponRemove(inUnit, UnitWeaponGet(inUnit, lv_index));
+    }
+    UnitWeaponAdd(inUnit, inWeapon, "SiegeTank");
+}
+
+void InitWeaponData() {
+    gv_weapondata_types[c_WeaponDataTypePunisherGrenades] = "PunisherGrenades";
+    gv_weapondata_types[c_WeaponDataTypeInfernalFlameThrower] = "InfernalFlameThrower";
+    gv_weapondata_types[c_WeaponDataType90mmCannons] = "90mmCannons";
+    gv_weapondata_types[c_WeaponDataTypeBacklashRockets] = "BacklashRockets";
+    gv_weapondata_types[c_WeaponDataTypeLanzerTorpedoes] = "LanzerTorpedoes";
+    gv_weapondata_types[c_WeaponDataTypeMengskThorsHammer] = "MengskThorsHammer";
+    gv_weapondata_types[c_WeaponDataTypeLiberatorAGWeapon] = "LiberatorAGWeapon";
+    gv_weapondata_types[c_WeaponDataTypeLiberatorMissileLaunchers] = "LiberatorMissileLaunchers";
+    gv_weapondata_types[c_WeaponDataTypeATSLaserBattery] = "ATSLaserBattery";
+    gv_weapondata_types[c_WeaponDataTypeTyphoonMissilePod] = "TyphoonMissilePod";
+    gv_weapondata_types[c_WeaponDataTypeParticleDisruptors] = "ParticleDisruptors";
+    gv_weapondata_types[c_WeaponDataTypeDisruptionBeam] = "DisruptionBeam";
+    gv_weapondata_types[c_WeaponDataTypeIonCannons] = "IonCannons";
+    gv_weapondata_types[c_WeaponDataTypePhaseDisruptors] = "PhaseDisruptors";
+    gv_weapondata_types[c_WeaponDataTypeThermalLances] = "ThermalLances";
+    gv_weapondata_types[c_WeaponDataTypeVoidRayChargeBeamBase] = "VoidRayChargeBeamBase";
+    gv_weapondata_types[c_WeaponDataTypePsionicShockwave] = "PsionicShockwave";
+    gv_weapondata_types[c_WeaponDataTypeMothershipBeam] = "MothershipBeam";
+    gv_weapondata_types[c_WeaponDataTypeTempestGround] = "TempestGround";
+    gv_weapondata_types[c_WeaponDataTypeAdept] = "Adept";
+    gv_weapondata_types[c_WeaponDataTypeAcidSaliva] = "AcidSaliva";
+    gv_weapondata_types[c_WeaponDataTypeGlaiveWurm] = "GlaiveWurm";
+    gv_weapondata_types[c_WeaponDataTypeParasiteSpore] = "ParasiteSpore";
+    gv_weapondata_types[c_WeaponDataTypeRavagerWeapon] = "RavagerWeapon";
+}

@@ -1,7 +1,6 @@
 // Const Declarations
 const int c_unitPlayerAIStatesCap = 5;
 const int c_unitPlayersCap = 20;
-static const int c_gamestate_autoRewardPointsPerSecond = 20;
 
 const int c_GameStatePlayerIdRed = 4;
 const int c_GameStatePlayerIdBlue = 3;
@@ -10,6 +9,7 @@ const int c_GameStatePlayerIdBlue = 3;
 struct UnitPlayer {
     string name;
     string unitType;
+    string weaponType;
     datetime deadTime;
     int playerId;
     int score;
@@ -61,6 +61,7 @@ static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source) {
     dest.points = source.points;
     dest.score = source.score;
     dest.unitType = source.unitType;
+    dest.weaponType = source.weaponType;
     dest.deadTime = source.deadTime;
     dest.aiMode = source.aiMode;
     dest.level = source.level;

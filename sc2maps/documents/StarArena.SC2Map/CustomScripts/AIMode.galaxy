@@ -45,7 +45,7 @@ void InitAIMode() {
     gv_aimode_allStructures = UnitGroupFromId(3);
 
     gv_aimode_loopTimer = TimerCreate();
-    TimerStart(gv_aimode_loopTimer, 1.0, true, c_timeReal);
+    TimerStart(gv_aimode_loopTimer, 0.1, true, c_timeReal);
 
     gv_aimode_balance[c_AIModeAttack] = c_unitPlayersCap / 4;
     gv_aimode_balance[c_AIModeHunter] = c_unitPlayersCap / 4;
@@ -206,6 +206,10 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
                 inUnit = arena_gf_CreateUnit(refPlayer.playerId, PointFromName(lv_pointName), lv_unitData.unitType, 
                     PointGetFacing(PointFromName(lv_pointName)), lv_unitData.baseScale, refPlayer.name, 2, !refPlayer.isBot);
                 UnitDataInitPlayerUnitProps(refPlayer.level, inUnit);
+                if (arena_gf_StringIsEmpty(refPlayer.weaponType)) {
+                    refPlayer.weaponType = WeaponDataGetType(RandomInt(0, c_WeaponDataTypeCount-1));
+                    WeaponDataApplyUnit(refPlayer.weaponType, inUnit);
+                }
 
                 lv_initOrder = OrderTargetingPoint(
                     AbilityCommand("move", 0), 
