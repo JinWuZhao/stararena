@@ -85,7 +85,11 @@ bool UnitDataInitUnitProps(unit inUnit) {
     if (!UnitDataGetByUnitType(UnitGetType(inUnit), lv_unitData)) {
         return false;
     }
-    UnitSetScale(inUnit, lv_unitData.baseScale, lv_unitData.baseScale, lv_unitData.baseScale);
+    if (UnitGetType(inUnit) == "DestructibleGarage") {
+        UnitSetScale(inUnit, lv_unitData.baseScale, lv_unitData.baseScale, lv_unitData.baseScale * 2);
+    } else {
+        UnitSetScale(inUnit, lv_unitData.baseScale, lv_unitData.baseScale, lv_unitData.baseScale);
+    }
     UnitSetPropertyInt(inUnit, c_unitPropLifeMax, lv_unitData.lifeMax);
     return true;
 }

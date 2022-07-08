@@ -72,7 +72,7 @@ bool unitctrl_MoveToward_Func(bool testConds, bool runActions) {
     SaveUnitPlayer(lv_player);
 
     lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_unitName));
-    if (!UnitIsValid(lv_unit)) {
+    if (!UnitIsAlive(lv_unit)) {
         return false;
     }
     UnitIssueOrder(lv_unit, 
@@ -109,7 +109,7 @@ bool unitctrl_SetWeapon_Func(bool testConds, bool runActions) {
     SaveUnitPlayer(lv_player);
 
     lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
-    if (UnitIsValid(lv_unit)) {
+    if (UnitIsAlive(lv_unit)) {
         WeaponDataApplyUnit(lv_weaponType, lv_unit);
     }
 
@@ -142,7 +142,7 @@ bool unitctrl_SetWeaponTest_Func(bool testConds, bool runActions) {
     SaveUnitPlayer(lv_player);
 
     lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
-    if (UnitIsValid(lv_unit)) {
+    if (UnitIsAlive(lv_unit)) {
         WeaponDataApplyUnit(lv_weaponType, lv_unit);
     }
 

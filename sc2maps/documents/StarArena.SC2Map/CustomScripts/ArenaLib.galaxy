@@ -247,7 +247,7 @@ bool arena_gt_KillUnit_Func (bool testConds, bool runActions) {
     lv_unitName = arena_gf_CurrentCommandArgument(1);
     lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_unitName));
 
-    if (!UnitIsValid(lv_unit)) {
+    if (!UnitIsAlive(lv_unit)) {
         return false;
     }
 

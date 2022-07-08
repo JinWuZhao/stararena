@@ -67,8 +67,9 @@ bool gameplay_initMap_Func(bool testConds, bool runActions) {
 
     for (lv_index = UnitGroupCount(lv_sepWalls, c_unitCountAll); lv_index > 0; lv_index -= 1) {
         lv_unit = UnitGroupUnitFromEnd(lv_sepWalls, lv_index);
-        if (UnitIsValid(lv_unit)) {
+        if (UnitIsAlive(lv_unit)) {
             libNtve_gf_MakeUnitInvulnerable(lv_unit, true);
+            UnitSetScale(lv_unit, 100, 100, 200);
         }
     }
 
@@ -79,7 +80,7 @@ bool gameplay_initMap_Func(bool testConds, bool runActions) {
 
     for (lv_index = UnitGroupCount(lv_structures, c_unitCountAll); lv_index > 0; lv_index -= 1) {
         lv_unit = UnitGroupUnitFromEnd(lv_structures, lv_index);
-        if (UnitIsValid(lv_unit)) {
+        if (UnitIsAlive(lv_unit)) {
             UnitDataInitUnitProps(lv_unit);
         }
     }
@@ -264,7 +265,7 @@ bool gameplay_RemoveUnitPlayer_Func(bool testConds, bool runActions) {
         return false;
     }
     lv_unit = arena_gf_UnitFromName(lv_name);
-    if (UnitIsValid(lv_unit)) {
+    if (UnitIsAlive(lv_unit)) {
         UnitKill(lv_unit);
     }
 
@@ -474,6 +475,7 @@ bool gameplay_UnitSelected_Func(bool testConds, bool runActions) {
     if (arena_gf_StringIsEmpty(lv_name) || !UnitPlayerFromName(lv_name, lv_player)) {
         return false;
     }
+    // arena_gf_InfoLog(lv_name + " datetime: " + IntToString(DateTimeToInt(CurrentDateTimeGet())));
     arena_gf_InfoLog(lv_name + " weapon: " + lv_player.weaponType);
     arena_gf_InfoLog(lv_name + " level: " + IntToString(lv_player.level));
     arena_gf_InfoLog(lv_name + " points: " + IntToString(lv_player.points));
@@ -489,7 +491,7 @@ bool gameplay_UnitSelected_Func(bool testConds, bool runActions) {
     // if (!arena_gf_StringIsEmpty(lv_huntTarget)) {
     //     arena_gf_InfoLog(lv_name + " HuntTarget: " + lv_huntTarget);
     //     lv_huntTargetUnit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_huntTarget);
-    //     if (UnitIsValid(lv_huntTargetUnit)) {
+    //     if (UnitIsAlive(lv_huntTargetUnit)) {
     //         arena_gf_InfoLog(lv_name + " HuntTarget unit: " + UnitGetType(lv_huntTargetUnit) + ", " + IntToString(UnitGetTag(lv_huntTargetUnit)));
     //     }
     // }

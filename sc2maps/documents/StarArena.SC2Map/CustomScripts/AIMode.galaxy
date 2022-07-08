@@ -45,7 +45,7 @@ void InitAIMode() {
     gv_aimode_allStructures = UnitGroupFromId(3);
 
     gv_aimode_loopTimer = TimerCreate();
-    TimerStart(gv_aimode_loopTimer, 0.1, true, c_timeReal);
+    TimerStart(gv_aimode_loopTimer, 0.2, true, c_timeReal);
 
     gv_aimode_balance[c_AIModeAttack] = c_unitPlayersCap / 4;
     gv_aimode_balance[c_AIModeHunter] = c_unitPlayersCap / 4;
@@ -109,7 +109,7 @@ bool aimode_GameLoop_Func(bool testConds, bool runActions) {
     UnitPlayersGetAll(lv_players);
     for (index = 0; index < UnitPlayersCount(); index += 1) {
         lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_players[index].name);
-        if (UnitIsValid(lv_unit)) {
+        if (UnitIsAlive(lv_unit)) {
 
             gv_aimode_metrics[lv_players[index].playerId][lv_players[index].aiMode] += 1;
 
@@ -147,7 +147,7 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
     string lv_pointName;
     int lv_levelUpCosts;
 
-    if (UnitIsValid(inUnit)) {
+    if (UnitIsAlive(inUnit)) {
         lv_willBrokenTime = refPlayer.aiStates[c_aimode_stateWillBrokenTime];
         if (lv_willBrokenTime == 0) {
             lv_currShields = UnitGetPropertyInt(inUnit, c_unitPropShields, true);
@@ -194,6 +194,9 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
                 if (refPlayer.aiMode == c_AIModeNone) {
                     AIModeSetMode(refPlayer, AIModeSelectMode(refPlayer.playerId));
                 }
+                if (arena_gf_StringIsEmpty(refPlayer.weaponType)) {
+                    refPlayer.weaponType = WeaponDataGetType(RandomInt(0, c_WeaponDataTypeCount-1));
+                }
                 SaveUnitPlayer(refPlayer);
 
                 if (refPlayer.playerId == c_GameStatePlayerIdRed) {
@@ -206,10 +209,7 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
                 inUnit = arena_gf_CreateUnit(refPlayer.playerId, PointFromName(lv_pointName), lv_unitData.unitType, 
                     PointGetFacing(PointFromName(lv_pointName)), lv_unitData.baseScale, refPlayer.name, 2, !refPlayer.isBot);
                 UnitDataInitPlayerUnitProps(refPlayer.level, inUnit);
-                if (arena_gf_StringIsEmpty(refPlayer.weaponType)) {
-                    refPlayer.weaponType = WeaponDataGetType(RandomInt(0, c_WeaponDataTypeCount-1));
-                    WeaponDataApplyUnit(refPlayer.weaponType, inUnit);
-                }
+                WeaponDataApplyUnit(refPlayer.weaponType, inUnit);
 
                 lv_initOrder = OrderTargetingPoint(
                     AbilityCommand("move", 0), 
@@ -236,11 +236,11 @@ static void aimode_AttackStep(UnitPlayerRef refPlayer, unit inUnit) {
     if (!arena_gf_StringIsEmpty(lv_targetPlayer)) {
         lv_targetUnit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_targetPlayer);
     }
-    if (!UnitIsValid(lv_targetUnit)) {
+    if (!UnitIsAlive(lv_targetUnit)) {
         lv_minDistance = -1;
         for (lv_unitIndex = UnitGroupCount(arena_gv_playerUnitGroup, c_unitCountAll); lv_unitIndex > 0; lv_unitIndex -= 1) {
             lv_unit = UnitGroupUnit(arena_gv_playerUnitGroup, lv_unitIndex);
-            if (UnitIsValid(lv_unit) && UnitGetOwner(lv_unit) != refPlayer.playerId && UnitCanAttackTarget(inUnit, lv_unit)) {
+            if (UnitIsAlive(lv_unit) && UnitGetOwner(lv_unit) != refPlayer.playerId && UnitCanAttackTarget(inUnit, lv_unit)) {
                 lv_distance = DistanceBetweenPoints(UnitGetPosition(lv_unit), UnitGetPosition(inUnit));
                 if (lv_minDistance == -1 || lv_distance < lv_minDistance) {
                     lv_minDistance = lv_distance;
@@ -252,16 +252,16 @@ static void aimode_AttackStep(UnitPlayerRef refPlayer, unit inUnit) {
             lv_targetUnit = null;
             lv_targetPlayer = null;
             refPlayer.aiStates[c_aimode_stateHuntTarget] = 0;
-        } else if (UnitIsValid(lv_targetUnit)) {
+        } else if (UnitIsAlive(lv_targetUnit)) {
             refPlayer.aiStates[c_aimode_stateHuntTarget] = UnitGetTag(lv_targetUnit);
         }
         SaveUnitPlayer(refPlayer);
 
-        if (!UnitIsValid(lv_targetUnit)) {
+        if (!UnitIsAlive(lv_targetUnit)) {
             lv_minWeight = -1;
             for (lv_unitIndex = UnitGroupCount(gv_aimode_allStructures, c_unitCountAll); lv_unitIndex > 0; lv_unitIndex -= 1) {
                 lv_unit = UnitGroupUnit(gv_aimode_allStructures, lv_unitIndex);
-                if (UnitIsValid(lv_unit) && UnitGetOwner(lv_unit) != refPlayer.playerId && UnitCanAttackTarget(inUnit, lv_unit)) {
+                if (UnitIsAlive(lv_unit) && UnitGetOwner(lv_unit) != refPlayer.playerId && UnitCanAttackTarget(inUnit, lv_unit)) {
                     lv_angle = AbsF(AngleBetweenPoints(UnitGetPosition(inUnit), UnitGetPosition(lv_unit)) - UnitGetFacing(inUnit));
                     lv_weight = lv_angle + DistanceBetweenPoints(UnitGetPosition(lv_unit), UnitGetPosition(inUnit))*10;
                     if (lv_minWeight == -1 || lv_weight < lv_minWeight) {
@@ -273,7 +273,7 @@ static void aimode_AttackStep(UnitPlayerRef refPlayer, unit inUnit) {
         }
     }
 
-    if (UnitIsValid(lv_targetUnit) && lv_targetUnit != OrderGetTargetUnit(UnitOrder(inUnit, 0))) {
+    if (UnitIsAlive(lv_targetUnit) && lv_targetUnit != OrderGetTargetUnit(UnitOrder(inUnit, 0))) {
         lv_order = OrderTargetingUnit(AbilityCommand("attack", 0), lv_targetUnit);
         UnitIssueOrder(inUnit, lv_order, c_orderQueueReplace);
     }
@@ -294,12 +294,12 @@ static void aimode_HunterStep(UnitPlayerRef refPlayer, unit inUnit) {
     if (!arena_gf_StringIsEmpty(lv_targetPlayer)) {
         lv_targetUnit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_targetPlayer);
     }
-    if (!UnitIsValid(lv_targetUnit)) {
+    if (!UnitIsAlive(lv_targetUnit)) {
         lv_minWeight = -1;
         for (lv_unitIndex = UnitGroupCount(arena_gv_playerUnitGroup, c_unitCountAll); lv_unitIndex > 0; lv_unitIndex -= 1) {
             lv_unit = UnitGroupUnit(arena_gv_playerUnitGroup, lv_unitIndex);
     
-            if (UnitIsValid(lv_unit) && UnitGetOwner(lv_unit) != refPlayer.playerId && UnitCanAttackTarget(inUnit, lv_unit)) {
+            if (UnitIsAlive(lv_unit) && UnitGetOwner(lv_unit) != refPlayer.playerId && UnitCanAttackTarget(inUnit, lv_unit)) {
                 lv_distance = DistanceBetweenPoints(UnitGetPosition(lv_unit), UnitGetPosition(inUnit));
                 lv_weight = lv_distance * 10;
     
@@ -323,7 +323,7 @@ static void aimode_HunterStep(UnitPlayerRef refPlayer, unit inUnit) {
         SaveUnitPlayer(refPlayer);
     }
 
-    if (UnitIsValid(lv_targetUnit) && lv_targetUnit != OrderGetTargetUnit(UnitOrder(inUnit, 0))) {
+    if (UnitIsAlive(lv_targetUnit) && lv_targetUnit != OrderGetTargetUnit(UnitOrder(inUnit, 0))) {
         lv_order = OrderTargetingUnit(AbilityCommand("attack", 0), lv_targetUnit);
         UnitIssueOrder(inUnit, lv_order, c_orderQueueReplace);
     }
@@ -355,8 +355,6 @@ static void aimode_DefenceStep(UnitPlayerRef inoutPlayer, unit inUnit) {
 
 static void aimode_RetreatStep(UnitPlayerRef refPlayer, unit inUnit) {
     int lv_index;
-    int lv_defenceUnits;
-    int lv_minDefenceUnits = -1;
     unit lv_structure;
     unit lv_targetStructure;
     int defenceRadius = 10;
@@ -369,7 +367,7 @@ static void aimode_RetreatStep(UnitPlayerRef refPlayer, unit inUnit) {
         if (UnitGroupCount(UnitGroupSearch("CommandCenter", refPlayer.playerId, UnitGetPosition(inUnit), defenceRadius, null, 2), c_unitCountAlive) <= 0) {
             for (lv_index = UnitGroupCount(gv_aimode_allStructures, c_unitCountAll); lv_index > 0; lv_index -= 1) {
                 lv_structure = UnitGroupUnit(gv_aimode_allStructures, lv_index);
-                if (UnitIsValid(lv_structure) && UnitGetOwner(lv_structure) == refPlayer.playerId) {
+                if (UnitIsAlive(lv_structure) && UnitGetOwner(lv_structure) == refPlayer.playerId) {
                     if (UnitGetType(lv_structure) == "CommandCenter") {
                         lv_targetStructure = lv_structure;
                         break;
