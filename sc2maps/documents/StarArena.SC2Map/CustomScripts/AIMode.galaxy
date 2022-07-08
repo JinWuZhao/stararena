@@ -175,12 +175,12 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
         }
 
         if (UnitDataGetByUnitType(refPlayer.unitType, lv_unitData)) {
-            lv_levelUpCosts = lv_unitData.costPoints * (refPlayer.level + 1);
-            if (refPlayer.points >= lv_levelUpCosts) {
+            lv_levelUpCosts = lv_unitData.baseExp * (refPlayer.level + 1);
+            if (refPlayer.exp >= lv_levelUpCosts) {
                 refPlayer.level += 1;
-                refPlayer.points -= lv_levelUpCosts;
+                refPlayer.points += 4;
+                refPlayer.exp -= lv_levelUpCosts;
                 SaveUnitPlayer(refPlayer);
-                UnitDataInitPlayerUnitProps(refPlayer.level, inUnit);
                 if (!refPlayer.isBot) {
                     arena_gf_ShowMessage(refPlayer.name + " 到达 " + IntToString(refPlayer.level) + " 级");
                 }
@@ -208,7 +208,7 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
                 }
                 inUnit = arena_gf_CreateUnit(refPlayer.playerId, PointFromName(lv_pointName), lv_unitData.unitType, 
                     PointGetFacing(PointFromName(lv_pointName)), lv_unitData.baseScale, refPlayer.name, 2, !refPlayer.isBot);
-                UnitDataInitPlayerUnitProps(refPlayer.level, inUnit);
+                UnitDataInitPlayerUnitProps(refPlayer, inUnit);
                 WeaponDataApplyUnit(refPlayer.weaponType, inUnit);
 
                 lv_initOrder = OrderTargetingPoint(

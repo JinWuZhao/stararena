@@ -1,5 +1,11 @@
 // Const Declarations
 const int c_unitPlayerAIStatesCap = 5;
+
+const int c_unitPlayerPropsMaxLife = 0;
+const int c_unitPlayerPropsDamageMultiplier = 1;
+const int c_unitPlayerPropsMoveSpeed = 2;
+const int c_unitPlayerPropsCap = 3;
+
 const int c_unitPlayersCap = 20;
 
 const int c_GameStatePlayerIdRed = 4;
@@ -14,12 +20,14 @@ struct UnitPlayer {
     int playerId;
     int score;
     int combo;
+    int exp;
     int points;
     int aiMode;
     int level;
     int revivePoint;
     bool isBot;
     int[c_unitPlayerAIStatesCap] aiStates;
+    int[c_unitPlayerPropsCap] props;
 };
 
 typedef structref<UnitPlayer> UnitPlayerRef;
@@ -54,10 +62,11 @@ static void gamestate_InitUnitPlayerIndexOfName() {
 }
 
 static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source) {
-    int lv_aiStatesIndex;
+    int lv_index;
 
     dest.name = source.name;
     dest.playerId = source.playerId;
+    dest.exp = source.exp;
     dest.points = source.points;
     dest.score = source.score;
     dest.unitType = source.unitType;
@@ -68,8 +77,11 @@ static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source) {
     dest.combo = source.combo;
     dest.revivePoint = source.revivePoint;
     dest.isBot = source.isBot;
-    for (lv_aiStatesIndex = 0; lv_aiStatesIndex < c_unitPlayerAIStatesCap; lv_aiStatesIndex += 1) {
-        dest.aiStates[lv_aiStatesIndex] = source.aiStates[lv_aiStatesIndex];
+    for (lv_index = 0; lv_index < c_unitPlayerAIStatesCap; lv_index += 1) {
+        dest.aiStates[lv_index] = source.aiStates[lv_index];
+    }
+    for (lv_index = 0; lv_index < c_unitPlayerPropsCap; lv_index += 1) {
+        dest.props[lv_index] = source.props[lv_index];
     }
 }
 

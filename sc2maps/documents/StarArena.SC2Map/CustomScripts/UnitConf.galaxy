@@ -9,8 +9,8 @@ struct UnitData {
     string[c_UnitDataTypeAliasCount] typeAlias;
     int lifeMax;
     fixed moveSpeed;
-    int costPoints;
-    int rewardPoints;
+    int baseExp;
+    int rewardExp;
     fixed baseScale;
 };
 typedef structref<UnitData> UnitDataRef;
@@ -38,7 +38,8 @@ void UnitDataCopy(UnitDataRef dest, UnitDataRef source);
 bool UnitDataGet(int unitDataType, UnitDataRef outData);
 bool UnitDataGetByUnitType(string unitType, UnitDataRef outData);
 bool UnitDataInitUnitProps(unit inUnit);
-bool UnitDataInitPlayerUnitProps(int level, unit inUnit);
+bool UnitDataSetUnitProp(int inProp, int inPoints, UnitDataRef inData, unit inUnit);
+bool UnitDataInitPlayerUnitProps(UnitPlayerRef inPlayer, unit inUnit);
 void InitUnitData();
 
 static void unitdata_InitUnitMatrix();
@@ -52,8 +53,8 @@ void UnitDataCopy(UnitDataRef dest, UnitDataRef source) {
     dest.name = source.name;
     dest.lifeMax = source.lifeMax;
     dest.moveSpeed = source.moveSpeed;
-    dest.costPoints = source.costPoints;
-    dest.rewardPoints = source.rewardPoints;
+    dest.baseExp = source.baseExp;
+    dest.rewardExp = source.rewardExp;
     dest.baseScale = source.baseScale;
 
     for (lv_index = 0; lv_index < c_UnitDataTypeAliasCount; lv_index += 1) {
@@ -94,15 +95,32 @@ bool UnitDataInitUnitProps(unit inUnit) {
     return true;
 }
 
-bool UnitDataInitPlayerUnitProps(int level, unit inUnit) {
+bool UnitDataSetUnitProp(int inProp, int inPoints, UnitDataRef inData, unit inUnit) {
+    if (inProp < 0 || inProp >= c_unitPlayerPropsCap) {
+        return false;
+    }
+    if (inProp == c_unitPlayerPropsMaxLife) {
+        UnitSetPropertyInt(inUnit, c_unitPropLifeMax, inData.lifeMax * inPoints);
+    } else if (inProp == c_unitPlayerPropsDamageMultiplier) {
+        UnitBehaviorAdd(inUnit, "StarArenaAttackDamageEnhance", inUnit, inPoints / 4);
+    } else if (inProp == c_unitPlayerPropsMoveSpeed) {
+        UnitSetPropertyFixed(inUnit, c_unitPropBaseMovementSpeed, inData.moveSpeed * (IntToFixed(inPoints) / 4 + 1));
+    }
+    return true;
+}
+
+bool UnitDataInitPlayerUnitProps(UnitPlayerRef inPlayer, unit inUnit) {
     UnitData lv_unitData;
-    if (!UnitDataGetByUnitType(UnitGetType(inUnit), lv_unitData)) {
+    int lv_propIndex;
+    if (!UnitDataGetByUnitType(inPlayer.unitType, lv_unitData)) {
         return false;
     }
     UnitSetScale(inUnit, lv_unitData.baseScale, lv_unitData.baseScale, lv_unitData.baseScale);
-    UnitSetPropertyInt(inUnit, c_unitPropLifeMax, lv_unitData.lifeMax * level);
-    UnitSetPropertyFixed(inUnit, c_unitPropBaseMovementSpeed, lv_unitData.moveSpeed * (IntToFixed(level) / 5 + 1));
-    UnitBehaviorAdd(inUnit, "StarArenaUnitEnhance", inUnit, level / 3 + 1);
+    for (lv_propIndex = 0; lv_propIndex < c_unitPlayerPropsCap; lv_propIndex += 1) {
+        UnitDataSetUnitProp(lv_propIndex, inPlayer.props[lv_propIndex], lv_unitData, inUnit);
+        UnitDataSetUnitProp(lv_propIndex, inPlayer.props[lv_propIndex], lv_unitData, inUnit);
+        UnitDataSetUnitProp(lv_propIndex, inPlayer.props[lv_propIndex], lv_unitData, inUnit);
+    }
     return true;
 }
 
@@ -117,7 +135,7 @@ void InitUnitData() {
     data.dataType = c_UnitDataTypesHellion;
     data.unitType = "Hellion";
     data.name = "恶火";
-    data.costPoints = 60;
+    data.baseExp = 60;
     data.baseScale = 200;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypesHellion], data);
 
@@ -126,7 +144,7 @@ void InitUnitData() {
     data.unitType = "SiegeTank";
     data.name = "攻城坦克";
     data.typeAlias[0] = "SiegeTankSieged";
-    data.costPoints = 135;
+    data.baseExp = 135;
     data.baseScale = 150;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypesSiegeTank], data);
 
@@ -134,7 +152,7 @@ void InitUnitData() {
     data.dataType = c_UnitDataTypesThor;
     data.unitType = "ThorAP";
     data.name = "雷神";
-    data.costPoints = 360;
+    data.baseExp = 360;
     data.baseScale = 150;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypesThor], data);
 
@@ -142,7 +160,7 @@ void InitUnitData() {
     data.dataType = c_UnitDataTypeCyclone;
     data.unitType = "Cyclone";
     data.name = "飓风";
-    data.costPoints = 96;
+    data.baseExp = 96;
     data.baseScale = 150;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeCyclone], data);
 
@@ -150,7 +168,7 @@ void InitUnitData() {
     data.dataType = c_UnitDataTypeImmortal;
     data.unitType = "Immortal";
     data.name = "不朽者";
-    data.costPoints = 220;
+    data.baseExp = 220;
     data.baseScale = 200;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeImmortal], data);
 
@@ -158,7 +176,7 @@ void InitUnitData() {
     data.dataType = c_UnitDataTypeColossus;
     data.unitType = "Colossus";
     data.name = "巨像";
-    data.costPoints = 450;
+    data.baseExp = 450;
     data.baseScale = 150;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeColossus], data);
 
@@ -178,8 +196,8 @@ void InitUnitData() {
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeDestructibleGarage], data);
 
     for (lv_index = 0; lv_index < c_UnitDataTypesCount; lv_index += 1) {
-        if (gv_unitdata_unitTypes[lv_index].costPoints > 0) {
-            gv_unitdata_unitTypes[lv_index].rewardPoints = gv_unitdata_unitTypes[lv_index].costPoints / 3;
+        if (gv_unitdata_unitTypes[lv_index].baseExp > 0) {
+            gv_unitdata_unitTypes[lv_index].rewardExp = gv_unitdata_unitTypes[lv_index].baseExp / 3;
         }
         if (gv_unitdata_unitTypes[lv_index].baseScale <= 0) {
             gv_unitdata_unitTypes[lv_index].baseScale = 100;

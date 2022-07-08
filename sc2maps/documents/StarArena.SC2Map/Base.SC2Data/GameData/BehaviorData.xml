@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Catalog>
-    <CBehaviorBuff id="StarArenaUnitEnhance">
+    <CBehaviorBuff id="StarArenaAttackDamageEnhance">
+        <MaxStackCount value="99"/>
         <Modification>
             <DamageDealtFraction index="Spell" value="1"/>
             <DamageDealtFraction index="Melee" value="1"/>
             <DamageDealtFraction index="Ranged" value="1"/>
             <DamageDealtFraction index="Splash" value="1"/>
         </Modification>
-        <MaxStackCount value="99"/>
     </CBehaviorBuff>
 </Catalog>

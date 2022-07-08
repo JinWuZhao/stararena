@@ -153,3 +153,33 @@ static void unitctrl_SetWeaponTest_Init() {
     gt_unitctrl_SetWeaponTest = TriggerCreate("unitctrl_SetWeaponTest_Func");
     TriggerAddEventGeneric(gt_unitctrl_SetWeaponTest, (arena_gv_commandPrefix + "set-weapon-test"));
 }
+
+bool unitctrl_AssignePoints_Func(bool testConds, bool runActions) {
+    string lv_name = arena_gf_CurrentCommandArgument(1);
+    int lv_propIndex = StringToInt(arena_gf_CurrentCommandArgument(2));
+    int lv_points = StringToInt(arena_gf_CurrentCommandArgument(3));
+    UnitPlayer lv_player;
+    unit lv_unit;
+    UnitData lv_data;
+
+    if (!runActions) {
+        return false;
+    }
+
+    if (arena_gf_StringIsEmpty(lv_name) || !UnitPlayerFromName(lv_name, lv_player) || 
+        lv_propIndex < 0 || lv_propIndex >= c_unitPlayerPropsCap || 
+        lv_points <= 0 || lv_points > lv_player.points) {
+        return false;
+    }
+
+    lv_player.points -= lv_points;
+    lv_player.props[lv_propIndex] += lv_points;
+    SaveUnitPlayer(lv_player);
+
+    lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
+    if (UnitIsAlive(lv_unit) && UnitDataGetByUnitType(lv_player.unitType, lv_data)) {
+        lv_points = lv_player.props[lv_propIndex];
+        UnitDataSetUnitProp(lv_propIndex, lv_points, lv_data, lv_unit);
+    }
+    return true;
+}

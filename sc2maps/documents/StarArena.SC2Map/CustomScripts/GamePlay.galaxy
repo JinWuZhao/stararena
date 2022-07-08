@@ -345,11 +345,11 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
     }
 
     if (!arena_gf_StringIsEmpty(lv_target) && UnitPlayerFromName(lv_target, lv_targetPlayer)) {
-        lv_rewardPoints = lv_unitData.rewardPoints * (lv_targetPlayer.combo + 1);
+        lv_rewardPoints = lv_unitData.rewardExp * (lv_targetPlayer.combo + 1);
     } else {
-        lv_rewardPoints = lv_unitData.rewardPoints;
+        lv_rewardPoints = lv_unitData.rewardExp;
     }
-    lv_attackerPlayer.points += lv_rewardPoints;
+    lv_attackerPlayer.exp += lv_rewardPoints;
     lv_attackerPlayer.score += 1;
     lv_attackerPlayer.combo += 1;
     SaveUnitPlayer(lv_attackerPlayer);
@@ -414,8 +414,8 @@ bool gameplay_DamageUnit_Func(bool testConds, bool runActions) {
         return false;
     }
 
-    if (lv_targetUnitData.rewardPoints > 0) {
-        lv_attackerPlayer.points += lv_damage * lv_targetUnitData.rewardPoints / UnitGetPropertyInt(lv_targetUnit, c_unitPropLifeMax, true) + 1;
+    if (lv_targetUnitData.rewardExp > 0) {
+        lv_attackerPlayer.exp += lv_damage * lv_targetUnitData.rewardExp / UnitGetPropertyInt(lv_targetUnit, c_unitPropLifeMax, true) + 1;
         SaveUnitPlayer(lv_attackerPlayer);
     }
 
@@ -478,6 +478,7 @@ bool gameplay_UnitSelected_Func(bool testConds, bool runActions) {
     // arena_gf_InfoLog(lv_name + " datetime: " + IntToString(DateTimeToInt(CurrentDateTimeGet())));
     arena_gf_InfoLog(lv_name + " weapon: " + lv_player.weaponType);
     arena_gf_InfoLog(lv_name + " level: " + IntToString(lv_player.level));
+    arena_gf_InfoLog(lv_name + " exp: " + IntToString(lv_player.exp));
     arena_gf_InfoLog(lv_name + " points: " + IntToString(lv_player.points));
     arena_gf_InfoLog(lv_name + " score: " + IntToString(lv_player.score));
     arena_gf_InfoLog(lv_name + " combo: " + IntToString(lv_player.combo));

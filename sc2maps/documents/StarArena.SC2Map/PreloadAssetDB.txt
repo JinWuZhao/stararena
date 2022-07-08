@@ -13,7 +13,7 @@ Button
 Effect=##id##CreatePrecursor
 
 [Behavior]
-id=StarArenaUnitEnhance
+id=StarArenaAttackDamageEnhance
 asset=Assets\Textures\btn-missing-kaeo.dds
 Actor=CommandUIHarnessAttackProtoss,CommandUIHarnessAttackTerran,CommandUIHarnessAttackZerg,CommandUIHarnessConfirmProtoss,CommandUIHarnessConfirmTerran,CommandUIHarnessConfirmZerg,CommandUIHarnessMoveProtoss,CommandUIHarnessMoveTerran,CommandUIHarnessMoveZerg,CommandUIHarnessRallyProtoss,CommandUIHarnessRallyTerran,CommandUIHarnessRallyZerg,TerrainMgr
 
