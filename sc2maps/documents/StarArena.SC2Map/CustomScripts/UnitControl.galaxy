@@ -3,6 +3,7 @@ static trigger gt_unitctrl_SetAIMode;
 static trigger gt_unitctrl_MoveToward;
 static trigger gt_unitctrl_SetWeapon;
 static trigger gt_unitctrl_SetWeaponTest;
+static trigger gt_unitctrl_AssignePoints;
 
 // Function Declarations
 void InitUnitControl();
@@ -11,6 +12,7 @@ static void unitctrl_SetAIMode_Init();
 static void unitctrl_MoveToward_Init();
 static void unitctrl_SetWeapon_Init();
 static void unitctrl_SetWeaponTest_Init();
+static void unitctrl_AssignePoints_Init();
 
 // Functions
 void InitUnitControl() {
@@ -18,6 +20,7 @@ void InitUnitControl() {
     unitctrl_MoveToward_Init();
     unitctrl_SetWeapon_Init();
     unitctrl_SetWeaponTest_Init();
+    unitctrl_AssignePoints_Init();
 }
 
 bool unitctrl_SetAIMode_Func(bool testConds, bool runActions) {
@@ -182,4 +185,9 @@ bool unitctrl_AssignePoints_Func(bool testConds, bool runActions) {
         UnitDataSetUnitProp(lv_propIndex, lv_points, lv_data, lv_unit);
     }
     return true;
+}
+
+static void unitctrl_AssignePoints_Init() {
+    gt_unitctrl_AssignePoints = TriggerCreate("unitctrl_AssignePoints_Func");
+    TriggerAddEventGeneric(gt_unitctrl_AssignePoints, (arena_gv_commandPrefix + "assigne-points"));
 }

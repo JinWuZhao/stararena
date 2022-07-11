@@ -14,8 +14,6 @@ static trigger gt_aimode_GameLoop;
 static trigger gt_aimode_DamageUnit;
 static trigger gt_aimode_KillUnit;
 
-static const int c_aimode_metricsPlayers = 5;
-static int[c_aimode_metricsPlayers][c_AIModeEnd] gv_aimode_metrics;
 static int[c_AIModeEnd] gv_aimode_balance;
 
 static const int c_aimode_reviveInterval = 4;
@@ -29,7 +27,6 @@ static const int c_aimode_stateHuntTarget = 4;
 
 void InitAIMode();
 bool AIModeValidMode(int aiMode);
-int AIModeSelectMode(int playerId);
 void AIModeSetMode(UnitPlayerRef refPlayer, int inMode);
 
 static void aimode_GameLoop_Init();
@@ -62,20 +59,6 @@ bool AIModeValidMode(int inMode) {
     return false;
 }
 
-int AIModeSelectMode(int playerId) {
-    int lv_index = RandomInt(c_AIModeNone+1, c_AIModeEnd-1);
-    if (gv_aimode_metrics[playerId][lv_index] < gv_aimode_balance[lv_index]) {
-        return lv_index;
-    }
-
-    for (lv_index = c_AIModeNone+1; lv_index < c_AIModeEnd-1; lv_index += 1) {
-        if (gv_aimode_metrics[playerId][lv_index] < gv_aimode_balance[lv_index]) {
-            break;
-        }
-    }
-    return lv_index;
-}
-
 void AIModeSetMode(UnitPlayerRef refPlayer, int inMode) {
     if (refPlayer.aiMode != inMode) {
         refPlayer.aiMode = inMode;
@@ -100,19 +83,10 @@ bool aimode_GameLoop_Func(bool testConds, bool runActions) {
         return true;
     }
 
-    for (k = 0; k < c_aimode_metricsPlayers; k += 1) {
-        for (index = 0; index < c_AIModeEnd; index += 1) {
-            gv_aimode_metrics[k][index] = 0;
-        }
-    }
-
     UnitPlayersGetAll(lv_players);
     for (index = 0; index < UnitPlayersCount(); index += 1) {
         lv_unit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_players[index].name);
         if (UnitIsAlive(lv_unit)) {
-
-            gv_aimode_metrics[lv_players[index].playerId][lv_players[index].aiMode] += 1;
-
             if (lv_players[index].aiMode == c_AIModeAttack) {
                 aimode_AttackStep(lv_players[index], lv_unit);
             } else if (lv_players[index].aiMode == c_AIModeHunter) {
@@ -165,9 +139,7 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
 
         if (refPlayer.aiMode == c_AIModeAttack || refPlayer.aiMode == c_AIModeHunter) {
             if (!UnitOrderHasAbil(inUnit, "attack")) {
-                if (refPlayer.aiMode == c_AIModeAttack) {
-                    AIModeSetMode(refPlayer, c_AIModeHunter);
-                } else {
+                if (refPlayer.aiMode == c_AIModeHunter) {
                     AIModeSetMode(refPlayer, c_AIModeAttack);
                 }
                 SaveUnitPlayer(refPlayer);
@@ -181,9 +153,6 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
                 refPlayer.points += 4;
                 refPlayer.exp -= lv_levelUpCosts;
                 SaveUnitPlayer(refPlayer);
-                if (!refPlayer.isBot) {
-                    arena_gf_ShowMessage(refPlayer.name + " 到达 " + IntToString(refPlayer.level) + " 级");
-                }
             }
         }
 
@@ -192,7 +161,7 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
             if (UnitDataGetByUnitType(refPlayer.unitType, lv_unitData)) {
                 refPlayer.deadTime = CurrentDateTimeGet();
                 if (refPlayer.aiMode == c_AIModeNone) {
-                    AIModeSetMode(refPlayer, AIModeSelectMode(refPlayer.playerId));
+                    AIModeSetMode(refPlayer, c_AIModeAttack);
                 }
                 if (arena_gf_StringIsEmpty(refPlayer.weaponType)) {
                     refPlayer.weaponType = WeaponDataGetType(RandomInt(0, c_WeaponDataTypeCount-1));
@@ -444,9 +413,6 @@ bool aimode_KillUnit_Func(bool testConds, bool runActions) {
     if (lv_player.aiStates[c_aimode_stateOriginAIMode] > 0) {
         AIModeSetMode(lv_player, lv_player.aiStates[c_aimode_stateOriginAIMode]);
         lv_player.aiStates[c_aimode_stateOriginAIMode] = 0;
-    }
-    if (lv_player.isBot) {
-        AIModeSetMode(lv_player, c_AIModeNone);
     }
     lv_player.combo = 0;
     lv_player.deadTime = CurrentDateTimeGet();

@@ -10,10 +10,12 @@ static trigger gt_gameplay_KillUnit;
 static trigger gt_gameplay_DamageUnit;
 static trigger gt_gameplay_RechargePoints;
 static trigger gt_gameplay_UnitSelected;
+static trigger gt_gameplay_TimerLoop;
 
 // Variable Declarations
 static int gv_gameplay_winnerPlayer;
 static timer gv_gameplay_loopTimer;
+static int[c_unitPlayersCap] gv_gameplay_playerInfoItmes;
 
 static const int c_gameplay_UnitRedCenter = 177235035;
 static const int c_gameplay_UnitBlueCenter = 1585478384;
@@ -32,11 +34,19 @@ static void gameplay_KillUnit_Init();
 static void gameplay_DamageUnit_Init();
 static void gameplay_RechargePoints_Init();
 static void gameplay_UnitSelected_Init();
+static void gameplay_TimerLoop_Init();
 
 // Functions
 void InitGamePlay() {
+    int lv_index;
+
     gv_gameplay_loopTimer = TimerCreate();
     TimerStart(gv_gameplay_loopTimer, 1.0, true, c_timeReal);
+
+    for (lv_index = 0; lv_index < c_unitPlayersCap; lv_index += 1) {
+        gv_gameplay_playerInfoItmes[lv_index] = DialogControlHookupStandard(
+            c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/Players/" + IntToString(lv_index) + "/content");
+    }
 
     gameplay_initMap_Init();
     gameplay_Victory_Init();
@@ -49,6 +59,7 @@ void InitGamePlay() {
     gameplay_DamageUnit_Init();
     gameplay_RechargePoints_Init();
     gameplay_UnitSelected_Init();
+    gameplay_TimerLoop_Init();
 }
 
 bool gameplay_initMap_Func(bool testConds, bool runActions) {
@@ -369,8 +380,8 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
         if (!lv_attackerPlayer.isBot || !lv_targetPlayer.isBot) {
             arena_gf_ShowMessage(lv_killMsg);
     
-            if (!lv_attackerPlayer.isBot && lv_attackerPlayer.combo > 1) {
-                arena_gf_ShowMessage(lv_attacker + " 完成了 " + IntToString(lv_attackerPlayer.combo) + " 连杀！");
+            if (!lv_attackerPlayer.isBot && lv_attackerPlayer.combo > 2) {
+                UIDisplayMessage(PlayerGroupActive(), c_messageAreaDirective, StringToText(lv_attacker + " 完成了 " + IntToString(lv_attackerPlayer.combo) + " 杀！"));
             }
         }
     }
@@ -475,32 +486,32 @@ bool gameplay_UnitSelected_Func(bool testConds, bool runActions) {
     if (arena_gf_StringIsEmpty(lv_name) || !UnitPlayerFromName(lv_name, lv_player)) {
         return false;
     }
-    // arena_gf_InfoLog(lv_name + " datetime: " + IntToString(DateTimeToInt(CurrentDateTimeGet())));
-    arena_gf_InfoLog(lv_name + " weapon: " + lv_player.weaponType);
-    arena_gf_InfoLog(lv_name + " level: " + IntToString(lv_player.level));
-    arena_gf_InfoLog(lv_name + " exp: " + IntToString(lv_player.exp));
-    arena_gf_InfoLog(lv_name + " points: " + IntToString(lv_player.points));
-    arena_gf_InfoLog(lv_name + " score: " + IntToString(lv_player.score));
-    arena_gf_InfoLog(lv_name + " combo: " + IntToString(lv_player.combo));
-    arena_gf_InfoLog(lv_name + " aiMode: " + IntToString(lv_player.aiMode));
-    // arena_gf_InfoLog(lv_name + " TotalTakenDamage: " + IntToString(lv_player.aiStates[0]));
-    // arena_gf_InfoLog(lv_name + " WillBrokenTime: " + IntToString(lv_player.aiStates[1]));
-    // arena_gf_InfoLog(lv_name + " OriginAIMode: " + IntToString(lv_player.aiStates[2]));
-    // arena_gf_InfoLog(lv_name + " ModeEntered: " + IntToString(lv_player.aiStates[3]));
-    // arena_gf_InfoLog(lv_name + " HuntTarget: " + IntToString(lv_player.aiStates[4]));
+    // arena_gf_DebugLog(lv_name + " datetime: " + IntToString(DateTimeToInt(CurrentDateTimeGet())));
+    arena_gf_DebugLog(lv_name + " weapon: " + lv_player.weaponType);
+    arena_gf_DebugLog(lv_name + " level: " + IntToString(lv_player.level));
+    arena_gf_DebugLog(lv_name + " exp: " + IntToString(lv_player.exp));
+    arena_gf_DebugLog(lv_name + " points: " + IntToString(lv_player.points));
+    arena_gf_DebugLog(lv_name + " score: " + IntToString(lv_player.score));
+    arena_gf_DebugLog(lv_name + " combo: " + IntToString(lv_player.combo));
+    arena_gf_DebugLog(lv_name + " aiMode: " + IntToString(lv_player.aiMode));
+    // arena_gf_DebugLog(lv_name + " TotalTakenDamage: " + IntToString(lv_player.aiStates[0]));
+    // arena_gf_DebugLog(lv_name + " WillBrokenTime: " + IntToString(lv_player.aiStates[1]));
+    // arena_gf_DebugLog(lv_name + " OriginAIMode: " + IntToString(lv_player.aiStates[2]));
+    // arena_gf_DebugLog(lv_name + " ModeEntered: " + IntToString(lv_player.aiStates[3]));
+    // arena_gf_DebugLog(lv_name + " HuntTarget: " + IntToString(lv_player.aiStates[4]));
     // lv_huntTarget = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(lv_player.aiStates[4])));
     // if (!arena_gf_StringIsEmpty(lv_huntTarget)) {
-    //     arena_gf_InfoLog(lv_name + " HuntTarget: " + lv_huntTarget);
+    //     arena_gf_DebugLog(lv_name + " HuntTarget: " + lv_huntTarget);
     //     lv_huntTargetUnit = DataTableGetUnit(true, arena_gv_unitNamePrefix + lv_huntTarget);
     //     if (UnitIsAlive(lv_huntTargetUnit)) {
-    //         arena_gf_InfoLog(lv_name + " HuntTarget unit: " + UnitGetType(lv_huntTargetUnit) + ", " + IntToString(UnitGetTag(lv_huntTargetUnit)));
+    //         arena_gf_DebugLog(lv_name + " HuntTarget unit: " + UnitGetType(lv_huntTargetUnit) + ", " + IntToString(UnitGetTag(lv_huntTargetUnit)));
     //     }
     // }
     // lv_order = UnitOrder(lv_unit, 0);
     // if (lv_order != null) {
-    //     arena_gf_InfoLog(lv_name + " order ability: " + AbilityCommandGetAbility(OrderGetAbilityCommand(lv_order)));
+    //     arena_gf_DebugLog(lv_name + " order ability: " + AbilityCommandGetAbility(OrderGetAbilityCommand(lv_order)));
     //     if (OrderGetTargetType(lv_order) == c_orderTargetUnit) {
-    //         arena_gf_InfoLog(lv_name + " order target unit: " + UnitGetType(OrderGetTargetUnit(lv_order)) + ", " + IntToString(UnitGetTag(OrderGetTargetUnit(lv_order))));
+    //         arena_gf_DebugLog(lv_name + " order target unit: " + UnitGetType(OrderGetTargetUnit(lv_order)) + ", " + IntToString(UnitGetTag(OrderGetTargetUnit(lv_order))));
     //     }
     // }
     
@@ -510,4 +521,31 @@ bool gameplay_UnitSelected_Func(bool testConds, bool runActions) {
 static void gameplay_UnitSelected_Init() {
     gt_gameplay_UnitSelected = TriggerCreate("gameplay_UnitSelected_Func");
     TriggerAddEventUnitSelected(gt_gameplay_UnitSelected, null, c_playerAny, true);
+}
+
+bool gameplay_TimerLoop_Func(bool testConds, bool runActions) {
+    int lv_index;
+    UnitPlayer lv_player;
+
+    if (!runActions) {
+        return true;
+    }
+
+    for (lv_index = 0; lv_index < c_unitPlayersCap; lv_index += 1) {
+        if (UnitPlayerGet(lv_index, lv_player)) {
+            if (lv_player.isBot) {
+                lv_player.name = "Bot";
+            }
+            DialogControlSetPropertyAsText(gv_gameplay_playerInfoItmes[lv_index], 
+                c_triggerControlPropertyText, PlayerGroupAll(), 
+                StringToText(lv_player.name + "\n" + lv_player.weaponType + "\nlv." + IntToString(lv_player.level) + "\n" + IntToString(lv_player.points) + " pts"));
+        }
+    }
+
+    return true;
+}
+
+static void gameplay_TimerLoop_Init() {
+    gt_gameplay_TimerLoop = TriggerCreate("gameplay_TimerLoop_Func");
+    TriggerAddEventTimer(gt_gameplay_TimerLoop, gv_gameplay_loopTimer);
 }

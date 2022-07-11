@@ -45,6 +45,7 @@ bool AddUnitPlayer(UnitPlayerRef player);
 bool RemoveUnitPlayer(string name);
 bool SaveUnitPlayer(UnitPlayerRef player);
 bool UnitPlayerFromName(string name, UnitPlayerRef player);
+bool UnitPlayerGet(int inIndex, UnitPlayerRef player);
 void UnitPlayersGetAll(UnitPlayerArrayRef outPlayers);
 int UnitPlayersCount();
 void UnitPlayersOfRanked(UnitPlayerArrayRef outPlayers);
@@ -52,7 +53,7 @@ void InitGameState();
 
 static void gamestate_InitUnitPlayerIndexOfName();
 static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source);
-static int gamestate_PickAvailableUnitPlayerIndex();
+static int gamestate_PickAvailableUnitPlayerIndex(int playerId);
 static void gamestate_SaveUnitPlayerByIndex(int index, UnitPlayerRef player);
 
 // Functions
@@ -85,10 +86,15 @@ static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source) {
     }
 }
 
-static int gamestate_PickAvailableUnitPlayerIndex() {
-    int index;
+static int gamestate_PickAvailableUnitPlayerIndex(int playerId) {
+    int index = 0;
 
-    for (index = 0; index < c_unitPlayersCap; index += 1) {
+    if (playerId == c_GameStatePlayerIdRed) {
+        index = 0;
+    } else if (playerId == c_GameStatePlayerIdBlue) {
+        index = c_unitPlayersCap / 2;
+    }
+    for (; index < c_unitPlayersCap; index += 1) {
         if (gv_gamestate_unitPlayers[index].name == null) {
             break;
         }
@@ -102,7 +108,7 @@ static void gamestate_SaveUnitPlayerByIndex(int index, UnitPlayerRef player) {
 }
 
 bool AddUnitPlayer(UnitPlayerRef player) {
-    int index = gamestate_PickAvailableUnitPlayerIndex();
+    int index = gamestate_PickAvailableUnitPlayerIndex(player.playerId);
     if (index == c_unitPlayersCap) {
         return false;
     }
@@ -110,6 +116,9 @@ bool AddUnitPlayer(UnitPlayerRef player) {
     player.unitType = "SiegeTank";
     player.level = 1;
     player.revivePoint = RandomInt(1, 4);
+    player.props[c_unitPlayerPropsMaxLife] = 1;
+    player.props[c_unitPlayerPropsDamageMultiplier] = 0;
+    player.props[c_unitPlayerPropsMoveSpeed] = 0;
     gamestate_SaveUnitPlayerByIndex(index, player);
     gv_gamestate_unitPlayersCount += 1;
     return true;
@@ -148,6 +157,20 @@ bool UnitPlayerFromName(string name, UnitPlayerRef player) {
 
     lv_player = gv_gamestate_unitPlayers[DataTableInstanceGetInt(gv_gamestate_unitPlayerIndexOfName, name)];
     gamestate_CopyUnitPlayer(player, lv_player);
+    return true;
+}
+
+bool UnitPlayerGet(int inIndex, UnitPlayerRef outPlayer) {
+    UnitPlayerRef lv_player;
+
+    if (inIndex < 0 || inIndex >= c_unitPlayersCap) {
+        return false;
+    }
+    lv_player = gv_gamestate_unitPlayers[inIndex];
+    if (arena_gf_StringIsEmpty(lv_player.name)) {
+        return false;
+    }
+    gamestate_CopyUnitPlayer(outPlayer, lv_player);
     return true;
 }
 

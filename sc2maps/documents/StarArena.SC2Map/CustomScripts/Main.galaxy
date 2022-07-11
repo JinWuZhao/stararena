@@ -1,7 +1,7 @@
 include "CustomScripts/ArenaLib"
 include "CustomScripts/WeaponConf"
-include "CustomScripts/UnitConf"
 include "CustomScripts/GameState"
+include "CustomScripts/UnitConf"
 include "CustomScripts/AIMode"
 include "CustomScripts/UnitControl"
 include "CustomScripts/GamePlay"
