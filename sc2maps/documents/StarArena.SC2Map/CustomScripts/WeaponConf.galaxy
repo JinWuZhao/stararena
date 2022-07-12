@@ -25,16 +25,50 @@ const int c_WeaponDataTypeParasiteSpore = 22; // 寄生孢子
 const int c_WeaponDataTypeRavagerWeapon = 23; // 等离子发射
 const int c_WeaponDataTypeCount = 24;
 
-static string[c_WeaponDataTypeCount] gv_weapondata_types;
+struct WeaponData {
+    int index;
+    string type;
+    string name;
+};
+typedef structref<WeaponData> WeaponDataRef;
 
+static WeaponData[c_WeaponDataTypeCount] gv_weapondata_types;
+
+static int gv_weapondata_dataByType;
+
+void WeaponDataCopy(WeaponDataRef dest, WeaponDataRef source);
 string WeaponDataGetType(int inIndex);
+string WeaponDataGetName(int inIndex);
+bool WeaponDataGetByType(string inType, WeaponDataRef outData);
+void WeaponDataApplyUnit(string inWeapon, unit inUnit);
 void InitWeaponData();
 
 string WeaponDataGetType(int inIndex) {
     if (inIndex > c_WeaponDataTypeNone && inIndex < c_WeaponDataTypeCount) {
-        return gv_weapondata_types[inIndex];
+        return gv_weapondata_types[inIndex].type;
     }
     return "";
+}
+
+string WeaponDataGetName(int inIndex) {
+    if (inIndex > c_WeaponDataTypeNone && inIndex < c_WeaponDataTypeCount) {
+        return gv_weapondata_types[inIndex].name;
+    }
+    return "";
+}
+
+bool WeaponDataGetByType(string inType, WeaponDataRef outData) {
+    if (!DataTableInstanceValueExists(gv_weapondata_dataByType, inType)) {
+        return false;
+    }
+    WeaponDataCopy(outData, gv_weapondata_types[DataTableInstanceGetInt(gv_weapondata_dataByType, inType)]);
+    return true;
+}
+
+void WeaponDataCopy(WeaponDataRef dest, WeaponDataRef source) {
+    dest.index = source.index;
+    dest.name = source.name;
+    dest.type = source.type;
 }
 
 void WeaponDataApplyUnit(string inWeapon, unit inUnit) {
@@ -46,28 +80,109 @@ void WeaponDataApplyUnit(string inWeapon, unit inUnit) {
 }
 
 void InitWeaponData() {
-    gv_weapondata_types[c_WeaponDataTypePunisherGrenades] = "PunisherGrenades";
-    gv_weapondata_types[c_WeaponDataTypeInfernalFlameThrower] = "InfernalFlameThrower";
-    gv_weapondata_types[c_WeaponDataType90mmCannons] = "90mmCannons";
-    gv_weapondata_types[c_WeaponDataTypeBacklashRockets] = "BacklashRockets";
-    gv_weapondata_types[c_WeaponDataTypeLanzerTorpedoes] = "LanzerTorpedoes";
-    gv_weapondata_types[c_WeaponDataTypeMengskThorsHammer] = "MengskThorsHammer";
-    gv_weapondata_types[c_WeaponDataTypeLiberatorAGWeapon] = "LiberatorAGWeapon";
-    gv_weapondata_types[c_WeaponDataTypeLiberatorMissileLaunchers] = "LiberatorMissileLaunchers";
-    gv_weapondata_types[c_WeaponDataTypeATSLaserBattery] = "ATSLaserBattery";
-    gv_weapondata_types[c_WeaponDataTypeTyphoonMissilePod] = "TyphoonMissilePod";
-    gv_weapondata_types[c_WeaponDataTypeParticleDisruptors] = "ParticleDisruptors";
-    gv_weapondata_types[c_WeaponDataTypeDisruptionBeam] = "DisruptionBeam";
-    gv_weapondata_types[c_WeaponDataTypeIonCannons] = "IonCannons";
-    gv_weapondata_types[c_WeaponDataTypePhaseDisruptors] = "PhaseDisruptors";
-    gv_weapondata_types[c_WeaponDataTypeThermalLances] = "ThermalLances";
-    gv_weapondata_types[c_WeaponDataTypeVoidRayChargeBeamBase] = "VoidRayChargeBeamBase";
-    gv_weapondata_types[c_WeaponDataTypePsionicShockwave] = "PsionicShockwave";
-    gv_weapondata_types[c_WeaponDataTypeMothershipBeam] = "MothershipBeam";
-    gv_weapondata_types[c_WeaponDataTypeTempestGround] = "TempestGround";
-    gv_weapondata_types[c_WeaponDataTypeAdept] = "Adept";
-    gv_weapondata_types[c_WeaponDataTypeAcidSaliva] = "AcidSaliva";
-    gv_weapondata_types[c_WeaponDataTypeGlaiveWurm] = "GlaiveWurm";
-    gv_weapondata_types[c_WeaponDataTypeParasiteSpore] = "ParasiteSpore";
-    gv_weapondata_types[c_WeaponDataTypeRavagerWeapon] = "RavagerWeapon";
+    WeaponDataRef lv_weaponData;
+    int lv_index;
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypePunisherGrenades];
+    lv_weaponData.type = "PunisherGrenades";
+    lv_weaponData.name = "惩罚者榴弹";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeInfernalFlameThrower];
+    lv_weaponData.type = "InfernalFlameThrower";
+    lv_weaponData.name = "地狱火喷射器";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataType90mmCannons];
+    lv_weaponData.type = "90mmCannons";
+    lv_weaponData.name = "90毫米口径火炮";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeBacklashRockets];
+    lv_weaponData.type = "BacklashRockets";
+    lv_weaponData.name = "反冲火箭";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeLanzerTorpedoes];
+    lv_weaponData.type = "LanzerTorpedoes";
+    lv_weaponData.name = "兰泽尔飞雷";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeMengskThorsHammer];
+    lv_weaponData.type = "MengskThorsHammer";
+    lv_weaponData.name = "雷神之锤";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeLiberatorAGWeapon];
+    lv_weaponData.type = "LiberatorAGWeapon";
+    lv_weaponData.name = "康科德火炮";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeLiberatorMissileLaunchers];
+    lv_weaponData.type = "LiberatorMissileLaunchers";
+    lv_weaponData.name = "列克星敦火箭";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeATSLaserBattery];
+    lv_weaponData.type = "ATSLaserBattery";
+    lv_weaponData.name = "空对地激光炮组";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeTyphoonMissilePod];
+    lv_weaponData.type = "TyphoonMissilePod";
+    lv_weaponData.name = "台风飞弹舱";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeParticleDisruptors];
+    lv_weaponData.type = "ParticleDisruptors";
+    lv_weaponData.name = "粒子碎裂炮";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeDisruptionBeam];
+    lv_weaponData.type = "DisruptionBeam";
+    lv_weaponData.name = "瓦解射线";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeIonCannons];
+    lv_weaponData.type = "IonCannons";
+    lv_weaponData.name = "离子炮";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypePhaseDisruptors];
+    lv_weaponData.type = "PhaseDisruptors";
+    lv_weaponData.name = "相位碎裂炮";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeThermalLances];
+    lv_weaponData.type = "ThermalLances";
+    lv_weaponData.name = "热能射线枪";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeVoidRayChargeBeamBase];
+    lv_weaponData.type = "VoidRayChargeBeamBase";
+    lv_weaponData.name = "棱镜光束";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypePsionicShockwave];
+    lv_weaponData.type = "PsionicShockwave";
+    lv_weaponData.name = "灵能冲击波";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeMothershipBeam];
+    lv_weaponData.type = "MothershipBeam";
+    lv_weaponData.name = "净化光束";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeTempestGround];
+    lv_weaponData.type = "TempestGround";
+    lv_weaponData.name = "谐振盘";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeAdept];
+    lv_weaponData.type = "Adept";
+    lv_weaponData.name = "刃炮";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeAcidSaliva];
+    lv_weaponData.type = "AcidSaliva";
+    lv_weaponData.name = "酸性唾液";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeGlaiveWurm];
+    lv_weaponData.type = "GlaiveWurm";
+    lv_weaponData.name = "刃虫";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeParasiteSpore];
+    lv_weaponData.type = "ParasiteSpore";
+    lv_weaponData.name = "寄生孢子";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeRavagerWeapon];
+    lv_weaponData.type = "RavagerWeapon";
+    lv_weaponData.name = "等离子发射";
+
+    DataTableInstanceCreate();
+    gv_weapondata_dataByType = DataTableInstanceLastCreated();
+    for (lv_index = 0; lv_index < c_WeaponDataTypeCount; lv_index += 1) {
+        gv_weapondata_types[lv_index].index = lv_index;
+        DataTableInstanceSetInt(gv_weapondata_dataByType, gv_weapondata_types[lv_index].type, lv_index);
+    }
 }

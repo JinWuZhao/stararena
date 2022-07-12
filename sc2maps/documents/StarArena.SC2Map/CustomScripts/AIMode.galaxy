@@ -16,7 +16,7 @@ static trigger gt_aimode_KillUnit;
 
 static int[c_AIModeEnd] gv_aimode_balance;
 
-static const int c_aimode_reviveInterval = 4;
+static const int c_aimode_reviveInterval = 8;
 static const int c_aimode_willRechargeCD = 2;
 
 static const int c_aimode_stateTotalTakenDamage = 0;
@@ -153,7 +153,16 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
                 refPlayer.points += 4;
                 refPlayer.exp -= lv_levelUpCosts;
                 SaveUnitPlayer(refPlayer);
+                if (!refPlayer.isBot) {
+                    arena_gf_ShowMessage(refPlayer.name + " 升至 " + IntToString(refPlayer.level) + " 级");
+                }
             }
+        }
+
+        if (refPlayer.isBot && refPlayer.points > 0) {
+            refPlayer.props[RandomInt(0, c_unitPlayerPropsCap-1)] += 1;
+            refPlayer.points -= 1;
+            SaveUnitPlayer(refPlayer);
         }
 
     } else {
@@ -162,9 +171,6 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
                 refPlayer.deadTime = CurrentDateTimeGet();
                 if (refPlayer.aiMode == c_AIModeNone) {
                     AIModeSetMode(refPlayer, c_AIModeAttack);
-                }
-                if (arena_gf_StringIsEmpty(refPlayer.weaponType)) {
-                    refPlayer.weaponType = WeaponDataGetType(RandomInt(0, c_WeaponDataTypeCount-1));
                 }
                 SaveUnitPlayer(refPlayer);
 

@@ -4,7 +4,7 @@
 <Terrain id="Zerus"/>
 <Unit id="CommandCenter"/>
 <Unit id="DestructibleGarage" Variations="1"/>
-<Unit id="XelNagaDestructibleBlocker6E"/>
+<Unit id="ValhallaDestructibleWall"/>
 <Unit id="XelNagaDestructibleBlocker8S"/>
 <Unit id="XelNagaDestructibleBlocker8E"/>
 <Unit id="XelNagaDestructibleBlocker8N"/>

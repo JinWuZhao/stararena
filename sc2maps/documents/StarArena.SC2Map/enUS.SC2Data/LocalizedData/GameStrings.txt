@@ -1,4 +1,6 @@
 ﻿Behavior/Name/StarArenaAttackDamageEnhance=StarArenaAttackDamageEnhance
+Behavior/Name/StarArenaAttackRangeEnhance=StarArenaAttackRangeEnhance
+Behavior/Name/StarArenaAttackSpeedEnhance=StarArenaAttackSpeedEnhance
 LoadingScreen/Tip= 
 LoadingScreen/TipRestart= 
 LoadingScreen/Title=<c val="FFFF00">星际竞技场</c>

@@ -3,8 +3,12 @@ const int c_unitPlayerAIStatesCap = 5;
 
 const int c_unitPlayerPropsMaxLife = 0;
 const int c_unitPlayerPropsDamageMultiplier = 1;
-const int c_unitPlayerPropsMoveSpeed = 2;
-const int c_unitPlayerPropsCap = 3;
+const int c_unitPlayerPropsRangeMultiplier = 2;
+const int c_unitPlayerPropsMoveSpeed = 3;
+const int c_unitPlayerPropsAttackSpeed = 4;
+const int c_unitPlayerPropsCap = 5;
+
+const int c_UnitPlayerMaxLevel = 15;
 
 const int c_unitPlayersCap = 20;
 
@@ -112,13 +116,6 @@ bool AddUnitPlayer(UnitPlayerRef player) {
     if (index == c_unitPlayersCap) {
         return false;
     }
-    player.deadTime = IntToDateTime(0);
-    player.unitType = "SiegeTank";
-    player.level = 1;
-    player.revivePoint = RandomInt(1, 4);
-    player.props[c_unitPlayerPropsMaxLife] = 1;
-    player.props[c_unitPlayerPropsDamageMultiplier] = 0;
-    player.props[c_unitPlayerPropsMoveSpeed] = 0;
     gamestate_SaveUnitPlayerByIndex(index, player);
     gv_gamestate_unitPlayersCount += 1;
     return true;

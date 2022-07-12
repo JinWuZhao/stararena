@@ -143,5 +143,39 @@
                 <Color val="0,0,255"/>
             </Frame>
         </Frame>
+
+        <Frame type="Frame" name="RankBoard">
+            <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
+            <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
+            <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
+            <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
+            <Width val="700"/>
+            <Height val="800"/>
+
+            <Frame type="Image" name="Background">
+                <Anchor relative="$parent"/>
+                <Color val="26,113,26"/>
+                <Alpha val="80"/>
+            </Frame>
+
+            <Frame type="Label" name="Title">
+                <Anchor side="Top" relative="$parent" pos="Min" offset="10"/>
+                <Anchor side="Bottom" relative="$parent" pos="Min" offset="80"/>
+                <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
+                <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
+                <Text val="游戏结束"/>
+                <Style val="WinDialogStyle"/>
+            </Frame>
+
+            <Frame type="Label" name="List">
+                <Anchor side="Top" relative="$parent" pos="Min" offset="100"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
+                <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
+                <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
+                <Color val="255,255,255"/>
+                <Text val="排行榜"/>
+                <Style val="RankListStyle"/>
+            </Frame>
+        </Frame>
     </Frame>
 </Desc>

@@ -287,3 +287,75 @@ func (c *ShowPointsCmd) Init(ctx Context, query parsec.Queryable) error {
 func (c *ShowPointsCmd) String() string {
 	return fmt.Sprintf("cmd-show-points %s", c.player)
 }
+
+type SetWeaponCmd struct {
+	player string
+	weapon int32
+}
+
+func (c *SetWeaponCmd) New() Command {
+	return new(SetWeaponCmd)
+}
+
+func (c *SetWeaponCmd) Name() string {
+	return "SET_WEAPON"
+}
+
+func (c *SetWeaponCmd) Parser(ast *parsec.AST) parsec.Parser {
+	return ast.And(c.Name(), nil,
+		parsec.AtomExact(`i`, "OP"), parsecUint("WEAPON", 2))
+}
+
+func (c *SetWeaponCmd) Init(ctx Context, query parsec.Queryable) error {
+	weapon, err := strconv.ParseInt(query.GetChildren()[1].GetValue(), 10, 32)
+	if err != nil {
+		return fmt.Errorf("strconv.ParseInt(weapon): %w", err)
+	}
+	c.weapon = int32(weapon)
+	c.player = ctx.Player
+	return nil
+}
+
+func (c *SetWeaponCmd) String() string {
+	return fmt.Sprintf("cmd-set-weapon %s %d", c.player, c.weapon)
+}
+
+type AssignPointsCmd struct {
+	player string
+	prop   int32
+	points int32
+}
+
+func (c *AssignPointsCmd) New() Command {
+	return new(AssignPointsCmd)
+}
+
+func (c *AssignPointsCmd) Name() string {
+	return "ASSIGN_POINTS"
+}
+
+func (c *AssignPointsCmd) Parser(ast *parsec.AST) parsec.Parser {
+	return ast.And(c.Name(), nil,
+		parsec.AtomExact(`o`, "OP"),
+		parsecUint("PROP", 1),
+		parsecUint("POINTS", 2))
+}
+
+func (c *AssignPointsCmd) Init(ctx Context, query parsec.Queryable) error {
+	prop, err := strconv.ParseInt(query.GetChildren()[1].GetValue(), 10, 32)
+	if err != nil {
+		return fmt.Errorf("strconv.ParseInt(prop): %w", err)
+	}
+	points, err := strconv.ParseInt(query.GetChildren()[2].GetValue(), 10, 32)
+	if err != nil {
+		return fmt.Errorf("strconv.ParseInt(points): %w", err)
+	}
+	c.prop = int32(prop)
+	c.points = int32(points)
+	c.player = ctx.Player
+	return nil
+}
+
+func (c *AssignPointsCmd) String() string {
+	return fmt.Sprintf("cmd-assign-points %s %d %d", c.player, c.prop, c.points)
+}

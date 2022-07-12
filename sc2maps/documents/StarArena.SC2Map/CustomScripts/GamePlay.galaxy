@@ -16,9 +16,12 @@ static trigger gt_gameplay_TimerLoop;
 static int gv_gameplay_winnerPlayer;
 static timer gv_gameplay_loopTimer;
 static int[c_unitPlayersCap] gv_gameplay_playerInfoItmes;
+static int gv_gameplay_RankBoard;
+static int gv_gameplay_RankBoardTitle;
+static int gv_gameplay_RankBoardList;
 
-static const int c_gameplay_UnitRedCenter = 177235035;
-static const int c_gameplay_UnitBlueCenter = 1585478384;
+static const int c_gameplay_UnitRedCenter = 1585478384;
+static const int c_gameplay_UnitBlueCenter = 177235035;
 
 // Function Declarations
 void InitGamePlay();
@@ -47,6 +50,13 @@ void InitGamePlay() {
         gv_gameplay_playerInfoItmes[lv_index] = DialogControlHookupStandard(
             c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/Players/" + IntToString(lv_index) + "/content");
     }
+    gv_gameplay_RankBoard = DialogControlHookupStandard(
+        c_triggerControlTypePanel, "UIContainer/FullscreenUpperContainer/RankBoard");
+    gv_gameplay_RankBoardTitle = DialogControlHookupStandard(
+        c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/RankBoard/Title");
+    gv_gameplay_RankBoardList = DialogControlHookupStandard(
+        c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/RankBoard/List");
+    DialogControlSetVisible(gv_gameplay_RankBoard, PlayerGroupAll(), false);
 
     gameplay_initMap_Init();
     gameplay_Victory_Init();
@@ -113,11 +123,12 @@ static void gameplay_initMap_Init() {
 bool gameplay_Victory_Func(bool testConds, bool runActions) {
     unit lv_unit = EventUnit();
     text lv_winText;
-    timer scoreTimer;
+    timer endTimer;
     UnitPlayerArray rankedUnitPlayers;
     int index;
     int lv_rankLength;
     string lv_playerName;
+    string lv_rankList = "";
 
     if (!runActions) {
         return true;
@@ -140,33 +151,27 @@ bool gameplay_Victory_Func(bool testConds, bool runActions) {
         lv_winText = StringExternal("Param/Value/6A0F2AB2");
     }
     if (lv_winText != null) {
-        DialogCreate(500, 400, c_anchorCenter, 0, 0, true);
-        libNtve_gf_CreateDialogItemLabel(
-            DialogLastCreated(), 400, 50, c_anchorCenter, 70, 0, lv_winText, 
-            libNtve_gf_ConvertPlayerColorToColor(PlayerGetColorIndex(gv_gameplay_winnerPlayer, false)), 
-            false, 2.0);
-        DialogSetVisible(DialogLastCreated(), PlayerGroupAll(), true);
+        DialogControlSetVisible(gv_gameplay_RankBoard, PlayerGroupAll(), true);
 
-        arena_gf_ShowMessage("排行榜:");
+        DialogControlSetPropertyAsText(gv_gameplay_RankBoardTitle, 
+            c_triggerControlPropertyText, PlayerGroupAll(), lv_winText);
+
         UnitPlayersOfRanked(rankedUnitPlayers);
-        scoreTimer = TimerCreate();
         lv_rankLength = UnitPlayersCount();
-        if (lv_rankLength > 10) {
-            lv_rankLength = 10;
-        }
-        for (index = lv_rankLength-1; index >= 0; index -= 1) {
-            TimerStart(scoreTimer, 1.0, false, c_timeReal);
-            libNtve_gf_WaitForTimer(scoreTimer, 0.0, false);
+        for (index = 0; index < lv_rankLength; index += 1) {
             lv_playerName = rankedUnitPlayers[index].name;
             if (rankedUnitPlayers[index].isBot) {
                 lv_playerName = "Bot";
             }
-            arena_gf_ShowMessage("第" + IntToString(index+1) + "名：" + lv_playerName + " -------------------------------------- " + IntToString(rankedUnitPlayers[index].score) + "击杀");
+            lv_rankList += "第" + IntToString(index+1) + "名：" + lv_playerName + " -------------- " + IntToString(rankedUnitPlayers[index].score) + "击杀\n";
         }
+        DialogControlSetPropertyAsText(gv_gameplay_RankBoardList, 
+            c_triggerControlPropertyText, PlayerGroupAll(), StringToText(lv_rankList));
 
         arena_gf_ShowMessage("10秒后游戏结束");
-        TimerStart(scoreTimer, 10.0, false, c_timeReal);
-        libNtve_gf_WaitForTimer(scoreTimer, 0.0, false);
+        endTimer = TimerCreate();
+        TimerStart(endTimer, 10.0, false, c_timeReal);
+        libNtve_gf_WaitForTimer(endTimer, 0.0, false);
         TriggerExecute(gt_gameplay_EndGame, true, false);
     }
 
@@ -222,6 +227,7 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
     bool lv_isBot = false;
     UnitPlayer lv_player;
     string lv_teamName;
+    int lv_index;
 
     lv_name = arena_gf_CurrentCommandArgument(1);
     lv_playerId = StringToInt(arena_gf_CurrentCommandArgument(2));
@@ -240,6 +246,23 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
     lv_player.name = lv_name;
     lv_player.playerId = lv_playerId;
     lv_player.isBot = lv_isBot;
+    if (lv_isBot) {
+        lv_index = RandomInt(0, c_WeaponDataTypeCount-1);
+        lv_player.points = 1;
+    } else {
+        lv_index = c_WeaponDataType90mmCannons;
+        lv_player.points = 2;
+    }
+    lv_player.weaponType = WeaponDataGetType(lv_index);
+    lv_player.deadTime = IntToDateTime(0);
+    lv_player.unitType = "SiegeTank";
+    lv_player.level = 1;
+    lv_player.revivePoint = RandomInt(1, 4);
+    lv_player.props[c_unitPlayerPropsMaxLife] = 1;
+    lv_player.props[c_unitPlayerPropsDamageMultiplier] = 0;
+    lv_player.props[c_unitPlayerPropsRangeMultiplier] = 0;
+    lv_player.props[c_unitPlayerPropsMoveSpeed] = 0;
+    lv_player.props[c_unitPlayerPropsAttackSpeed] = 0;
     if (!AddUnitPlayer(lv_player)) {
         return false;
     }
@@ -250,7 +273,7 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
         } else if (lv_player.playerId == c_GameStatePlayerIdRed) {
             lv_teamName = "红方";
         }
-        arena_gf_ShowMessage(lv_player.name + " 加入了 " + lv_teamName + " 队伍");
+        arena_gf_ShowMessage(lv_player.name + " 加入了 " + lv_teamName + " 队伍，初始武器 " + WeaponDataGetName(lv_index));
     }
 
     return true;
@@ -323,10 +346,10 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
     UnitPlayer lv_attackerPlayer;
     UnitPlayer lv_targetPlayer;
     int lv_rewardPoints;
-    int lv_rewardText;
-    timer lv_rewardTimer;
     UnitData lv_unitData;
     string lv_killMsg = "";
+    int lv_index;
+    UnitPlayer lv_player;
 
     lv_attackerUnit = EventUnitDamageSourceUnit();
     lv_attacker = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_attackerUnit))));
@@ -360,7 +383,9 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
     } else {
         lv_rewardPoints = lv_unitData.rewardExp;
     }
-    lv_attackerPlayer.exp += lv_rewardPoints;
+    if (lv_attackerPlayer.level < c_UnitPlayerMaxLevel) {
+        lv_attackerPlayer.exp += lv_rewardPoints;
+    }
     lv_attackerPlayer.score += 1;
     lv_attackerPlayer.combo += 1;
     SaveUnitPlayer(lv_attackerPlayer);
@@ -386,15 +411,13 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
         }
     }
 
-    if (!lv_attackerPlayer.isBot) {
-        lv_rewardText = TextTagCreate(StringToText("+"+IntToString(lv_rewardPoints)), 24, UnitGetPosition(lv_attackerUnit), 3.0, true, false, PlayerGroupAll());
-        TextTagSetColor(lv_rewardText, c_textTagColorText, Color(0, 255, 0));
-        TextTagAttachToUnit(lv_rewardText, lv_attackerUnit, 3.0);
-        TextTagSetGravity(lv_rewardText, 2.0);
-        lv_rewardTimer = TimerCreate();
-        TimerStart(lv_rewardTimer, 2.0, false, c_timeReal);
-        libNtve_gf_WaitForTimer(lv_rewardTimer, 0.0, false);
-        TextTagDestroy(lv_rewardText);
+    for (lv_index = 0; lv_index < c_unitPlayersCap; lv_index += 1) {
+        if (UnitPlayerGet(lv_index, lv_player) && 
+            lv_player.playerId == lv_attackerPlayer.playerId && 
+            lv_player.level < c_UnitPlayerMaxLevel) {
+            lv_player.exp += lv_rewardPoints / 2;
+            SaveUnitPlayer(lv_player);
+        }
     }
 
     return true;
@@ -423,11 +446,6 @@ bool gameplay_DamageUnit_Func(bool testConds, bool runActions) {
 
     if (!UnitDataGetByUnitType(UnitGetType(lv_targetUnit), lv_targetUnitData)) {
         return false;
-    }
-
-    if (lv_targetUnitData.rewardExp > 0) {
-        lv_attackerPlayer.exp += lv_damage * lv_targetUnitData.rewardExp / UnitGetPropertyInt(lv_targetUnit, c_unitPropLifeMax, true) + 1;
-        SaveUnitPlayer(lv_attackerPlayer);
     }
 
     return true;
@@ -461,7 +479,7 @@ bool gameplay_RechargePoints_Func(bool testConds, bool runActions) {
     lv_player.points += lv_points;
     SaveUnitPlayer(lv_player);
 
-    arena_gf_ShowMessage(lv_player.name + " 充值了 " + IntToString(lv_points) + "pt，总计 " + IntToString(lv_player.points) + "pt");
+    arena_gf_ShowMessage(lv_player.name + " 充值了 " + IntToString(lv_points) + " pts");
 
     return true;
 }
@@ -538,7 +556,7 @@ bool gameplay_TimerLoop_Func(bool testConds, bool runActions) {
             }
             DialogControlSetPropertyAsText(gv_gameplay_playerInfoItmes[lv_index], 
                 c_triggerControlPropertyText, PlayerGroupAll(), 
-                StringToText(lv_player.name + "\n" + lv_player.weaponType + "\nlv." + IntToString(lv_player.level) + "\n" + IntToString(lv_player.points) + " pts"));
+                StringToText(lv_player.name + "\nlv." + IntToString(lv_player.level) + "\n" + IntToString(lv_player.points) + " pts"));
         }
     }
 
