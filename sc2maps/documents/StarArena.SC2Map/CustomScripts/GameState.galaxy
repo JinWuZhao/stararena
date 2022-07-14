@@ -15,6 +15,16 @@ const int c_unitPlayersCap = 20;
 const int c_GameStatePlayerIdRed = 4;
 const int c_GameStatePlayerIdBlue = 3;
 
+struct UnitPlayerBuff {
+    string behavior;
+    int count;
+    fixed duration;
+    datetime ctime;
+};
+typedef structref<UnitPlayerBuff> UnitPlayerBuffRef;
+
+const int c_UnitPlayerBuffsCap = 10;
+
 // Type Declarations
 struct UnitPlayer {
     string name;
@@ -32,6 +42,7 @@ struct UnitPlayer {
     bool isBot;
     int[c_unitPlayerAIStatesCap] aiStates;
     int[c_unitPlayerPropsCap] props;
+    UnitPlayerBuff[c_UnitPlayerBuffsCap] buffs;
 };
 
 typedef structref<UnitPlayer> UnitPlayerRef;
@@ -53,6 +64,9 @@ bool UnitPlayerGet(int inIndex, UnitPlayerRef player);
 void UnitPlayersGetAll(UnitPlayerArrayRef outPlayers);
 int UnitPlayersCount();
 void UnitPlayersOfRanked(UnitPlayerArrayRef outPlayers);
+void UnitPlayerAddBuff(UnitPlayerRef refPlayer, UnitPlayerBuffRef inBuff);
+void UnitPlayerSaveBuffs(UnitPlayerRef refPlayer);
+void UnitPlayerRestoreBuffs(UnitPlayerRef refPlayer, unit inUnit);
 void InitGameState();
 
 static void gamestate_InitUnitPlayerIndexOfName();
@@ -87,6 +101,12 @@ static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source) {
     }
     for (lv_index = 0; lv_index < c_unitPlayerPropsCap; lv_index += 1) {
         dest.props[lv_index] = source.props[lv_index];
+    }
+    for (lv_index = 0; lv_index < c_UnitPlayerBuffsCap; lv_index += 1) {
+        dest.buffs[lv_index].behavior = source.buffs[lv_index].behavior;
+        dest.buffs[lv_index].count = source.buffs[lv_index].count;
+        dest.buffs[lv_index].duration = source.buffs[lv_index].duration;
+        dest.buffs[lv_index].ctime = source.buffs[lv_index].ctime;
     }
 }
 
@@ -210,6 +230,71 @@ void UnitPlayersGetAll(UnitPlayerArrayRef outPlayers) {
             k += 1;
         }
     }
+}
+
+void UnitPlayerAddBuff(UnitPlayerRef refPlayer, UnitPlayerBuffRef inBuff) {
+    int lv_index;
+    UnitPlayerBuffRef lv_buff;
+    int lv_emptyBUffIndex = -1;
+    datetime lv_now = CurrentDateTimeGet();
+    for (lv_index = 0; lv_index < c_UnitPlayerBuffsCap; lv_index += 1) {
+        lv_buff = refPlayer.buffs[lv_index];
+        if (lv_buff.behavior == null && lv_emptyBUffIndex < 0) {
+            lv_emptyBUffIndex = lv_index;
+        } else if (lv_buff.behavior == inBuff.behavior) {
+            lv_buff.count = inBuff.count;
+            lv_buff.duration -= DateTimeToInt(lv_now) - DateTimeToInt(lv_buff.ctime);
+            if (lv_buff.duration > 0) {
+                lv_buff.duration += inBuff.duration;
+            } else {
+                lv_buff.duration = inBuff.duration;
+            }
+            lv_buff.ctime = lv_now;
+            lv_emptyBUffIndex = -1;
+            break;
+        }
+    }
+    if (lv_emptyBUffIndex >= 0) {
+        lv_buff = refPlayer.buffs[lv_emptyBUffIndex];
+        lv_buff.behavior = inBuff.behavior;
+        lv_buff.count = inBuff.count;
+        lv_buff.duration = inBuff.duration;
+        lv_buff.ctime = lv_now;
+    }
+}
+
+void UnitPlayerSaveBuffs(UnitPlayerRef refPlayer) {
+    int lv_index;
+    UnitPlayerBuffRef lv_buff;
+    datetime lv_now = CurrentDateTimeGet();
+    for (lv_index = 0; lv_index < c_UnitPlayerBuffsCap; lv_index += 1) {
+        lv_buff = refPlayer.buffs[lv_index];
+        if (lv_buff.behavior != null) {
+            lv_buff.duration -= DateTimeToInt(lv_now) - DateTimeToInt(lv_buff.ctime);
+            if (lv_buff.duration <= 0) {
+                lv_buff.behavior = null;
+                lv_buff.count = 0;
+                lv_buff.duration = 0;
+            }
+            lv_buff.ctime = null;
+        }
+    }
+}
+
+void UnitPlayerRestoreBuffs(UnitPlayerRef refPlayer, unit inUnit) {
+    int lv_index;
+    UnitPlayerBuffRef lv_buff;
+    datetime lv_now = CurrentDateTimeGet();
+    for (lv_index = 0; lv_index < c_UnitPlayerBuffsCap; lv_index += 1) {
+        lv_buff = refPlayer.buffs[lv_index];
+        if (lv_buff.behavior != null) {
+            lv_buff.ctime = lv_now;
+            UnitBehaviorAdd(inUnit, lv_buff.behavior, inUnit, lv_buff.count);
+            UnitBehaviorSetDuration(inUnit, lv_buff.behavior, lv_buff.duration);
+        }
+    }
+    UnitSetPropertyInt(inUnit, c_unitPropLife, UnitGetPropertyInt(inUnit, c_unitPropLifeMax, true));
+    UnitSetPropertyInt(inUnit, c_unitPropShields, UnitGetPropertyInt(inUnit, c_unitPropShieldsMax, true));
 }
 
 void InitGameState() {

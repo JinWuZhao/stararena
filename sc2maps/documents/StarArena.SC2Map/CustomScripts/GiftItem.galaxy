@@ -1,0 +1,149 @@
+const string c_GiftBehaviorLifeRegen = "StarArenaLifeRegen";
+const string c_GiftBehaviorTempShield = "StarArenaTempShield";
+const string c_GiftBehaviorMaxLifeEnhance = "StarArenaMaxLifeTempEnhance";
+const string c_GiftBehaviorAttackDamageEnhance = "StarArenaAttackDamageTempEnhance";
+const string c_GiftBehaviorAttackRangeEnhance = "StarArenaAttackRangeTempEnhance";
+const string c_GiftBehaviorMoveSpeedEnhance = "StarArenaMoveSpeedTempEnhance";
+const string c_GiftBehaviorAttackSpeedEnhance = "StarArenaAttackSpeedTempEnhance";
+
+struct GiftItem {
+    string name;
+    string behavior;
+    int count;
+    fixed duration;
+};
+typedef structref<GiftItem> GiftItemRef;
+
+const int c_GiftKindBasic = 0;
+const int c_GiftKindBasicCount = 6;
+const int c_GiftKindAdvanced = 1;
+const int c_GiftKindAdvancedCount = 6;
+//const int c_GiftKindDeluxe = 2;
+//const int c_GiftKindDeluxeCount = 6;
+const int c_GiftKindCount = 2;
+const int c_GiftItemCapPerKind = 6;
+
+static GiftItem[c_GiftKindCount][c_GiftItemCapPerKind] gv_giftitem_data;
+
+void InitGiftItme();
+void GiftItemCopy(GiftItemRef dest, GiftItemRef source);
+bool GiftItemGet(int inKind, int inIndex, GiftItemRef outItem);
+bool GiftItemApply(unit inUnit, GiftItemRef inItem);
+
+void InitGiftItme() {
+    GiftItemRef lv_item;
+
+    lv_item = gv_giftitem_data[c_GiftKindBasic][0];
+    lv_item.name = "恢复生命";
+    lv_item.behavior = c_GiftBehaviorLifeRegen;
+    lv_item.count = 40;
+    lv_item.duration = 5;
+
+    lv_item = gv_giftitem_data[c_GiftKindBasic][1];
+    lv_item.name = "提升生命上限";
+    lv_item.behavior = c_GiftBehaviorMaxLifeEnhance;
+    lv_item.count = 5;
+    lv_item.duration = 5;
+
+    lv_item = gv_giftitem_data[c_GiftKindBasic][2];
+    lv_item.name = "增加伤害";
+    lv_item.behavior = c_GiftBehaviorAttackDamageEnhance;
+    lv_item.count = 2;
+    lv_item.duration = 5;
+
+    lv_item = gv_giftitem_data[c_GiftKindBasic][3];
+    lv_item.name = "延长攻击范围";
+    lv_item.behavior = c_GiftBehaviorAttackRangeEnhance;
+    lv_item.count = 5;
+    lv_item.duration = 5;
+
+    lv_item = gv_giftitem_data[c_GiftKindBasic][4];
+    lv_item.name = "提升移动速度";
+    lv_item.behavior = c_GiftBehaviorMoveSpeedEnhance;
+    lv_item.count = 5;
+    lv_item.duration = 5;
+
+    lv_item = gv_giftitem_data[c_GiftKindBasic][5];
+    lv_item.name = "提升攻击速度";
+    lv_item.behavior = c_GiftBehaviorAttackSpeedEnhance;
+    lv_item.count = 5;
+    lv_item.duration = 5;
+
+    lv_item = gv_giftitem_data[c_GiftKindAdvanced][0];
+    lv_item.name = "强效恢复生命";
+    lv_item.behavior = c_GiftBehaviorLifeRegen;
+    lv_item.count = 80;
+    lv_item.duration = 5;
+
+    lv_item = gv_giftitem_data[c_GiftKindAdvanced][1];
+    lv_item.name = "大幅提升生命上限";
+    lv_item.behavior = c_GiftBehaviorMaxLifeEnhance;
+    lv_item.count = 10;
+    lv_item.duration = 5;
+
+    lv_item = gv_giftitem_data[c_GiftKindAdvanced][2];
+    lv_item.name = "大幅提升伤害";
+    lv_item.behavior = c_GiftBehaviorAttackDamageEnhance;
+    lv_item.count = 4;
+    lv_item.duration = 5;
+
+    lv_item = gv_giftitem_data[c_GiftKindAdvanced][3];
+    lv_item.name = "大幅延长攻击范围";
+    lv_item.behavior = c_GiftBehaviorAttackRangeEnhance;
+    lv_item.count = 10;
+    lv_item.duration = 5;
+
+    lv_item = gv_giftitem_data[c_GiftKindAdvanced][4];
+    lv_item.name = "大幅提升移动速度";
+    lv_item.behavior = c_GiftBehaviorMoveSpeedEnhance;
+    lv_item.count = 10;
+    lv_item.duration = 5;
+
+    lv_item = gv_giftitem_data[c_GiftKindAdvanced][5];
+    lv_item.name = "大幅提升攻击速度";
+    lv_item.behavior = c_GiftBehaviorAttackSpeedEnhance;
+    lv_item.count = 5;
+    lv_item.duration = 5;
+}
+
+void GiftItemCopy(GiftItemRef dest, GiftItemRef source) {
+    dest.name = source.name;
+    dest.behavior = source.behavior;
+    dest.count = source.count;
+    dest.duration = source.duration;
+}
+
+bool GiftItemGet(int inKind, int inIndex, GiftItemRef outItem) {
+    GiftItemRef lv_item;
+    if (inKind < 0 || inKind >= c_GiftKindCount) {
+        return false;
+    }
+    if (inIndex < 0 || inIndex >= c_GiftItemCapPerKind) {
+        return false;
+    }
+    lv_item = gv_giftitem_data[inKind][inIndex];
+    if (lv_item.name == null) {
+        return false;
+    }
+    GiftItemCopy(outItem, lv_item);
+    return true;
+}
+
+bool GiftItemApply(unit inUnit, GiftItemRef inItem) {
+    int lv_count;
+    fixed lv_duration;
+    lv_count = UnitBehaviorCount(inUnit, inItem.behavior);
+    lv_duration = UnitBehaviorDuration(inUnit, inItem.behavior);
+    if (lv_count < inItem.count) {
+        UnitBehaviorAdd(inUnit, inItem.behavior, inUnit, inItem.count - lv_count);
+    } else if (lv_count > inItem.count) {
+        UnitBehaviorRemove(inUnit, inItem.behavior, lv_count - inItem.count);
+    }
+    UnitBehaviorSetDuration(inUnit, inItem.behavior, lv_duration + inItem.duration);
+    if (inItem.behavior == c_GiftBehaviorTempShield) {
+        UnitSetPropertyInt(inUnit, c_unitPropShields, UnitGetPropertyInt(inUnit, c_unitPropShieldsMax, true));
+    } else if (inItem.behavior == c_GiftBehaviorMaxLifeEnhance) {
+        UnitSetPropertyInt(inUnit, c_unitPropLife, UnitGetPropertyInt(inUnit, c_unitPropLifeMax, true));
+    }
+    return true;
+}

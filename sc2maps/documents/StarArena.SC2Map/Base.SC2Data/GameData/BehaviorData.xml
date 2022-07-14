@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Catalog>
     <CBehaviorBuff id="StarArenaAttackDamageEnhance">
-        <MaxStackCount value="99"/>
+        <MaxStackCount value="9999"/>
+        <Modification>
+            <DamageDealtFraction index="Spell" value="1"/>
+            <DamageDealtFraction index="Melee" value="1"/>
+            <DamageDealtFraction index="Ranged" value="1"/>
+            <DamageDealtFraction index="Splash" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="StarArenaAttackDamageTempEnhance">
+        <MaxStackCount value="9999"/>
         <Modification>
             <DamageDealtFraction index="Spell" value="1"/>
             <DamageDealtFraction index="Melee" value="1"/>
@@ -10,11 +19,55 @@
         </Modification>
     </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaAttackRangeEnhance">
-        <MaxStackCount value="99"/>
+        <MaxStackCount value="9999"/>
+        <Modification WeaponRange="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="StarArenaAttackRangeTempEnhance">
+        <MaxStackCount value="9999"/>
         <Modification WeaponRange="1"/>
     </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaAttackSpeedEnhance">
-        <MaxStackCount value="99"/>
+        <MaxStackCount value="9999"/>
         <Modification AttackSpeedMultiplier="1.05"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="StarArenaAttackSpeedTempEnhance">
+        <MaxStackCount value="9999"/>
+        <Modification AttackSpeedMultiplier="1.05"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="StarArenaLifeRegen">
+        <MaxStackCount value="9999"/>
+        <Modification>
+            <VitalRegenArray index="Life" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="StarArenaMaxLifeTempEnhance">
+        <MaxStackCount value="9999"/>
+        <Modification>
+            <VitalMaxFractionArray index="Life" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="StarArenaMoveSpeedEnhance">
+        <MaxStackCount value="9999"/>
+        <Modification>
+            <AdditiveMoveSpeedFactor value="0.2"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="StarArenaMoveSpeedTempEnhance">
+        <MaxStackCount value="9999"/>
+        <Modification>
+            <AdditiveMoveSpeedFactor value="0.2"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="StarArenaTempShield">
+        <MaxStackCount value="9999"/>
+        <Modification>
+            <VitalMaxFractionArray index="Shields" value="1"/>
+        </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="StarArenaMaxLifeEnhance">
+        <MaxStackCount value="9999"/>
+        <Modification>
+            <VitalMaxFractionArray index="Life" value="1"/>
+        </Modification>
     </CBehaviorBuff>
 </Catalog>

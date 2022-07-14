@@ -185,6 +185,8 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
                     PointGetFacing(PointFromName(lv_pointName)), lv_unitData.baseScale, refPlayer.name, 2, !refPlayer.isBot);
                 UnitDataInitPlayerUnitProps(refPlayer, inUnit);
                 WeaponDataApplyUnit(refPlayer.weaponType, inUnit);
+                UnitPlayerRestoreBuffs(refPlayer, inUnit);
+                SaveUnitPlayer(refPlayer);
 
                 lv_initOrder = OrderTargetingPoint(
                     AbilityCommand("move", 0), 
@@ -425,6 +427,7 @@ bool aimode_KillUnit_Func(bool testConds, bool runActions) {
     if (lv_player.revivePoint <= 0) {
         lv_player.revivePoint = RandomInt(1, 4);
     }
+    UnitPlayerSaveBuffs(lv_player);
     SaveUnitPlayer(lv_player);
 
     return true;

@@ -11,14 +11,21 @@ static trigger gt_gameplay_DamageUnit;
 static trigger gt_gameplay_RechargePoints;
 static trigger gt_gameplay_UnitSelected;
 static trigger gt_gameplay_TimerLoop;
+static trigger gt_gameplay_GiftChange;
+static trigger gt_gameplay_ApplyGift;
 
 // Variable Declarations
 static int gv_gameplay_winnerPlayer;
 static timer gv_gameplay_loopTimer;
+static timer gv_gameplay_giftTimer;
+static GiftItem gv_gameplay_basicGift;
+static GiftItem gv_gameplay_advancedGift;
 static int[c_unitPlayersCap] gv_gameplay_playerInfoItmes;
 static int gv_gameplay_RankBoard;
 static int gv_gameplay_RankBoardTitle;
 static int gv_gameplay_RankBoardList;
+static int gv_gameplay_BasicGiftMsg;
+static int gv_gameplay_AdvancedGiftMsg;
 
 static const int c_gameplay_UnitRedCenter = 1585478384;
 static const int c_gameplay_UnitBlueCenter = 177235035;
@@ -38,6 +45,8 @@ static void gameplay_DamageUnit_Init();
 static void gameplay_RechargePoints_Init();
 static void gameplay_UnitSelected_Init();
 static void gameplay_TimerLoop_Init();
+static void gameplay_GiftChange_Init();
+static void gameplay_ApplyGift_Init();
 
 // Functions
 void InitGamePlay() {
@@ -45,6 +54,8 @@ void InitGamePlay() {
 
     gv_gameplay_loopTimer = TimerCreate();
     TimerStart(gv_gameplay_loopTimer, 1.0, true, c_timeReal);
+    gv_gameplay_giftTimer = TimerCreate();
+    TimerStart(gv_gameplay_giftTimer, 30.0, true, c_timeReal);
 
     for (lv_index = 0; lv_index < c_unitPlayersCap; lv_index += 1) {
         gv_gameplay_playerInfoItmes[lv_index] = DialogControlHookupStandard(
@@ -57,6 +68,10 @@ void InitGamePlay() {
     gv_gameplay_RankBoardList = DialogControlHookupStandard(
         c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/RankBoard/List");
     DialogControlSetVisible(gv_gameplay_RankBoard, PlayerGroupAll(), false);
+    gv_gameplay_BasicGiftMsg = DialogControlHookupStandard(
+        c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/GiftBoard/BasicGifts");
+    gv_gameplay_AdvancedGiftMsg = DialogControlHookupStandard(
+        c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/GiftBoard/AdvancedGifts");
 
     gameplay_initMap_Init();
     gameplay_Victory_Init();
@@ -70,6 +85,8 @@ void InitGamePlay() {
     gameplay_RechargePoints_Init();
     gameplay_UnitSelected_Init();
     gameplay_TimerLoop_Init();
+    gameplay_GiftChange_Init();
+    gameplay_ApplyGift_Init();
 }
 
 bool gameplay_initMap_Func(bool testConds, bool runActions) {
@@ -258,7 +275,7 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
     lv_player.unitType = "SiegeTank";
     lv_player.level = 1;
     lv_player.revivePoint = RandomInt(1, 4);
-    lv_player.props[c_unitPlayerPropsMaxLife] = 1;
+    lv_player.props[c_unitPlayerPropsMaxLife] = 0;
     lv_player.props[c_unitPlayerPropsDamageMultiplier] = 0;
     lv_player.props[c_unitPlayerPropsRangeMultiplier] = 0;
     lv_player.props[c_unitPlayerPropsMoveSpeed] = 0;
@@ -273,7 +290,7 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
         } else if (lv_player.playerId == c_GameStatePlayerIdRed) {
             lv_teamName = "红方";
         }
-        arena_gf_ShowMessage(lv_player.name + " 加入了 " + lv_teamName + " 队伍，初始武器 " + WeaponDataGetName(lv_index));
+        arena_gf_ShowMessage(lv_player.name + " 加入了 " + lv_teamName + " 队伍，初始武器 " + WeaponDataGetName(lv_index) + "(" + IntToString(lv_index) + ")");
     }
 
     return true;
@@ -566,4 +583,67 @@ bool gameplay_TimerLoop_Func(bool testConds, bool runActions) {
 static void gameplay_TimerLoop_Init() {
     gt_gameplay_TimerLoop = TriggerCreate("gameplay_TimerLoop_Func");
     TriggerAddEventTimer(gt_gameplay_TimerLoop, gv_gameplay_loopTimer);
+}
+
+bool gameplay_GiftChange_Func(bool testConds, bool runActions) {
+    if (!runActions) {
+        return true;
+    }
+    if (GiftItemGet(c_GiftKindBasic, RandomInt(0, c_GiftKindBasicCount-1), gv_gameplay_basicGift)) {
+        DialogControlSetPropertyAsText(gv_gameplay_BasicGiftMsg, c_triggerControlPropertyText, PlayerGroupAll(), 
+            StringToText("初级商品：" + gv_gameplay_basicGift.name + FixedToString(gv_gameplay_basicGift.duration, 0) + "s"));
+    }
+    if (GiftItemGet(c_GiftKindAdvanced, RandomInt(0, c_GiftKindAdvancedCount-1), gv_gameplay_advancedGift)) {
+        DialogControlSetPropertyAsText(gv_gameplay_AdvancedGiftMsg, c_triggerControlPropertyText, PlayerGroupAll(), 
+            StringToText("高级商品：" + gv_gameplay_advancedGift.name + FixedToString(gv_gameplay_advancedGift.duration, 0) + "s"));
+    }
+    return true;
+}
+
+static void gameplay_GiftChange_Init() {
+    gt_gameplay_GiftChange = TriggerCreate("gameplay_GiftChange_Func");
+    TriggerAddEventTimer(gt_gameplay_GiftChange, gv_gameplay_giftTimer);
+}
+
+bool gameplay_ApplyGift_Func(bool testConds, bool runActions) {
+    string lv_name = arena_gf_CurrentCommandArgument(1);
+    int lv_kind = StringToInt(arena_gf_CurrentCommandArgument(2));
+    unit lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
+    UnitPlayer lv_player;
+    GiftItemRef lv_gift;
+    UnitPlayerBuff lv_buff;
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (lv_kind == c_GiftKindBasic) {
+        lv_gift = gv_gameplay_basicGift;
+    } else if (lv_kind == c_GiftKindAdvanced) {
+        lv_gift = gv_gameplay_advancedGift;
+    } else {
+        return false;
+    }
+    if (lv_gift.name == null) {
+        return false;
+    }
+    if (!UnitPlayerFromName(lv_name, lv_player)) {
+        return false;
+    }
+
+    lv_buff.behavior = lv_gift.behavior;
+    lv_buff.count = lv_gift.count;
+    lv_buff.duration = lv_gift.duration;
+    UnitPlayerAddBuff(lv_player, lv_buff);
+    SaveUnitPlayer(lv_player);
+
+    if (UnitIsAlive(lv_unit)) {
+        GiftItemApply(lv_unit, lv_gift);
+    }
+    return true;
+}
+
+static void gameplay_ApplyGift_Init() {
+    gt_gameplay_ApplyGift = TriggerCreate("gameplay_ApplyGift_Func");
+    TriggerAddEventGeneric(gt_gameplay_ApplyGift, (arena_gv_commandPrefix + "apply-gift"));
 }

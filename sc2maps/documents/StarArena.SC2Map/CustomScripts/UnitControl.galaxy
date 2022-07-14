@@ -4,6 +4,7 @@ static trigger gt_unitctrl_MoveToward;
 static trigger gt_unitctrl_SetWeapon;
 static trigger gt_unitctrl_SetWeaponTest;
 static trigger gt_unitctrl_AssignPoints;
+static trigger gt_unitctrl_SetBehaviorTest;
 
 // Function Declarations
 void InitUnitControl();
@@ -13,6 +14,7 @@ static void unitctrl_MoveToward_Init();
 static void unitctrl_SetWeapon_Init();
 static void unitctrl_SetWeaponTest_Init();
 static void unitctrl_AssignPoints_Init();
+static void unitctrl_SetBehaviorTest_Init();
 
 // Functions
 void InitUnitControl() {
@@ -21,6 +23,7 @@ void InitUnitControl() {
     unitctrl_SetWeapon_Init();
     unitctrl_SetWeaponTest_Init();
     unitctrl_AssignPoints_Init();
+    unitctrl_SetBehaviorTest_Init();
 }
 
 bool unitctrl_SetAIMode_Func(bool testConds, bool runActions) {
@@ -117,7 +120,7 @@ bool unitctrl_SetWeapon_Func(bool testConds, bool runActions) {
     lv_player.points -= lv_costPoints;
     SaveUnitPlayer(lv_player);
 
-    arena_gf_ShowMessage(lv_player.name + " 切换武器 " + WeaponDataGetName(lv_index));
+    arena_gf_ShowMessage(lv_player.name + " 切换武器 " + WeaponDataGetName(lv_index) + "(" + IntToString(lv_index) + ")");
 
     lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
     if (UnitIsAlive(lv_unit)) {
@@ -198,4 +201,31 @@ bool unitctrl_AssignPoints_Func(bool testConds, bool runActions) {
 static void unitctrl_AssignPoints_Init() {
     gt_unitctrl_AssignPoints = TriggerCreate("unitctrl_AssignPoints_Func");
     TriggerAddEventGeneric(gt_unitctrl_AssignPoints, (arena_gv_commandPrefix + "assign-points"));
+}
+
+bool unitctrl_SetBehaviorTest_Func(bool testConds, bool runActions) {
+    string lv_name = arena_gf_CurrentCommandArgument(1);
+    string lv_behavior = arena_gf_CurrentCommandArgument(2);
+    int lv_count = StringToInt(arena_gf_CurrentCommandArgument(3));
+    int lv_duration = StringToInt(arena_gf_CurrentCommandArgument(4));
+    UnitPlayer lv_player;
+    unit lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (arena_gf_StringIsEmpty(lv_name) || !UnitPlayerFromName(lv_name, lv_player) || !UnitIsAlive(lv_unit)) {
+        return false;
+    }
+    UnitBehaviorAdd(lv_unit, lv_behavior, lv_unit, lv_count);
+    if (lv_duration > 0) {
+        UnitBehaviorSetDuration(lv_unit, lv_behavior, lv_duration);
+    }
+    return true;
+}
+
+static void unitctrl_SetBehaviorTest_Init() {
+    gt_unitctrl_SetBehaviorTest = TriggerCreate("unitctrl_SetBehaviorTest_Func");
+    TriggerAddEventGeneric(gt_unitctrl_SetBehaviorTest, (arena_gv_commandPrefix + "set-behavior-test"));
 }

@@ -8,4 +8,8 @@
             <LayoutButtons index="7" removed="1"/>
         </CardLayouts>
     </CUnit>
+    <CUnit id="SiegeTank">
+        <LifeStart value="320"/>
+        <LifeMax value="320"/>
+    </CUnit>
 </Catalog>

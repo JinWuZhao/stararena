@@ -97,20 +97,25 @@ bool UnitDataInitUnitProps(unit inUnit) {
 }
 
 bool UnitDataSetUnitProp(int inProp, int inPoints, UnitDataRef inData, unit inUnit) {
+    string lv_behavior;
+    int lv_points = inPoints;
     if (inProp < 0 || inProp >= c_unitPlayerPropsCap) {
         return false;
     }
     if (inProp == c_unitPlayerPropsMaxLife) {
-        UnitSetPropertyInt(inUnit, c_unitPropLifeMax, inData.lifeMax * inPoints);
+        lv_behavior = "StarArenaMaxLifeEnhance";
     } else if (inProp == c_unitPlayerPropsDamageMultiplier) {
-        UnitBehaviorAdd(inUnit, "StarArenaAttackDamageEnhance", inUnit, inPoints / 2);
+        lv_behavior = "StarArenaAttackDamageEnhance";
+        lv_points /= 2;
     } else if (inProp == c_unitPlayerPropsRangeMultiplier) {
-        UnitBehaviorAdd(inUnit, "StarArenaAttackRangeEnhance", inUnit, inPoints / 2);
+        lv_behavior = "StarArenaAttackRangeEnhance";
     } else if (inProp == c_unitPlayerPropsMoveSpeed) {
-        UnitSetPropertyFixed(inUnit, c_unitPropBaseMovementSpeed, inData.moveSpeed * (IntToFixed(inPoints) / 4 + 1));
+        lv_behavior = "StarArenaMoveSpeedEnhance";
     } else if (inProp == c_unitPlayerPropsAttackSpeed) {
-        UnitBehaviorAdd(inUnit, "StarArenaAttackSpeedEnhance", inUnit, inPoints);
+        lv_behavior = "StarArenaAttackSpeedEnhance";
     }
+    UnitBehaviorRemove(inUnit, lv_behavior, UnitBehaviorCount(inUnit, lv_behavior));
+    UnitBehaviorAdd(inUnit, lv_behavior, inUnit, lv_points);
     return true;
 }
 
@@ -122,8 +127,6 @@ bool UnitDataInitPlayerUnitProps(UnitPlayerRef inPlayer, unit inUnit) {
     }
     UnitSetScale(inUnit, lv_unitData.baseScale, lv_unitData.baseScale, lv_unitData.baseScale);
     for (lv_propIndex = 0; lv_propIndex < c_unitPlayerPropsCap; lv_propIndex += 1) {
-        UnitDataSetUnitProp(lv_propIndex, inPlayer.props[lv_propIndex], lv_unitData, inUnit);
-        UnitDataSetUnitProp(lv_propIndex, inPlayer.props[lv_propIndex], lv_unitData, inUnit);
         UnitDataSetUnitProp(lv_propIndex, inPlayer.props[lv_propIndex], lv_unitData, inUnit);
     }
     return true;

@@ -1,6 +1,15 @@
 ﻿Behavior/Name/StarArenaAttackDamageEnhance=StarArenaAttackDamageEnhance
+Behavior/Name/StarArenaAttackDamageTempEnhance=StarArenaAttackDamageTempEnhance
 Behavior/Name/StarArenaAttackRangeEnhance=StarArenaAttackRangeEnhance
+Behavior/Name/StarArenaAttackRangeTempEnhance=StarArenaAttackRangeTempEnhance
 Behavior/Name/StarArenaAttackSpeedEnhance=StarArenaAttackSpeedEnhance
+Behavior/Name/StarArenaAttackSpeedTempEnhance=StarArenaAttackSpeedTempEnhance
+Behavior/Name/StarArenaLifeRegen=StarArenaLifeRegen
+Behavior/Name/StarArenaMaxLifeEnhance=StarArenaMaxLifeEnhance
+Behavior/Name/StarArenaMaxLifeTempEnhance=StarArenaMaxLifeTempEnhance
+Behavior/Name/StarArenaMoveSpeedEnhance=StarArenaMoveSpeedEnhance
+Behavior/Name/StarArenaMoveSpeedTempEnhance=StarArenaMoveSpeedTempEnhance
+Behavior/Name/StarArenaTempShield=StarArenaTempShield
 LoadingScreen/Tip= 
 LoadingScreen/TipRestart= 
 LoadingScreen/Title=<c val="FFFF00">星际竞技场</c>
