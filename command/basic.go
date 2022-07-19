@@ -262,32 +262,6 @@ func (c *ChangeModeCmd) String() string {
 	return fmt.Sprintf("cmd-set-aimode %s %s", c.player, c.mode)
 }
 
-type ShowPointsCmd struct {
-	player string
-}
-
-func (c *ShowPointsCmd) New() Command {
-	return new(ShowPointsCmd)
-}
-
-func (c *ShowPointsCmd) Name() string {
-	return "SHOW_POINTS"
-}
-
-func (c *ShowPointsCmd) Parser(ast *parsec.AST) parsec.Parser {
-	return ast.And(c.Name(), nil,
-		parsec.AtomExact(`pt`, "OP"))
-}
-
-func (c *ShowPointsCmd) Init(ctx Context, query parsec.Queryable) error {
-	c.player = ctx.Player
-	return nil
-}
-
-func (c *ShowPointsCmd) String() string {
-	return fmt.Sprintf("cmd-show-points %s", c.player)
-}
-
 type SetWeaponCmd struct {
 	player string
 	weapon int32
@@ -336,7 +310,7 @@ func (c *AssignPointsCmd) Name() string {
 
 func (c *AssignPointsCmd) Parser(ast *parsec.AST) parsec.Parser {
 	return ast.And(c.Name(), nil,
-		parsec.AtomExact(`o`, "OP"),
+		parsec.AtomExact(`p`, "OP"),
 		parsecUint("PROP", 1),
 		parsecUint("POINTS", 2))
 }
@@ -358,4 +332,54 @@ func (c *AssignPointsCmd) Init(ctx Context, query parsec.Queryable) error {
 
 func (c *AssignPointsCmd) String() string {
 	return fmt.Sprintf("cmd-assign-points %s %d %d", c.player, c.prop, c.points)
+}
+
+type GiftItemCmd struct {
+	player string
+	kind   uint32
+	number uint32
+}
+
+func (c *GiftItemCmd) New() Command {
+	return new(GiftItemCmd)
+}
+
+type GiftItemOpts func(*GiftItemCmd)
+
+func GiftItemOptsGift(player string, gift string, number uint32) GiftItemOpts {
+	return func(cmd *GiftItemCmd) {
+		cmd.player = player
+		if gift == "辣条" {
+			cmd.kind = 0
+		} else if gift == "电池" {
+			cmd.kind = 1
+		} else {
+			cmd.kind = 2
+		}
+		cmd.number = number
+	}
+}
+
+func (*GiftItemCmd) NewWithOpts(opts ...GiftItemOpts) Command {
+	cmd := new(GiftItemCmd)
+	for _, opt := range opts {
+		opt(cmd)
+	}
+	return cmd
+}
+
+func (c *GiftItemCmd) Name() string {
+	return "GIFT_ITEM"
+}
+
+func (c *GiftItemCmd) Parser(_ *parsec.AST) parsec.Parser {
+	panic("not support")
+}
+
+func (c *GiftItemCmd) Init(_ Context, _ parsec.Queryable) error {
+	panic("not support")
+}
+
+func (c *GiftItemCmd) String() string {
+	return fmt.Sprintf("cmd-apply-gift %s %d %d", c.player, c.kind, c.number)
 }

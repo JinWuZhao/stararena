@@ -5,7 +5,6 @@ var cmdCtors = []Constructor{
 	MakeCmdCtor[*MoveXCmd](),
 	MakeCmdCtor[*ChangeModeCmd](),
 	MakeCmdCtor[*JoinGameCmd](),
-	MakeCmdCtor[*ShowPointsCmd](),
 	MakeCmdCtor[*SetWeaponCmd](),
 	MakeCmdCtor[*AssignPointsCmd](),
 }

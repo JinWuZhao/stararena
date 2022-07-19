@@ -608,6 +608,7 @@ static void gameplay_GiftChange_Init() {
 bool gameplay_ApplyGift_Func(bool testConds, bool runActions) {
     string lv_name = arena_gf_CurrentCommandArgument(1);
     int lv_kind = StringToInt(arena_gf_CurrentCommandArgument(2));
+    int lv_number = StringToInt(arena_gf_CurrentCommandArgument(3));
     unit lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
     UnitPlayer lv_player;
     GiftItemRef lv_gift;
@@ -633,7 +634,7 @@ bool gameplay_ApplyGift_Func(bool testConds, bool runActions) {
 
     lv_buff.behavior = lv_gift.behavior;
     lv_buff.count = lv_gift.count;
-    lv_buff.duration = lv_gift.duration;
+    lv_buff.duration = lv_gift.duration * lv_number;
     UnitPlayerAddBuff(lv_player, lv_buff);
     SaveUnitPlayer(lv_player);
 

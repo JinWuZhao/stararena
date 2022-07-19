@@ -63,8 +63,9 @@ chatLoop:
 	}
 
 	var sc2Actions []*sc2proto.Action
+	var cmdCount int
 cmdLoop:
-	for {
+	for cmdCount < 2 {
 		select {
 		case <-ctx.Done():
 			break cmdLoop
@@ -72,13 +73,14 @@ cmdLoop:
 			action := m.handleCommand(cmd)
 			if action != nil {
 				sc2Actions = append(sc2Actions, action)
+				cmdCount++
 			}
 		default:
 			break cmdLoop
 		}
 	}
 
-	if st.Steps%50 == 0 {
+	if st.Steps%100 == 0 {
 		m.gameState.HandleJoinPlayers()
 		for _, player := range m.gameState.GetRemovePlayers() {
 			sc2Actions = append(sc2Actions, m.makeLeaveAction(player))

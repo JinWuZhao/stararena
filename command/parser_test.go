@@ -60,15 +60,11 @@ func TestParseCommand(t *testing.T) {
 			Want: "cmd-set-aimode player 4",
 		},
 		{
-			Text: "pt",
-			Want: "cmd-show-points player",
-		},
-		{
 			Text: "i 12",
 			Want: "cmd-set-weapon player 12",
 		},
 		{
-			Text: "o 1 4",
+			Text: "p 1 4",
 			Want: "cmd-assign-points player 1 4",
 		},
 	}

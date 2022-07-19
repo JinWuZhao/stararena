@@ -62,7 +62,11 @@ func (s *Controller) ReceiveMessage(message bilidanmu.Message) {
 			}
 		}
 	case *bilidanmu.Gift:
-		log.Printf("%s %s 价值 %d 的 %s\n", m.UUname, m.Action, m.Price, m.GiftName)
+		log.Printf("%s %s 价值 %d 的 %s X%d\n", m.Uname, m.Action, m.Price*m.Number, m.GiftName, m.Number)
+		cmd := (*command.GiftItemCmd)(nil).NewWithOpts(command.GiftItemOptsGift(m.Uname, m.GiftName, m.Number))
+		if !s.cmdQueue.Push(cmd) {
+			log.Println("[ERROR] command queue overflowed for gift")
+		}
 	}
 }
 
