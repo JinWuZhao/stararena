@@ -3,4 +3,8 @@
     <CEffectSet id="LiberatorAGMissileLMSet">
         <ValidatorArray index="0" removed="1"/>
     </CEffectSet>
+    <CEffectEnumArea id="PsiStormSearch">
+        <SearchFilters value="-;Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <!--AreaArray index="0" Radius="1.5" Effect="PsiStormImpactSet"/-->
+    </CEffectEnumArea>
 </Catalog>

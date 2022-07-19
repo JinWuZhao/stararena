@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Catalog>
+    <CButton id="PsiStorm">
+        <DefaultButtonLayout Row="2" CardId="1"/>
+    </CButton>
+    <CButton id="YamatoGun">
+        <DefaultButtonLayout Row="2" CardId="1"/>
+    </CButton>
+</Catalog>

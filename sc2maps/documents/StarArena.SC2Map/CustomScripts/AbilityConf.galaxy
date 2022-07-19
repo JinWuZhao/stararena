@@ -1,0 +1,138 @@
+const int c_AbilityTypeNone = 0;
+const int c_AbilityTypeYamatoGun = 1;
+const int c_AbilityTypePsiStorm = 2;
+const int c_AbilityTypeCount = 3;
+
+bool AbilityCastAction(unit inCaster, unit inTaget, string type);
+
+struct AbilityData {
+    int index;
+    string type;
+    string cooldown;
+    string name;
+    funcref<AbilityCastAction> castAction;
+};
+typedef structref<AbilityData> AbilityDataRef;
+
+static AbilityData[c_AbilityTypeCount] gv_abilitydata_types;
+static int gv_abilitydata_dataByType;
+
+void AbilityDataCopy(AbilityDataRef dest, AbilityDataRef source);
+bool AbilityDataGet(int inIndex, AbilityDataRef outAbility);
+string AbilityDataGetType(int inIndex);
+string AbilityDataGetName(int inIndex);
+bool AbilityDataGetByType(string inType, AbilityDataRef outAbility);
+fixed AbilityDataGetCoolDown(unit inUnit, AbilityDataRef inAbility);
+bool AbilityDataApply(unit inUnit, string inType);
+bool AbilityDataCast(unit inCaster, unit inTarget, AbilityDataRef inAbility);
+void InitAbilityData();
+
+void AbilityDataCopy(AbilityDataRef dest, AbilityDataRef source) {
+    dest.index = source.index;
+    dest.type = source.type;
+    dest.cooldown = source.cooldown;
+    dest.name = source.name;
+    dest.castAction = source.castAction;
+}
+
+bool AbilityDataGet(int inIndex, AbilityDataRef outAbility) {
+    if (inIndex < 0 || inIndex >= c_AbilityTypeCount) {
+        return false;
+    }
+    AbilityDataCopy(outAbility, gv_abilitydata_types[inIndex]);
+    return true;
+}
+
+string AbilityDataGetType(int inIndex) {
+    if (inIndex < 0 || inIndex >= c_AbilityTypeCount) {
+        return "";
+    }
+    return gv_abilitydata_types[inIndex].type;
+}
+
+string AbilityDataGetName(int inIndex) {
+    if (inIndex < 0 || inIndex >= c_AbilityTypeCount) {
+        return "";
+    }
+    return gv_abilitydata_types[inIndex].name;
+}
+
+bool AbilityDataGetByType(string inType, AbilityDataRef outAbility) {
+    if (!DataTableInstanceValueExists(gv_abilitydata_dataByType, inType)) {
+        return false;
+    }
+    AbilityDataCopy(outAbility, gv_abilitydata_types[DataTableInstanceGetInt(gv_abilitydata_dataByType, inType)]);
+    return true;
+}
+
+fixed AbilityDataGetCoolDown(unit inUnit, AbilityDataRef inAbility) {
+    if (inAbility.index == c_AbilityTypeNone) {
+        return 6000;
+    }
+    return UnitAbilityGetCooldown(inUnit, inAbility.type, inAbility.cooldown);
+}
+
+bool AbilityDataApply(unit inUnit, string inType) {
+    UnitAbilityRemove(inUnit, UnitAbilityGet(inUnit, 4));
+    if (inType != "None") {
+        UnitAbilityAdd(inUnit, inType);
+    }
+    return true;
+}
+
+bool AbilityDataCast(unit inCaster, unit inTarget, AbilityDataRef inAbility) {
+    if (!UnitIsAlive(inCaster) || !UnitIsAlive(inTarget)) {
+        return false;
+    }
+    if ((UnitWeaponRange(inCaster, 1) + UnitGetPropertyFixed(inCaster, c_unitPropRadius, true)) * 1.5 < DistanceBetweenPoints(UnitGetPosition(inCaster), UnitGetPosition(inTarget))) {
+        return false;
+    }
+    if (inAbility.index == c_AbilityTypeNone) {
+        return true;
+    }
+    return inAbility.castAction(inCaster, inTarget, inAbility.type);
+}
+
+static bool abilitydata_CastYamato(unit inCaster, unit inTaget, string type) {
+    order lv_order = OrderTargetingUnit(AbilityCommand(type, 0), inTaget);
+    return UnitIssueOrder(inCaster, lv_order, c_orderQueueReplace);
+}
+
+static bool abilitydata_CastPsiStorm(unit inCaster, unit inTaget, string type) {
+    order lv_order = OrderTargetingPoint(AbilityCommand(type, 0), UnitGetPosition(inTaget));
+    return UnitIssueOrder(inCaster, lv_order, c_orderQueueReplace);
+}
+
+void InitAbilityData() {
+    AbilityDataRef lv_ability;
+    int lv_index;
+
+    DataTableInstanceCreate();
+    gv_abilitydata_dataByType = DataTableInstanceLastCreated();
+
+    lv_ability = gv_abilitydata_types[c_AbilityTypeNone];
+    lv_ability.index = c_AbilityTypeNone;
+    lv_ability.type = "None";
+    lv_ability.cooldown = "None";
+    lv_ability.name = "无";
+    lv_ability.castAction = null;
+
+    lv_ability = gv_abilitydata_types[c_AbilityTypeYamatoGun];
+    lv_ability.index = c_AbilityTypeYamatoGun;
+    lv_ability.type = "Yamato";
+    lv_ability.cooldown = "Yamato";
+    lv_ability.name = "大和炮";
+    lv_ability.castAction = abilitydata_CastYamato;
+
+    lv_ability = gv_abilitydata_types[c_AbilityTypePsiStorm];
+    lv_ability.index = c_AbilityTypePsiStorm;
+    lv_ability.type = "PsiStorm";
+    lv_ability.cooldown = "Abil/PsiStorm";
+    lv_ability.name = "灵能风暴";
+    lv_ability.castAction = abilitydata_CastPsiStorm;
+
+    for (lv_index = 0; lv_index < c_AbilityTypeCount; lv_index += 1) {
+        lv_ability = gv_abilitydata_types[lv_index];
+        DataTableInstanceSetInt(gv_abilitydata_dataByType, lv_ability.type, lv_index);
+    }
+}

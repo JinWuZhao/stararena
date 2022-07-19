@@ -1,5 +1,6 @@
 include "CustomScripts/ArenaLib"
 include "CustomScripts/WeaponConf"
+include "CustomScripts/AbilityConf"
 include "CustomScripts/GameState"
 include "CustomScripts/UnitConf"
 include "CustomScripts/GiftItem"
@@ -10,6 +11,7 @@ include "CustomScripts/GamePlay"
 void InitCustomScripts() {
     InitArenaLib();
     InitWeaponData();
+    InitAbilityData();
     InitGameState();
     InitUnitData();
     InitGiftItme();

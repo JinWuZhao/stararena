@@ -120,6 +120,7 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
     int lv_currLife;
     string lv_pointName;
     int lv_levelUpCosts;
+    AbilityData lv_ability;
 
     if (UnitIsAlive(inUnit)) {
         lv_willBrokenTime = refPlayer.aiStates[c_aimode_stateWillBrokenTime];
@@ -137,12 +138,9 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
             SaveUnitPlayer(refPlayer);
         }
 
-        if (refPlayer.aiMode == c_AIModeAttack || refPlayer.aiMode == c_AIModeHunter) {
-            if (!UnitOrderHasAbil(inUnit, "attack")) {
-                if (refPlayer.aiMode == c_AIModeHunter) {
-                    AIModeSetMode(refPlayer, c_AIModeAttack);
-                }
-                SaveUnitPlayer(refPlayer);
+        if (AbilityDataGetByType(refPlayer.abilityType, lv_ability) && UnitOrderHasAbil(inUnit, "attack")) {
+            if (FixedToInt(AbilityDataGetCoolDown(inUnit, lv_ability)) <= 0) {
+                AbilityDataCast(inUnit, OrderGetTargetUnit(UnitOrder(inUnit, 0)), lv_ability);
             }
         }
 
@@ -185,6 +183,7 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
                     PointGetFacing(PointFromName(lv_pointName)), lv_unitData.baseScale, refPlayer.name, 2, !refPlayer.isBot);
                 UnitDataInitPlayerUnitProps(refPlayer, inUnit);
                 WeaponDataApplyUnit(refPlayer.weaponType, inUnit);
+                AbilityDataApply(inUnit, refPlayer.abilityType);
                 UnitPlayerRestoreBuffs(refPlayer, inUnit);
                 SaveUnitPlayer(refPlayer);
 
@@ -225,7 +224,7 @@ static void aimode_AttackStep(UnitPlayerRef refPlayer, unit inUnit) {
                 }
             }
         }
-        if (lv_minDistance > (UnitWeaponRange(inUnit, 1) + UnitGetPropertyFixed(inUnit, c_unitPropRadius, true)) * 2) {
+        if (lv_minDistance > (UnitWeaponRange(inUnit, 1) + UnitGetPropertyFixed(inUnit, c_unitPropRadius, true)) * 1.5) {
             lv_targetUnit = null;
             lv_targetPlayer = null;
             refPlayer.aiStates[c_aimode_stateHuntTarget] = 0;

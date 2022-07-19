@@ -30,6 +30,7 @@ struct UnitPlayer {
     string name;
     string unitType;
     string weaponType;
+    string abilityType;
     datetime deadTime;
     int playerId;
     int score;
@@ -90,6 +91,7 @@ static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source) {
     dest.score = source.score;
     dest.unitType = source.unitType;
     dest.weaponType = source.weaponType;
+    dest.abilityType = source.abilityType;
     dest.deadTime = source.deadTime;
     dest.aiMode = source.aiMode;
     dest.level = source.level;

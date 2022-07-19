@@ -265,12 +265,13 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
     lv_player.isBot = lv_isBot;
     if (lv_isBot) {
         lv_index = RandomInt(0, c_WeaponDataTypeCount-1);
-        lv_player.points = 1;
+        lv_player.points = 0;
     } else {
         lv_index = c_WeaponDataType90mmCannons;
-        lv_player.points = 2;
+        lv_player.points = 1;
     }
     lv_player.weaponType = WeaponDataGetType(lv_index);
+    lv_player.abilityType = AbilityDataGetType(c_AbilityTypeNone);
     lv_player.deadTime = IntToDateTime(0);
     lv_player.unitType = "SiegeTank";
     lv_player.level = 1;

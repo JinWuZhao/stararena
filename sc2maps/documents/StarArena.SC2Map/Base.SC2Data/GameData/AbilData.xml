@@ -1,13 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Catalog>
-    <CAbilEffectTarget id="Hyperjump">
+    <CAbilEffectTarget id="PsiStorm">
         <Cost index="0">
-            <Vital index="Energy" value="20"/>
+            <Vital index="Energy" value="0"/>
+            <Cooldown TimeUse="6"/>
         </Cost>
+        <CmdButtonArray index="Execute">
+            <Flags index="UseDefaultButton" value="1"/>
+            <Flags index="CreateDefaultButton" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="Cancel">
+            <Flags index="UseDefaultButton" value="1"/>
+            <Flags index="CreateDefaultButton" value="1"/>
+        </CmdButtonArray>
+        <Range index="0" value="200"/>
     </CAbilEffectTarget>
     <CAbilEffectTarget id="Yamato">
         <Cost index="0">
-            <Vital index="Energy" value="20"/>
+            <Vital index="Energy" value="0"/>
+            <Cooldown TimeUse="10"/>
         </Cost>
+        <CmdButtonArray index="Execute">
+            <Flags index="UseDefaultButton" value="1"/>
+            <Flags index="CreateDefaultButton" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="Cancel">
+            <Flags index="UseDefaultButton" value="1"/>
+            <Flags index="CreateDefaultButton" value="1"/>
+        </CmdButtonArray>
+        <Range index="0" value="200"/>
+        <PrepTime index="0" value="0.1"/>
     </CAbilEffectTarget>
 </Catalog>
