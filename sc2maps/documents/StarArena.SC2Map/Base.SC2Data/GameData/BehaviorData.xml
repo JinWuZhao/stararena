@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Catalog>
+    <CBehaviorBuff id="PurificationNovaTargettedCaster">
+        <Duration value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="PurificationNovaTargettedTarget">
+        <Duration value="10"/>
+    </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaAttackDamageEnhance">
         <MaxStackCount value="9999"/>
         <Modification>

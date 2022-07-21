@@ -3,6 +3,9 @@
     <CButton id="PsiStorm">
         <DefaultButtonLayout Row="2" CardId="1"/>
     </CButton>
+    <CButton id="PurificationNovaTargeted">
+        <DefaultButtonLayout Row="2" CardId="1"/>
+    </CButton>
     <CButton id="YamatoGun">
         <DefaultButtonLayout Row="2" CardId="1"/>
     </CButton>

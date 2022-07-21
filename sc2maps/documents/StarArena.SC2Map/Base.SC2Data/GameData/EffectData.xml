@@ -7,4 +7,7 @@
         <SearchFilters value="-;Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
         <!--AreaArray index="0" Radius="1.5" Effect="PsiStormImpactSet"/-->
     </CEffectEnumArea>
+    <CEffectEnumArea id="PurificationNovaTargettedSearch">
+        <AreaArray index="0" Radius="10"/>
+    </CEffectEnumArea>
 </Catalog>

@@ -15,6 +15,19 @@
         </CmdButtonArray>
         <Range index="0" value="200"/>
     </CAbilEffectTarget>
+    <CAbilEffectTarget id="PurificationNovaTargeted">
+        <Cost index="0">
+            <Cooldown TimeUse="15"/>
+        </Cost>
+        <CmdButtonArray index="Execute">
+            <Flags index="UseDefaultButton" value="1"/>
+            <Flags index="CreateDefaultButton" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="Cancel">
+            <Flags index="UseDefaultButton" value="1"/>
+            <Flags index="CreateDefaultButton" value="1"/>
+        </CmdButtonArray>
+    </CAbilEffectTarget>
     <CAbilEffectTarget id="Yamato">
         <Cost index="0">
             <Vital index="Energy" value="0"/>
