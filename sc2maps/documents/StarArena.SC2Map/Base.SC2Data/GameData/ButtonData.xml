@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Catalog>
+    <CButton id="ParasiticBomb">
+        <DefaultButtonLayout Row="2" CardId="1"/>
+    </CButton>
     <CButton id="PsiStorm">
         <DefaultButtonLayout Row="2" CardId="1"/>
     </CButton>
     <CButton id="PurificationNovaTargeted">
+        <DefaultButtonLayout Row="2" CardId="1"/>
+    </CButton>
+    <CButton id="RavagerCorrosiveBile">
+        <DefaultButtonLayout Row="2" CardId="1"/>
+    </CButton>
+    <CButton id="SpawnBanelings">
         <DefaultButtonLayout Row="2" CardId="1"/>
     </CButton>
     <CButton id="YamatoGun">

@@ -2,7 +2,10 @@ const int c_AbilityTypeNone = 0;
 const int c_AbilityTypeYamatoGun = 1;
 const int c_AbilityTypePsiStorm = 2;
 const int c_AbilityTypePurificationNovaTargeted = 3;
-const int c_AbilityTypeCount = 4;
+const int c_AbilityTypeRavagerCorrosiveBile = 4;
+const int c_AbilityTypeParasiticBomb = 5;
+const int c_AbilityTypeSpawnBanelings = 6;
+const int c_AbilityTypeCount = 7;
 
 bool AbilityCastAction(unit inCaster, unit inTaget, string type);
 
@@ -94,12 +97,12 @@ bool AbilityDataCast(unit inCaster, unit inTarget, AbilityDataRef inAbility) {
     return inAbility.castAction(inCaster, inTarget, inAbility.type);
 }
 
-static bool abilitydata_CastYamato(unit inCaster, unit inTaget, string type) {
+static bool abilitydata_CastTargetUnit(unit inCaster, unit inTaget, string type) {
     order lv_order = OrderTargetingUnit(AbilityCommand(type, 0), inTaget);
     return UnitIssueOrder(inCaster, lv_order, c_orderQueueReplace);
 }
 
-static bool abilitydata_CastPsiStorm(unit inCaster, unit inTaget, string type) {
+static bool abilitydata_CastTargetPoint(unit inCaster, unit inTaget, string type) {
     order lv_order = OrderTargetingPoint(AbilityCommand(type, 0), UnitGetPosition(inTaget));
     return UnitIssueOrder(inCaster, lv_order, c_orderQueueReplace);
 }
@@ -123,21 +126,42 @@ void InitAbilityData() {
     lv_ability.type = "Yamato";
     lv_ability.cooldown = "Yamato";
     lv_ability.name = "大和炮";
-    lv_ability.castAction = abilitydata_CastYamato;
+    lv_ability.castAction = abilitydata_CastTargetUnit;
 
     lv_ability = gv_abilitydata_types[c_AbilityTypePsiStorm];
     lv_ability.index = c_AbilityTypePsiStorm;
     lv_ability.type = "PsiStorm";
     lv_ability.cooldown = "Abil/PsiStorm";
     lv_ability.name = "灵能风暴";
-    lv_ability.castAction = abilitydata_CastPsiStorm;
+    lv_ability.castAction = abilitydata_CastTargetPoint;
 
     lv_ability = gv_abilitydata_types[c_AbilityTypePurificationNovaTargeted];
     lv_ability.index = c_AbilityTypePurificationNovaTargeted;
     lv_ability.type = "PurificationNovaTargeted";
     lv_ability.cooldown = "Abil/PurificationNovaTargeted";
     lv_ability.name = "净化新星";
-    lv_ability.castAction = abilitydata_CastPsiStorm;
+    lv_ability.castAction = abilitydata_CastTargetPoint;
+
+    lv_ability = gv_abilitydata_types[c_AbilityTypeRavagerCorrosiveBile];
+    lv_ability.index = c_AbilityTypeRavagerCorrosiveBile;
+    lv_ability.type = "RavagerCorrosiveBile";
+    lv_ability.cooldown = "Abil/RavagerCorrosiveBile";
+    lv_ability.name = "腐蚀胆汁";
+    lv_ability.castAction = abilitydata_CastTargetPoint;
+
+    lv_ability = gv_abilitydata_types[c_AbilityTypeParasiticBomb];
+    lv_ability.index = c_AbilityTypeParasiticBomb;
+    lv_ability.type = "ParasiticBomb";
+    lv_ability.cooldown = "Abil/ParasiticBomb";
+    lv_ability.name = "寄生弹";
+    lv_ability.castAction = abilitydata_CastTargetUnit;
+
+    lv_ability = gv_abilitydata_types[c_AbilityTypeSpawnBanelings];
+    lv_ability.index = c_AbilityTypeSpawnBanelings;
+    lv_ability.type = "SpawnBanelings";
+    lv_ability.cooldown = "SpawnBanelings";
+    lv_ability.name = "召唤毒爆虫";
+    lv_ability.castAction = abilitydata_CastTargetUnit;
 
     for (lv_index = 0; lv_index < c_AbilityTypeCount; lv_index += 1) {
         lv_ability = gv_abilitydata_types[lv_index];

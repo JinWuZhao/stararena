@@ -639,6 +639,8 @@ bool gameplay_ApplyGift_Func(bool testConds, bool runActions) {
     UnitPlayerAddBuff(lv_player, lv_buff);
     SaveUnitPlayer(lv_player);
 
+    arena_gf_ShowMessage(lv_player.name + " 获得了 " + lv_gift.name + FixedToString(lv_gift.duration, 0) + "s");
+
     if (UnitIsAlive(lv_unit)) {
         GiftItemApply(lv_unit, lv_gift);
     }

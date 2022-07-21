@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Catalog>
+    <CAbilEffectTarget id="ParasiticBomb">
+        <Cost index="0">
+            <Vital index="Energy" value="0"/>
+            <Cooldown TimeUse="10"/>
+        </Cost>
+        <TargetFilters index="0" value="Visible;Self,Ally,Stasis,Invulnerable"/>
+        <Range index="0" value="200"/>
+        <CmdButtonArray index="Execute">
+            <Flags index="UseDefaultButton" value="1"/>
+            <Flags index="CreateDefaultButton" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="Cancel">
+            <Flags index="UseDefaultButton" value="1"/>
+            <Flags index="CreateDefaultButton" value="1"/>
+        </CmdButtonArray>
+    </CAbilEffectTarget>
     <CAbilEffectTarget id="PsiStorm">
         <Cost index="0">
             <Vital index="Energy" value="0"/>
@@ -17,9 +33,38 @@
     </CAbilEffectTarget>
     <CAbilEffectTarget id="PurificationNovaTargeted">
         <Cost index="0">
-            <Cooldown TimeUse="15"/>
+            <Cooldown TimeUse="12"/>
         </Cost>
         <CmdButtonArray index="Execute">
+            <Flags index="UseDefaultButton" value="1"/>
+            <Flags index="CreateDefaultButton" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="Cancel">
+            <Flags index="UseDefaultButton" value="1"/>
+            <Flags index="CreateDefaultButton" value="1"/>
+        </CmdButtonArray>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="RavagerCorrosiveBile">
+        <Cost index="0">
+            <Cooldown TimeUse="8"/>
+        </Cost>
+        <Range index="0" value="200"/>
+        <CmdButtonArray index="Execute">
+            <Flags index="UseDefaultButton" value="1"/>
+            <Flags index="CreateDefaultButton" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="Cancel">
+            <Flags index="UseDefaultButton" value="1"/>
+            <Flags index="CreateDefaultButton" value="1"/>
+        </CmdButtonArray>
+    </CAbilEffectTarget>
+    <CAbilEffectTarget id="SpawnBanelings">
+        <Cost index="0">
+            <Vital index="Energy" value="0"/>
+            <Cooldown TimeUse="20"/>
+        </Cost>
+        <Range index="0" value="200"/>
+        <CmdButtonArray index="Execute" Requirements="">
             <Flags index="UseDefaultButton" value="1"/>
             <Flags index="CreateDefaultButton" value="1"/>
         </CmdButtonArray>

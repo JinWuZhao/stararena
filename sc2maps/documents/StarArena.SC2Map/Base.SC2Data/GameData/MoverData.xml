@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Catalog>
+    <CMoverMissile id="RavagerCorrosiveBile">
+        <MotionPhases index="0" ClearanceAcceleration="30"/>
+    </CMoverMissile>
+</Catalog>
