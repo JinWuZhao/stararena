@@ -7,6 +7,8 @@ static trigger gt_unitctrl_AssignPoints;
 static trigger gt_unitctrl_SetBehaviorTest;
 static trigger gt_unitctrl_SetAbilityTest;
 static trigger gt_unitctrl_SetAbility;
+static trigger gt_unitctrl_ShowWeaponInfo;
+static trigger gt_unitctrl_ShowAbilityInfo;
 
 // Function Declarations
 void InitUnitControl();
@@ -19,6 +21,8 @@ static void unitctrl_AssignPoints_Init();
 static void unitctrl_SetBehaviorTest_Init();
 static void unitctrl_SetAbilityTest_Init();
 static void unitctrl_SetAbility_Init();
+static void unitctrl_ShowWeaponInfo_Init();
+static void unitctrl_ShowAbilityInfo_Init();
 
 // Functions
 void InitUnitControl() {
@@ -30,6 +34,8 @@ void InitUnitControl() {
     unitctrl_SetBehaviorTest_Init();
     unitctrl_SetAbilityTest_Init();
     unitctrl_SetAbility_Init();
+    unitctrl_ShowWeaponInfo_Init();
+    unitctrl_ShowAbilityInfo_Init();
 }
 
 bool unitctrl_SetAIMode_Func(bool testConds, bool runActions) {
@@ -308,4 +314,46 @@ bool unitctrl_SetAbility_Func(bool testConds, bool runActions) {
 static void unitctrl_SetAbility_Init() {
     gt_unitctrl_SetAbility = TriggerCreate("unitctrl_SetAbility_Func");
     TriggerAddEventGeneric(gt_unitctrl_SetAbility, (arena_gv_commandPrefix + "set-ability"));
+}
+
+bool unitctrl_ShowWeaponInfo_Func(bool testConds, bool runActions) {
+    int lv_index = StringToInt(arena_gf_CurrentCommandArgument(1));
+    string lv_weapon = WeaponDataGetName(lv_index);
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (arena_gf_StringIsEmpty(lv_weapon)) {
+        return false;
+    }
+    arena_gf_ShowMessage("武器信息：" + lv_weapon + "(" + IntToString(lv_index) + ")");
+
+    return true;
+}
+
+static void unitctrl_ShowWeaponInfo_Init() {
+    gt_unitctrl_ShowWeaponInfo = TriggerCreate("unitctrl_ShowWeaponInfo_Func");
+    TriggerAddEventGeneric(gt_unitctrl_ShowWeaponInfo, (arena_gv_commandPrefix + "show-weapon"));
+}
+
+bool unitctrl_ShowAbilityInfo_Func(bool testConds, bool runActions) {
+    int lv_index = StringToInt(arena_gf_CurrentCommandArgument(1));
+    AbilityData lv_ability;
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (!AbilityDataGet(lv_index, lv_ability)) {
+        return false;
+    }
+    arena_gf_ShowMessage("技能信息：" + lv_ability.name + "(" + IntToString(lv_index) + ")，");
+
+    return true;
+}
+
+static void unitctrl_ShowAbilityInfo_Init() {
+    gt_unitctrl_ShowAbilityInfo = TriggerCreate("unitctrl_ShowAbilityInfo_Func");
+    TriggerAddEventGeneric(gt_unitctrl_ShowAbilityInfo, (arena_gv_commandPrefix + "show-ability"));
 }

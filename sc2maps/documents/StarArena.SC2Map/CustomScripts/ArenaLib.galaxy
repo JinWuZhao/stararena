@@ -60,6 +60,7 @@ void arena_gf_InitbaseMap (camerainfo lp_mainCamera) {
     VisEnable(c_visTypeMask, false);
     VisEnable(c_visTypeFog, false);
     libNtve_gf_HideGameUI(false, PlayerGroupSingle(arena_gv_audiencePlayer));
+    // libNtve_gf_HideGameUI(false, PlayerGroupSingle(arena_gv_directorPlayer));
     UISetFrameVisible(PlayerGroupAll(), c_syncFrameTypeTextTag, true);
     CameraApplyInfo(arena_gv_audiencePlayer, lp_mainCamera, 0.0, -1, 10.0, true);
     CameraApplyInfo(arena_gv_directorPlayer, lp_mainCamera, 0.0, -1, 10.0, true);

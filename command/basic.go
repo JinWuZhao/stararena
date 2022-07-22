@@ -277,7 +277,7 @@ func (c *SetWeaponCmd) Name() string {
 
 func (c *SetWeaponCmd) Parser(ast *parsec.AST) parsec.Parser {
 	return ast.And(c.Name(), nil,
-		parsec.AtomExact(`i`, "OP"), parsecUint("WEAPON", 2))
+		parsec.AtomExact(`l`, "OP"), parsecUint("WEAPON", 2))
 }
 
 func (c *SetWeaponCmd) Init(ctx Context, query parsec.Queryable) error {
@@ -292,6 +292,38 @@ func (c *SetWeaponCmd) Init(ctx Context, query parsec.Queryable) error {
 
 func (c *SetWeaponCmd) String() string {
 	return fmt.Sprintf("cmd-set-weapon %s %d", c.player, c.weapon)
+}
+
+type SetAbilityCmd struct {
+	player  string
+	ability int32
+}
+
+func (c *SetAbilityCmd) New() Command {
+	return new(SetAbilityCmd)
+}
+
+func (c *SetAbilityCmd) Name() string {
+	return "SET_ABILITY"
+}
+
+func (c *SetAbilityCmd) Parser(ast *parsec.AST) parsec.Parser {
+	return ast.And(c.Name(), nil,
+		parsec.AtomExact(`k`, "OP"), parsecUint("ABILITY", 2))
+}
+
+func (c *SetAbilityCmd) Init(ctx Context, query parsec.Queryable) error {
+	ability, err := strconv.ParseInt(query.GetChildren()[1].GetValue(), 10, 32)
+	if err != nil {
+		return fmt.Errorf("strconv.ParseInt(ability): %w", err)
+	}
+	c.ability = int32(ability)
+	c.player = ctx.Player
+	return nil
+}
+
+func (c *SetAbilityCmd) String() string {
+	return fmt.Sprintf("cmd-set-ability %s %d", c.player, c.ability)
 }
 
 type AssignPointsCmd struct {
@@ -334,6 +366,45 @@ func (c *AssignPointsCmd) String() string {
 	return fmt.Sprintf("cmd-assign-points %s %d %d", c.player, c.prop, c.points)
 }
 
+type ShowInfoCmd struct {
+	kind  string
+	index int32
+}
+
+func (c *ShowInfoCmd) New() Command {
+	return new(ShowInfoCmd)
+}
+
+func (c *ShowInfoCmd) Name() string {
+	return "SHOW_INFO"
+}
+
+func (c *ShowInfoCmd) Parser(ast *parsec.AST) parsec.Parser {
+	return ast.And(c.Name(), nil,
+		parsec.AtomExact(`i`, "OP"),
+		ast.OrdChoice("KIND", nil,
+			parsec.Atom(`l`, "WEAPON"),
+			parsec.Atom(`k`, "ABILITY")),
+		parsecUint("INDEX", 2))
+}
+
+func (c *ShowInfoCmd) Init(ctx Context, query parsec.Queryable) error {
+	index, err := strconv.ParseInt(query.GetChildren()[2].GetValue(), 10, 32)
+	if err != nil {
+		return fmt.Errorf("strconv.ParseInt(index): %w", err)
+	}
+	c.kind = query.GetChildren()[1].GetValue()
+	c.index = int32(index)
+	return nil
+}
+
+func (c *ShowInfoCmd) String() string {
+	if c.kind == "l" {
+		return fmt.Sprintf("cmd-show-weapon %d", c.index)
+	}
+	return fmt.Sprintf("cmd-show-ability %d", c.index)
+}
+
 type GiftItemCmd struct {
 	player string
 	kind   uint32
@@ -351,7 +422,7 @@ func GiftItemOptsGift(player string, gift string, number uint32) GiftItemOpts {
 		cmd.player = player
 		if gift == "辣条" {
 			cmd.kind = 0
-		} else if gift == "电池" {
+		} else if gift == "小花花" {
 			cmd.kind = 1
 		} else {
 			cmd.kind = 2

@@ -28,7 +28,7 @@ static GiftItem[c_GiftKindCount][c_GiftItemCapPerKind] gv_giftitem_data;
 void InitGiftItme();
 void GiftItemCopy(GiftItemRef dest, GiftItemRef source);
 bool GiftItemGet(int inKind, int inIndex, GiftItemRef outItem);
-bool GiftItemApply(unit inUnit, GiftItemRef inItem);
+bool GiftItemApply(unit inUnit, GiftItemRef inItem, int inNum);
 
 void InitGiftItme() {
     GiftItemRef lv_item;
@@ -129,7 +129,7 @@ bool GiftItemGet(int inKind, int inIndex, GiftItemRef outItem) {
     return true;
 }
 
-bool GiftItemApply(unit inUnit, GiftItemRef inItem) {
+bool GiftItemApply(unit inUnit, GiftItemRef inItem, int inNum) {
     int lv_count;
     fixed lv_duration;
     lv_count = UnitBehaviorCount(inUnit, inItem.behavior);
@@ -139,7 +139,7 @@ bool GiftItemApply(unit inUnit, GiftItemRef inItem) {
     } else if (lv_count > inItem.count) {
         UnitBehaviorRemove(inUnit, inItem.behavior, lv_count - inItem.count);
     }
-    UnitBehaviorSetDuration(inUnit, inItem.behavior, lv_duration + inItem.duration);
+    UnitBehaviorSetDuration(inUnit, inItem.behavior, lv_duration + inItem.duration * inNum);
     if (inItem.behavior == c_GiftBehaviorTempShield) {
         UnitSetPropertyInt(inUnit, c_unitPropShields, UnitGetPropertyInt(inUnit, c_unitPropShieldsMax, true));
     } else if (inItem.behavior == c_GiftBehaviorMaxLifeEnhance) {

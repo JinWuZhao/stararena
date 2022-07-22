@@ -60,12 +60,24 @@ func TestParseCommand(t *testing.T) {
 			Want: "cmd-set-aimode player 4",
 		},
 		{
-			Text: "i 12",
+			Text: "l 12",
 			Want: "cmd-set-weapon player 12",
+		},
+		{
+			Text: "k 5",
+			Want: "cmd-set-ability player 5",
 		},
 		{
 			Text: "p 1 4",
 			Want: "cmd-assign-points player 1 4",
+		},
+		{
+			Text: "i l 1",
+			Want: "cmd-show-weapon 1",
+		},
+		{
+			Text: "i k 1",
+			Want: "cmd-show-ability 1",
 		},
 	}
 	for _, p := range tests {

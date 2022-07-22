@@ -5,9 +5,10 @@
     </CEffectSet>
     <CEffectDamage id="ParasiticBombDotDamage">
         <Amount value="5"/>
+        <SearchFilters value="-;Self,Player,Ally,Missile,Item,Dead,Hidden,Invulnerable"/>
     </CEffectDamage>
     <CEffectEnumArea id="ParasiticBombSearchEffect">
-        <SearchFilters value="-;Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <SearchFilters value="-;Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
         <AreaArray index="0" Radius="4"/>
     </CEffectEnumArea>
     <CEffectEnumArea id="ParasiticBombSecondarySearchEffect">
@@ -33,13 +34,15 @@
     </CEffectCreatePersistent>
     <CEffectDamage id="RavagerCorrosiveBileDamage">
         <Amount value="120"/>
+        <SearchFilters value="-;Self,Player,Ally,Missile,Item,Dead,Hidden,Invulnerable"/>
     </CEffectDamage>
     <CEffectEnumArea id="RavagerCorrosiveBileSearch">
         <AreaArray index="0" Radius="4"/>
+        <SearchFilters value="-;Player,Ally,Missile,Item,Stasis,Dead,Hidden,Invulnerable"/>
     </CEffectEnumArea>
-    <CEffectEnumArea id="RavagerCorrosiveBileWarningDummySearch">
-        <SearchFilters value="-;Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
-    </CEffectEnumArea>
+    <CEffectDamage id="RavagerCorrosiveBileWarningDummyDamage">
+        <SearchFilters value="-;Self,Player,Ally,Missile,Item,Dead,Hidden,Invulnerable"/>
+    </CEffectDamage>
     <CEffectIssueOrder id="SapStructureIssueAttackOrder">
         <WhichUnit Value="Target"/>
         <Target Effect="SpawnBanelings"/>

@@ -55,7 +55,7 @@ void InitGamePlay() {
     gv_gameplay_loopTimer = TimerCreate();
     TimerStart(gv_gameplay_loopTimer, 1.0, true, c_timeReal);
     gv_gameplay_giftTimer = TimerCreate();
-    TimerStart(gv_gameplay_giftTimer, 30.0, true, c_timeReal);
+    TimerStart(gv_gameplay_giftTimer, 60.0, true, c_timeReal);
 
     for (lv_index = 0; lv_index < c_unitPlayersCap; lv_index += 1) {
         gv_gameplay_playerInfoItmes[lv_index] = DialogControlHookupStandard(
@@ -639,10 +639,10 @@ bool gameplay_ApplyGift_Func(bool testConds, bool runActions) {
     UnitPlayerAddBuff(lv_player, lv_buff);
     SaveUnitPlayer(lv_player);
 
-    arena_gf_ShowMessage(lv_player.name + " 获得了 " + lv_gift.name + FixedToString(lv_gift.duration, 0) + "s");
+    arena_gf_ShowMessage(lv_player.name + " 获得了 " + lv_gift.name + FixedToString(lv_gift.duration * lv_number, 0) + "s");
 
     if (UnitIsAlive(lv_unit)) {
-        GiftItemApply(lv_unit, lv_gift);
+        GiftItemApply(lv_unit, lv_gift, lv_number);
     }
     return true;
 }

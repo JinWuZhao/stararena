@@ -2,10 +2,11 @@
 <Desc>
     <Frame type="GameMessageDisplay" name="GameUI/UIContainer/FullscreenUpperContainer/ChatDisplay" file="GameUI">
         <Anchor side="Top" relative="$GameUI" pos="Max" offset="-140"/>
-        <Anchor side="Bottom" relative="$parent" pos="Max" offset="-20"/>
+        <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
         <Anchor side="Left" relative="$parent" pos="Mid" offset="0"/>
         <Anchor side="Right" relative="$parent" pos="Mid" offset="0"/>
-        <Height val="120"/>
+        <Height val="140"/>
+        <Width val="620"/>
         <Style val="SystemInfoStyle"/>
     </Frame>
     <Frame type="GameMessageDisplay" name="GameUI/UIContainer/FullscreenUpperContainer/DirectiveDisplay" file="GameUI">
@@ -200,6 +201,74 @@
                 <Color val="255,255,255"/>
                 <Text val="排行榜"/>
                 <Style val="RankListStyle"/>
+            </Frame>
+        </Frame>
+
+        <Frame type="Frame" name="LeftTips">
+            <Anchor side="Top" relative="$parent" pos="Max" offset="-140"/>
+            <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
+            <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
+            <Anchor side="Right" relative="$parent" pos="Mid" offset="-320"/>
+            <Frame type="Label" name="Tips">
+                <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Min" offset="26"/>
+                <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
+                <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
+                <Color val="255,255,255"/>
+                <Style val="SystemInfoStyle"/>
+                <Text val="输入弹幕指令进行游戏，不区分大小写：JR加入红队，JB加入蓝队；"/>
+            </Frame>
+            <Frame type="Label" name="Tips2">
+                <Anchor side="Top" relative="$parent" pos="Min" offset="26"/>
+                <Anchor side="Bottom" relative="$parent" pos="Min" offset="52"/>
+                <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
+                <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
+                <Color val="255,255,255"/>
+                <Style val="SystemInfoStyle"/>
+                <Text val="L0~L23切换武器(消耗1pt)；K1~K6切换技能(消耗4pts)；I+武器/技能查询信息；"/>
+            </Frame>
+            <Frame type="Label" name="Tips3">
+                <Anchor side="Top" relative="$parent" pos="Min" offset="52"/>
+                <Anchor side="Bottom" relative="$parent" pos="Min" offset="78"/>
+                <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
+                <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
+                <Color val="255,255,255"/>
+                <Style val="SystemInfoStyle"/>
+                <Text val="击杀敌人可升级并获得属性点，P+编号+数量分配属性点，"/>
+            </Frame>
+            <Frame type="Label" name="Tips4">
+                <Anchor side="Top" relative="$parent" pos="Min" offset="78"/>
+                <Anchor side="Bottom" relative="$parent" pos="Min" offset="104"/>
+                <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
+                <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
+                <Color val="255,255,255"/>
+                <Style val="SystemInfoStyle"/>
+                <Text val="属性编号：0生命，1伤害，2射程，3移速，4攻速；"/>
+            </Frame>
+            <Frame type="Label" name="Tips5">
+                <Anchor side="Top" relative="$parent" pos="Min" offset="104"/>
+                <Anchor side="Bottom" relative="$parent" pos="Min" offset="130"/>
+                <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
+                <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
+                <Color val="255,255,255"/>
+                <Style val="SystemInfoStyle"/>
+                <Text val="M+编号控制坦克，编号1进攻，2猎杀，3防御，4撤退。"/>
+            </Frame>
+        </Frame>
+
+        <Frame type="Frame" name="RightTips">
+            <Anchor side="Top" relative="$parent" pos="Max" offset="-140"/>
+            <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
+            <Anchor side="Left" relative="$parent" pos="Mid" offset="320"/>
+            <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
+            <Frame type="Label" name="Tips">
+                <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
+                <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
+                <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
+                <Color val="255,255,255"/>
+                <Style val="SystemInfoStyle"/>
+                <Text val="使用 辣条 购买初级商品，使用 小花花 购买高级商品，购买多次商品可叠加效果持续时间。"/>
             </Frame>
         </Frame>
     </Frame>
