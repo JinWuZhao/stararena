@@ -3,6 +3,7 @@ static trigger gt_gameplay_init;
 static trigger gt_gameplay_Victory;
 static trigger gt_gameplay_DestroyCenters;
 static trigger gt_gameplay_EndGame;
+static trigger gt_gameplay_RaceTimeOut;
 static trigger gt_gameplay_AddUnitPlayer;
 static trigger gt_gameplay_RemoveUnitPlayer;
 static trigger gt_gameplay_ShowUnitPlayerPoints;
@@ -13,11 +14,14 @@ static trigger gt_gameplay_UnitSelected;
 static trigger gt_gameplay_TimerLoop;
 static trigger gt_gameplay_GiftChange;
 static trigger gt_gameplay_ApplyGift;
+static trigger gt_gameplay_changeTips;
 
 // Variable Declarations
 static int gv_gameplay_winnerPlayer;
 static timer gv_gameplay_loopTimer;
 static timer gv_gameplay_giftTimer;
+static timer gv_gameplay_raceTimer;
+static timer gv_gameplay_tipsTimer;
 static GiftItem gv_gameplay_basicGift;
 static GiftItem gv_gameplay_advancedGift;
 static int[c_unitPlayersCap] gv_gameplay_playerInfoItmes;
@@ -26,6 +30,9 @@ static int gv_gameplay_RankBoardTitle;
 static int gv_gameplay_RankBoardList;
 static int gv_gameplay_BasicGiftMsg;
 static int gv_gameplay_AdvancedGiftMsg;
+static int gv_gameplay_WeaponTipsMsg;
+static int gv_gameplay_AbilityTipsMsg;
+static int gv_gameplay_GameTipsMsg;
 
 static const int c_gameplay_UnitRedCenter = 1585478384;
 static const int c_gameplay_UnitBlueCenter = 177235035;
@@ -37,6 +44,7 @@ static void gameplay_initMap_Init();
 static void gameplay_Victory_Init();
 static void gameplay_DestroyCenters_Init();
 static void gameplay_EndGame_Init();
+static void gameplay_RaceTimeOut_Init();
 static void gameplay_AddUnitPlayer_Init();
 static void gameplay_RemoveUnitPlayer_Init();
 static void gameplay_ShowUnitPlayerPoints();
@@ -47,6 +55,7 @@ static void gameplay_UnitSelected_Init();
 static void gameplay_TimerLoop_Init();
 static void gameplay_GiftChange_Init();
 static void gameplay_ApplyGift_Init();
+static void gameplay_changeTips_Init();
 
 // Functions
 void InitGamePlay() {
@@ -56,6 +65,10 @@ void InitGamePlay() {
     TimerStart(gv_gameplay_loopTimer, 1.0, true, c_timeReal);
     gv_gameplay_giftTimer = TimerCreate();
     TimerStart(gv_gameplay_giftTimer, 60.0, true, c_timeReal);
+    gv_gameplay_raceTimer = TimerCreate();
+    TimerStart(gv_gameplay_raceTimer, 60.0 * 15, false, c_timeReal);
+    gv_gameplay_tipsTimer = TimerCreate();
+    TimerStart(gv_gameplay_tipsTimer, 10.0, true, c_timeReal);
 
     for (lv_index = 0; lv_index < c_unitPlayersCap; lv_index += 1) {
         gv_gameplay_playerInfoItmes[lv_index] = DialogControlHookupStandard(
@@ -72,11 +85,18 @@ void InitGamePlay() {
         c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/GiftBoard/BasicGifts");
     gv_gameplay_AdvancedGiftMsg = DialogControlHookupStandard(
         c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/GiftBoard/AdvancedGifts");
+    gv_gameplay_WeaponTipsMsg = DialogControlHookupStandard(
+        c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/RightTips/weaponTips");
+    gv_gameplay_AbilityTipsMsg = DialogControlHookupStandard(
+        c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/RightTips/abilityTips");
+    gv_gameplay_GameTipsMsg = DialogControlHookupStandard(
+        c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/RightTips/gameTips");
 
     gameplay_initMap_Init();
     gameplay_Victory_Init();
     gameplay_DestroyCenters_Init();
     gameplay_EndGame_Init();
+    gameplay_RaceTimeOut_Init();
     gameplay_AddUnitPlayer_Init();
     gameplay_RemoveUnitPlayer_Init();
     gameplay_ShowUnitPlayerPoints();
@@ -87,6 +107,7 @@ void InitGamePlay() {
     gameplay_TimerLoop_Init();
     gameplay_GiftChange_Init();
     gameplay_ApplyGift_Init();
+    gameplay_changeTips_Init();
 }
 
 bool gameplay_initMap_Func(bool testConds, bool runActions) {
@@ -146,6 +167,7 @@ bool gameplay_Victory_Func(bool testConds, bool runActions) {
     int lv_rankLength;
     string lv_playerName;
     string lv_rankList = "";
+    string lv_teamName = "";
 
     if (!runActions) {
         return true;
@@ -180,7 +202,12 @@ bool gameplay_Victory_Func(bool testConds, bool runActions) {
             if (rankedUnitPlayers[index].isBot) {
                 lv_playerName = "Bot";
             }
-            lv_rankList += "第" + IntToString(index+1) + "名：" + lv_playerName + " -------------- " + IntToString(rankedUnitPlayers[index].score) + "击杀\n";
+            if (rankedUnitPlayers[index].playerId == c_GameStatePlayerIdRed) {
+                lv_teamName = "红队";
+            } else if(rankedUnitPlayers[index].playerId == c_GameStatePlayerIdBlue) {
+                lv_teamName = "蓝队";
+            }
+            lv_rankList += "第" + IntToString(index+1) + "名：" + "[" + lv_teamName + "] " + lv_playerName + " -------------- " + IntToString(rankedUnitPlayers[index].score) + "\n";
         }
         DialogControlSetPropertyAsText(gv_gameplay_RankBoardList, 
             c_triggerControlPropertyText, PlayerGroupAll(), StringToText(lv_rankList));
@@ -236,6 +263,38 @@ bool gameplay_EndGame_Func(bool testConds, bool runActions) {
 static void gameplay_EndGame_Init() {
     gt_gameplay_EndGame = TriggerCreate("gameplay_EndGame_Func");
     TriggerAddEventGeneric(gt_gameplay_EndGame, (arena_gv_commandPrefix + "end-game"));
+}
+
+bool gameplay_RaceTimeOut_Func(bool testConds, bool runActions) {
+    UnitPlayerArray lv_players;
+    int lv_redScore;
+    int lv_blueScore;
+    int lv_index;
+
+    if (!runActions) {
+        return true;
+    }
+
+    UnitPlayersGetAll(lv_players);
+    for (lv_index = 0; lv_index < UnitPlayersCount(); lv_index += 1) {
+        if (lv_players[lv_index].playerId == c_GameStatePlayerIdRed) {
+            lv_redScore += lv_players[lv_index].score;
+        } else if (lv_players[lv_index].playerId == c_GameStatePlayerIdBlue) {
+            lv_blueScore += lv_players[lv_index].score;
+        }
+    }
+    if (lv_redScore < lv_blueScore) {
+        UnitKill(UnitFromId(c_gameplay_UnitRedCenter));
+    } else {
+        UnitKill(UnitFromId(c_gameplay_UnitBlueCenter));
+    }
+
+    return true;
+}
+
+static void gameplay_RaceTimeOut_Init() {
+    gt_gameplay_RaceTimeOut = TriggerCreate("gameplay_RaceTimeOut_Func");
+    TriggerAddEventTimer(gt_gameplay_RaceTimeOut, gv_gameplay_raceTimer);
 }
 
 bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
@@ -398,14 +457,16 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
 
     if (!arena_gf_StringIsEmpty(lv_target) && UnitPlayerFromName(lv_target, lv_targetPlayer)) {
         lv_rewardPoints = lv_unitData.rewardExp * (lv_targetPlayer.combo + 1);
+        lv_rewardPoints += (lv_targetPlayer.level - lv_attackerPlayer.level) * lv_rewardPoints / 3;
+        if (lv_rewardPoints < 0) {
+            lv_rewardPoints = 0;
+        }
+        lv_attackerPlayer.score += 1;
+        lv_attackerPlayer.combo += 1;
     } else {
         lv_rewardPoints = lv_unitData.rewardExp;
     }
-    if (lv_attackerPlayer.level < c_UnitPlayerMaxLevel) {
-        lv_attackerPlayer.exp += lv_rewardPoints;
-    }
-    lv_attackerPlayer.score += 1;
-    lv_attackerPlayer.combo += 1;
+    lv_attackerPlayer.exp += lv_rewardPoints;
     SaveUnitPlayer(lv_attackerPlayer);
 
     if (!arena_gf_StringIsEmpty(lv_targetPlayer.name)) {
@@ -430,9 +491,7 @@ bool gameplay_KillUnit_Func(bool testConds, bool runActions) {
     }
 
     for (lv_index = 0; lv_index < c_unitPlayersCap; lv_index += 1) {
-        if (UnitPlayerGet(lv_index, lv_player) && 
-            lv_player.playerId == lv_attackerPlayer.playerId && 
-            lv_player.level < c_UnitPlayerMaxLevel) {
+        if (UnitPlayerGet(lv_index, lv_player) && lv_player.playerId == lv_attackerPlayer.playerId) {
             lv_player.exp += lv_rewardPoints / 2;
             SaveUnitPlayer(lv_player);
         }
@@ -592,11 +651,11 @@ bool gameplay_GiftChange_Func(bool testConds, bool runActions) {
     }
     if (GiftItemGet(c_GiftKindBasic, RandomInt(0, c_GiftKindBasicCount-1), gv_gameplay_basicGift)) {
         DialogControlSetPropertyAsText(gv_gameplay_BasicGiftMsg, c_triggerControlPropertyText, PlayerGroupAll(), 
-            StringToText("初级商品：" + gv_gameplay_basicGift.name + FixedToString(gv_gameplay_basicGift.duration, 0) + "s"));
+            StringToText("辣条X1：" + gv_gameplay_basicGift.name + FixedToString(gv_gameplay_basicGift.duration, 0) + "s"));
     }
     if (GiftItemGet(c_GiftKindAdvanced, RandomInt(0, c_GiftKindAdvancedCount-1), gv_gameplay_advancedGift)) {
         DialogControlSetPropertyAsText(gv_gameplay_AdvancedGiftMsg, c_triggerControlPropertyText, PlayerGroupAll(), 
-            StringToText("高级商品：" + gv_gameplay_advancedGift.name + FixedToString(gv_gameplay_advancedGift.duration, 0) + "s"));
+            StringToText("小花花X1：" + gv_gameplay_advancedGift.name + FixedToString(gv_gameplay_advancedGift.duration, 0) + "s"));
     }
     return true;
 }
@@ -650,4 +709,46 @@ bool gameplay_ApplyGift_Func(bool testConds, bool runActions) {
 static void gameplay_ApplyGift_Init() {
     gt_gameplay_ApplyGift = TriggerCreate("gameplay_ApplyGift_Func");
     TriggerAddEventGeneric(gt_gameplay_ApplyGift, (arena_gv_commandPrefix + "apply-gift"));
+}
+
+bool gameplay_changeTips_Func(bool testConds, bool runActions) {
+    int lv_index;
+    int lv_count;
+    int lv_ts = DateTimeToInt(CurrentDateTimeGet());
+    string lv_weaponTips = "可选武器：   ";
+    string lv_abilityTips = "可选技能：   ";
+
+    if (!runActions) {
+        return true;
+    }
+
+    lv_count = 7;
+    for (lv_index = (lv_ts / 10) % c_WeaponDataTypeCount; lv_count > 0; lv_index += 1) {
+        if (lv_index >= c_WeaponDataTypeCount) {
+            lv_index = 0;
+        }
+        lv_weaponTips += WeaponDataGetName(lv_index) + "(L" + IntToString(lv_index) + ")  ";
+        lv_count -= 1;
+        if (lv_count == 4) {
+            lv_weaponTips += "\n";
+        }
+    }
+    DialogControlSetPropertyAsText(gv_gameplay_WeaponTipsMsg, c_triggerControlPropertyText, PlayerGroupAll(), StringToText(lv_weaponTips));
+    lv_count = 3;
+    for (lv_index = (lv_ts / 10) % c_AbilityTypeCount; lv_count > 0; lv_index += 1) {
+        if (lv_index >= c_AbilityTypeCount) {
+            lv_index = 0;
+        }
+        lv_abilityTips += AbilityDataGetName(lv_index) + "(K" + IntToString(lv_index) + ")  ";
+        lv_count -= 1;
+    }
+    DialogControlSetPropertyAsText(gv_gameplay_AbilityTipsMsg, c_triggerControlPropertyText, PlayerGroupAll(), StringToText(lv_abilityTips));
+    DialogControlSetPropertyAsText(gv_gameplay_GameTipsMsg, c_triggerControlPropertyText, PlayerGroupAll(), 
+        StringToText("一局超过15分钟自动结束，按照杀敌数决胜负。\n指令提示：分配4点属性到生命(P04)，分配4点属性到伤害(P14)..."));
+    return true;
+}
+
+static void gameplay_changeTips_Init() {
+    gt_gameplay_changeTips = TriggerCreate("gameplay_changeTips_Func");
+    TriggerAddEventTimer(gt_gameplay_changeTips, gv_gameplay_tipsTimer);
 }

@@ -106,7 +106,7 @@ bool UnitDataSetUnitProp(int inProp, int inPoints, UnitDataRef inData, unit inUn
         lv_behavior = "StarArenaMaxLifeEnhance";
     } else if (inProp == c_unitPlayerPropsDamageMultiplier) {
         lv_behavior = "StarArenaAttackDamageEnhance";
-        lv_points /= 2;
+        lv_points /= 4;
     } else if (inProp == c_unitPlayerPropsRangeMultiplier) {
         lv_behavior = "StarArenaAttackRangeEnhance";
     } else if (inProp == c_unitPlayerPropsMoveSpeed) {
@@ -200,19 +200,21 @@ void InitUnitData() {
     data.dataType = c_UnitDataTypeDestructibleGarage;
     data.unitType = "DestructibleGarage";
     data.name = "围墙";
-    data.lifeMax = 1000;
+    data.baseExp = 400;
+    data.lifeMax = 2000;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeDestructibleGarage], data);
 
     UnitDataCopy(data, emptyData);
     data.dataType = c_UnitDataTypeValhallaDestructibleWall;
     data.unitType = "ValhallaDestructibleWall";
     data.name = "围墙";
+    data.baseExp = 200;
     data.lifeMax = 1000;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeValhallaDestructibleWall], data);
 
     for (lv_index = 0; lv_index < c_UnitDataTypesCount; lv_index += 1) {
         if (gv_unitdata_unitTypes[lv_index].baseExp > 0) {
-            gv_unitdata_unitTypes[lv_index].rewardExp = gv_unitdata_unitTypes[lv_index].baseExp / 2;
+            gv_unitdata_unitTypes[lv_index].rewardExp = gv_unitdata_unitTypes[lv_index].baseExp;
         }
         if (gv_unitdata_unitTypes[lv_index].baseScale <= 0) {
             gv_unitdata_unitTypes[lv_index].baseScale = 100;
