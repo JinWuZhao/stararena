@@ -10,7 +10,7 @@ const int c_unitPlayerPropsCap = 5;
 
 const int c_UnitPlayerMaxLevel = 15;
 
-const int c_unitPlayersCap = 20;
+const int c_unitPlayersCap = 40;
 
 const int c_GameStatePlayerIdRed = 4;
 const int c_GameStatePlayerIdBlue = 3;
@@ -68,6 +68,7 @@ void UnitPlayersOfRanked(UnitPlayerArrayRef outPlayers);
 void UnitPlayerAddBuff(UnitPlayerRef refPlayer, UnitPlayerBuffRef inBuff);
 void UnitPlayerSaveBuffs(UnitPlayerRef refPlayer);
 void UnitPlayerRestoreBuffs(UnitPlayerRef refPlayer, unit inUnit);
+int UnitPlayerGetMinLevel();
 void InitGameState();
 
 static void gamestate_InitUnitPlayerIndexOfName();
@@ -297,6 +298,25 @@ void UnitPlayerRestoreBuffs(UnitPlayerRef refPlayer, unit inUnit) {
     }
     UnitSetPropertyInt(inUnit, c_unitPropLife, UnitGetPropertyInt(inUnit, c_unitPropLifeMax, true));
     UnitSetPropertyInt(inUnit, c_unitPropShields, UnitGetPropertyInt(inUnit, c_unitPropShieldsMax, true));
+}
+
+int UnitPlayerGetMinLevel() {
+    int lv_index;
+    int lv_minLevel = c_UnitPlayerMaxLevel - 1;
+    UnitPlayerRef lv_player;
+
+    if (gv_gamestate_unitPlayersCount <= 0) {
+        return 1;
+    }
+    for (lv_index = 0; lv_index < c_unitPlayersCap; lv_index += 1) {
+        if (!arena_gf_StringIsEmpty(gv_gamestate_unitPlayers[lv_index].name)) {
+            lv_player = gv_gamestate_unitPlayers[lv_index];
+            if (lv_player.level < lv_minLevel) {
+                lv_minLevel = lv_player.level;
+            }
+        }
+    }
+    return lv_minLevel;
 }
 
 void InitGameState() {

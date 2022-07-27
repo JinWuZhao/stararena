@@ -3,15 +3,15 @@
     <ObjectPoint Id="1021755700" Position="109.5,32.5,0" Rotation="4.7121" Scale="1,1,1" Type="Normal" Name="Blue-02" Color="0,0,0,0"/>
     <ObjectPoint Id="1341440731" Position="18.5,48.5,0" Rotation="5.4978" Scale="1,1,1" Type="StartLoc" Name="Red-start" Color="0,0,0,0" Attachment="Ref_Center" ObjectId="1585478384" ObjectType="Unit"/>
     <ObjectPoint Id="101123559" Position="18.5,32.5,0" Rotation="1.5705" Scale="1,1,1" Type="Normal" Name="Red-02" Color="0,0,0,0"/>
-    <ObjectPoint Id="913167181" Position="109.5,63.5,0" Rotation="4.7121" Scale="1,1,1" Type="Normal" Name="Blue-01" Color="0,0,0,0"/>
-    <ObjectPoint Id="1835577758" Position="18.5,63.5,0" Rotation="1.5705" Scale="1,1,1" Type="Normal" Name="Red-01" Color="0,0,0,0"/>
-    <ObjectPoint Id="1738434129" Position="64.5,47.5,0" Scale="1,1,1" Type="StartLoc" Name="NPC-Start" Color="0,0,0,0"/>
-    <ObjectPoint Id="1994784925" Position="109.5,48.5,0" Rotation="5.4978" Scale="1,1,1" Type="StartLoc" Name="Blue-start" Color="0,0,0,0" Attachment="Ref_Center" ObjectId="177235035" ObjectType="Unit"/>
     <ObjectPoint Id="265868269" Position="109.5,21.5,0" Rotation="4.7121" Scale="1,1,1" Type="Normal" Name="Blue-04" Color="0,0,0,0"/>
+    <ObjectPoint Id="1994784925" Position="109.5,48.5,0" Rotation="5.4978" Scale="1,1,1" Type="StartLoc" Name="Blue-start" Color="0,0,0,0" Attachment="Ref_Center" ObjectId="177235035" ObjectType="Unit"/>
+    <ObjectPoint Id="1738434129" Position="64.5,47.5,0" Scale="1,1,1" Type="StartLoc" Name="NPC-Start" Color="0,0,0,0"/>
+    <ObjectPoint Id="1835577758" Position="18.5,63.5,0" Rotation="1.5705" Scale="1,1,1" Type="Normal" Name="Red-01" Color="0,0,0,0"/>
+    <ObjectPoint Id="913167181" Position="109.5,63.5,0" Rotation="4.7121" Scale="1,1,1" Type="Normal" Name="Blue-01" Color="0,0,0,0"/>
     <ObjectPoint Id="1957095032" Position="18.5,21.5,0" Rotation="1.5705" Scale="1,1,1" Type="Normal" Name="Red-04" Color="0,0,0,0"/>
     <ObjectPoint Id="1250670012" Position="109.5,74.5,0" Rotation="4.7121" Scale="1,1,1" Type="Normal" Name="Blue-03" Color="0,0,0,0"/>
     <ObjectPoint Id="1816264614" Position="18.5,74.5,0" Rotation="1.5705" Scale="1,1,1" Type="Normal" Name="Red-03" Color="0,0,0,0"/>
-    <ObjectCamera Id="2107835186" Position="64,46,0" Rotation="3.1406" Scale="1,1,1" Name="Camera 001" Color="0,0,0,0" CameraTarget="64,46">
+    <ObjectCamera Id="2107835186" Position="64,47,0" Rotation="3.1403" Scale="1,1,1" Name="Camera 001" Color="0,0,0,0" CameraTarget="64,47">
         <Flag Index="CameraHidden" Value="1"/>
         <CameraValue Index="FieldOfView" Value="22"/>
         <CameraValue Index="NearClip" Value="0.0998"/>
@@ -19,7 +19,7 @@
         <CameraValue Index="ShadowClip" Value="75"/>
         <CameraValue Index="Distance" Value="160"/>
         <CameraValue Index="Pitch" Value="60"/>
-        <CameraValue Index="Yaw" Value="179.9584"/>
+        <CameraValue Index="Yaw" Value="179.94"/>
         <CameraValue Index="FocalDepth" Value="8"/>
         <CameraValue Index="FalloffStart" Value="0.0002"/>
         <CameraValue Index="FalloffEnd" Value="8"/>
@@ -42,19 +42,19 @@
     <ObjectUnit Id="80620264" Position="103,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
     <ObjectUnit Id="1213990808" Variation="1" Position="28.5,52.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="4"/>
     <ObjectUnit Id="1517569871" Position="45,57,0" Rotation="1.5705" Scale="1,1,1" UnitType="ValhallaDestructibleWall" Player="4"/>
-    <ObjectUnit Id="1091798832" Position="53,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
-    <ObjectUnit Id="1232816786" Variation="1" Position="25.5,37.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="4"/>
     <ObjectUnit Id="787759497" Position="83,39,0" Rotation="4.7121" Scale="1,1,1" UnitType="ValhallaDestructibleWall" Player="3"/>
-    <ObjectUnit Id="490024109" Position="115,62,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="1232816786" Variation="1" Position="25.5,37.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="4"/>
+    <ObjectUnit Id="1091798832" Position="53,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
     <ObjectUnit Id="155934253" Variation="1" Position="28.5,49.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="4"/>
-    <ObjectUnit Id="375923104" Position="115,20,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="490024109" Position="115,62,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="323811728" Variation="1" Position="111.5,58.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="3"/>
+    <ObjectUnit Id="375923104" Position="115,20,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="1957420924" Position="115,69,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="798731257" Position="64,22,0" Rotation="4.7114" Scale="1,1,1" UnitType="ValhallaDestructibleWall"/>
     <ObjectUnit Id="1797848962" Position="39,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
-    <ObjectUnit Id="1155317105" Position="18,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
-    <ObjectUnit Id="170411106" Variation="1" Position="99.5,49.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="3"/>
     <ObjectUnit Id="2020316067" Position="64,68,0" Rotation="4.7121" Scale="1,1,1" UnitType="ValhallaDestructibleWall"/>
+    <ObjectUnit Id="170411106" Variation="1" Position="99.5,49.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="3"/>
+    <ObjectUnit Id="1155317105" Position="18,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
     <ObjectUnit Id="1587027227" Position="25,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
     <ObjectUnit Id="103260458" Position="115,48,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="177235035" Position="109.5,48.5,0" Rotation="5.4975" Scale="1,1,1" Name="Red-Center" UnitType="CommandCenter" Player="3"/>
@@ -66,48 +66,48 @@
     <ObjectUnit Id="2012353108" Position="89,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
     <ObjectUnit Id="258139693" Variation="1" Position="25.5,58.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="4"/>
     <ObjectUnit Id="2132916533" Position="45,51,0" Rotation="1.5705" Scale="1,1,1" UnitType="ValhallaDestructibleWall" Player="4"/>
-    <ObjectUnit Id="789528626" Position="115,27,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="58294942" Position="13,76,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="789528626" Position="115,27,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="1516472049" Position="82,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
     <ObjectUnit Id="311770331" Position="64,28,0" Rotation="1.5705" Scale="1,1,1" UnitType="ValhallaDestructibleWall"/>
     <ObjectUnit Id="381165265" Position="64,40,0" Rotation="4.7114" Scale="1,1,1" UnitType="ValhallaDestructibleWall"/>
     <ObjectUnit Id="1409916448" Variation="1" Position="19.5,58.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="4"/>
-    <ObjectUnit Id="1306088270" Position="46,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
-    <ObjectUnit Id="767668276" Position="45,33,0" Rotation="1.5705" Scale="1,1,1" UnitType="ValhallaDestructibleWall" Player="4"/>
     <ObjectUnit Id="659480582" Position="64,68,0" Rotation="1.5705" Scale="1,1,1" UnitType="ValhallaDestructibleWall"/>
+    <ObjectUnit Id="767668276" Position="45,33,0" Rotation="1.5705" Scale="1,1,1" UnitType="ValhallaDestructibleWall" Player="4"/>
+    <ObjectUnit Id="1306088270" Position="46,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
     <ObjectUnit Id="1543311250" Variation="1" Position="111.5,37.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="3"/>
     <ObjectUnit Id="1605981774" Position="64,56,0" Rotation="1.5705" Scale="1,1,1" UnitType="ValhallaDestructibleWall"/>
-    <ObjectUnit Id="1585478384" Position="18.5,48.5,0" Rotation="5.4975" Scale="1,1,1" Name="Blue-Center" UnitType="CommandCenter" Player="4"/>
-    <ObjectUnit Id="1229445737" Position="13,34,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="1856547835" Position="13,48,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="1229445737" Position="13,34,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="1585478384" Position="18.5,48.5,0" Rotation="5.4975" Scale="1,1,1" Name="Blue-Center" UnitType="CommandCenter" Player="4"/>
     <ObjectUnit Id="2004776464" Position="64,51,0" Rotation="1.5705" Scale="1,1,1" UnitType="ValhallaDestructibleWall"/>
     <ObjectUnit Id="554824060" Position="64,45,0" Rotation="1.5705" Scale="1,1,1" UnitType="ValhallaDestructibleWall"/>
     <ObjectUnit Id="1591643081" Position="64,51,0" Rotation="4.7121" Scale="1,1,1" UnitType="ValhallaDestructibleWall"/>
     <ObjectUnit Id="610724832" Position="64,74,0" Rotation="4.7121" Scale="1,1,1" UnitType="ValhallaDestructibleWall"/>
-    <ObjectUnit Id="477444458" Position="75,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
     <ObjectUnit Id="2044730598" Variation="1" Position="99.5,37.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="3"/>
-    <ObjectUnit Id="1041033131" Variation="1" Position="99.5,52.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="3"/>
+    <ObjectUnit Id="477444458" Position="75,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
     <ObjectUnit Id="1739095642" Position="64,34,0" Rotation="1.5705" Scale="1,1,1" UnitType="ValhallaDestructibleWall"/>
+    <ObjectUnit Id="1041033131" Variation="1" Position="99.5,52.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="3"/>
     <ObjectUnit Id="1894467976" Position="13,55,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="2006543305" Position="96,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
     <ObjectUnit Id="90503290" Position="64,45,0" Rotation="4.7114" Scale="1,1,1" UnitType="ValhallaDestructibleWall"/>
     <ObjectUnit Id="1483390547" Variation="1" Position="22.5,37.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="4"/>
-    <ObjectUnit Id="1836665118" Position="75,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
     <ObjectUnit Id="1824930680" Position="64,62,0" Rotation="1.5705" Scale="1,1,1" UnitType="ValhallaDestructibleWall"/>
+    <ObjectUnit Id="1836665118" Position="75,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
     <ObjectUnit Id="1751454805" Position="83,33,0" Rotation="4.7121" Scale="1,1,1" UnitType="ValhallaDestructibleWall" Player="3"/>
     <ObjectUnit Id="1020734976" Position="45,63,0" Rotation="1.5705" Scale="1,1,1" UnitType="ValhallaDestructibleWall" Player="4"/>
     <ObjectUnit Id="1484677623" Variation="1" Position="28.5,40.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="4"/>
     <ObjectUnit Id="835406745" Position="46,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
     <ObjectUnit Id="397569166" Position="83,57,0" Rotation="4.7121" Scale="1,1,1" UnitType="ValhallaDestructibleWall" Player="3"/>
     <ObjectUnit Id="2055443337" Variation="1" Position="99.5,58.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="3"/>
-    <ObjectUnit Id="65584521" Position="89,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
     <ObjectUnit Id="1814022151" Position="13,27,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="65584521" Position="89,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
     <ObjectUnit Id="1909958052" Position="115,41,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
-    <ObjectUnit Id="1432153117" Position="39,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
     <ObjectUnit Id="2135425615" Position="96,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
+    <ObjectUnit Id="1432153117" Position="39,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
     <ObjectUnit Id="519704186" Variation="1" Position="28.5,58.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="4"/>
-    <ObjectUnit Id="754948729" Position="115,55,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="2044230416" Position="13,62,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
+    <ObjectUnit Id="754948729" Position="115,55,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="1837729846" Variation="1" Position="19.5,37.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="4"/>
     <ObjectUnit Id="1504461727" Position="83,63,0" Rotation="4.7121" Scale="1,1,1" UnitType="ValhallaDestructibleWall" Player="3"/>
     <ObjectUnit Id="376524351" Position="53,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
@@ -117,10 +117,10 @@
     <ObjectUnit Id="2085420042" Variation="1" Position="28.5,46.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="4"/>
     <ObjectUnit Id="795396177" Variation="1" Position="108.5,58.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="3"/>
     <ObjectUnit Id="1485887515" Position="83,51,0" Rotation="4.7121" Scale="1,1,1" UnitType="ValhallaDestructibleWall" Player="3"/>
-    <ObjectUnit Id="1214665589" Position="32,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
     <ObjectUnit Id="1358943898" Position="64,22,0" Rotation="1.5705" Scale="1,1,1" UnitType="ValhallaDestructibleWall"/>
-    <ObjectUnit Id="984860447" Position="68,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
+    <ObjectUnit Id="1214665589" Position="32,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
     <ObjectUnit Id="295798111" Position="45,39,0" Rotation="1.5705" Scale="1,1,1" UnitType="ValhallaDestructibleWall" Player="4"/>
+    <ObjectUnit Id="984860447" Position="68,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
     <ObjectUnit Id="867118079" Variation="1" Position="28.5,37.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="4"/>
     <ObjectUnit Id="762337916" Variation="1" Position="16.5,58.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="4"/>
     <ObjectUnit Id="211871644" Position="60,80,0" Rotation="3.1413" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8N"/>
@@ -132,14 +132,14 @@
     <ObjectUnit Id="407579318" Position="83,45,0" Rotation="4.7121" Scale="1,1,1" UnitType="ValhallaDestructibleWall" Player="3"/>
     <ObjectUnit Id="185926231" Position="13,20,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="146413911" Position="18,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
-    <ObjectUnit Id="1377697748" Position="13,69,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="1975107912" Variation="1" Position="28.5,55.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="4"/>
+    <ObjectUnit Id="1377697748" Position="13,69,0" Rotation="1.5705" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8E"/>
     <ObjectUnit Id="1899910532" Position="103,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
-    <ObjectUnit Id="523985610" Variation="1" Position="99.5,40.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="3"/>
     <ObjectUnit Id="999232303" Position="64,56,0" Rotation="4.7121" Scale="1,1,1" UnitType="ValhallaDestructibleWall"/>
+    <ObjectUnit Id="523985610" Variation="1" Position="99.5,40.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="3"/>
     <ObjectUnit Id="1555269113" Position="64,74,0" Rotation="1.5705" Scale="1,1,1" UnitType="ValhallaDestructibleWall"/>
-    <ObjectUnit Id="2043301957" Position="60,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
     <ObjectUnit Id="1078595785" Variation="1" Position="102.5,37.5,0" Scale="1,1,1" UnitType="DestructibleGarage" Player="3"/>
+    <ObjectUnit Id="2043301957" Position="60,17,0" Scale="1,1,1" UnitType="XelNagaDestructibleBlocker8S"/>
     <Group Type="ObjectUnit" Name="Center" Id="2">
         <GroupObject Id="177235035"/>
         <GroupObject Id="1585478384"/>

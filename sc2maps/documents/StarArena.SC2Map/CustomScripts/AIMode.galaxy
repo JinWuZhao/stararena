@@ -145,11 +145,13 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
         }
 
         if (UnitDataGetByUnitType(refPlayer.unitType, lv_unitData)) {
-            lv_levelUpCosts = lv_unitData.baseExp * (refPlayer.level + 1);
+            lv_levelUpCosts = lv_unitData.baseExp * (refPlayer.level / 2 + 1);
             if (refPlayer.exp >= lv_levelUpCosts) {
                 refPlayer.level += 1;
-                if (refPlayer.level <= c_UnitPlayerMaxLevel) {
+                if (refPlayer.level < c_UnitPlayerMaxLevel) {
                     refPlayer.points += 4;
+                } else if (refPlayer.level == c_UnitPlayerMaxLevel) {
+                    refPlayer.points += 8;
                 } else {
                     refPlayer.points += 1;
                 }

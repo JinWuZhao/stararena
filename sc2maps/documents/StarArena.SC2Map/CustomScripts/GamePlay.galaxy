@@ -24,7 +24,7 @@ static timer gv_gameplay_raceTimer;
 static timer gv_gameplay_tipsTimer;
 static GiftItem gv_gameplay_basicGift;
 static GiftItem gv_gameplay_advancedGift;
-static int[c_unitPlayersCap] gv_gameplay_playerInfoItmes;
+static int[c_unitPlayersCap][2] gv_gameplay_playerInfoItmes;
 static int gv_gameplay_RankBoard;
 static int gv_gameplay_RankBoardTitle;
 static int gv_gameplay_RankBoardList;
@@ -71,8 +71,10 @@ void InitGamePlay() {
     TimerStart(gv_gameplay_tipsTimer, 10.0, true, c_timeReal);
 
     for (lv_index = 0; lv_index < c_unitPlayersCap; lv_index += 1) {
-        gv_gameplay_playerInfoItmes[lv_index] = DialogControlHookupStandard(
-            c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/Players/" + IntToString(lv_index) + "/content");
+        gv_gameplay_playerInfoItmes[lv_index][0] = DialogControlHookupStandard(
+            c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/Players/" + IntToString(lv_index) + "/name");
+        gv_gameplay_playerInfoItmes[lv_index][1] = DialogControlHookupStandard(
+            c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/Players/" + IntToString(lv_index) + "/info");
     }
     gv_gameplay_RankBoard = DialogControlHookupStandard(
         c_triggerControlTypePanel, "UIContainer/FullscreenUpperContainer/RankBoard");
@@ -333,7 +335,10 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
     lv_player.abilityType = AbilityDataGetType(c_AbilityTypeNone);
     lv_player.deadTime = IntToDateTime(0);
     lv_player.unitType = "SiegeTank";
-    lv_player.level = 1;
+    lv_player.level = UnitPlayerGetMinLevel();
+    if (lv_player.level > 1) {
+        lv_player.points += (lv_player.level - 1) * 4;
+    }
     lv_player.revivePoint = RandomInt(1, 4);
     lv_player.props[c_unitPlayerPropsMaxLife] = 0;
     lv_player.props[c_unitPlayerPropsDamageMultiplier] = 0;
@@ -631,9 +636,11 @@ bool gameplay_TimerLoop_Func(bool testConds, bool runActions) {
             if (lv_player.isBot) {
                 lv_player.name = "Bot";
             }
-            DialogControlSetPropertyAsText(gv_gameplay_playerInfoItmes[lv_index], 
+            DialogControlSetPropertyAsText(gv_gameplay_playerInfoItmes[lv_index][0], 
+                c_triggerControlPropertyText, PlayerGroupAll(), StringToText(lv_player.name));
+            DialogControlSetPropertyAsText(gv_gameplay_playerInfoItmes[lv_index][1], 
                 c_triggerControlPropertyText, PlayerGroupAll(), 
-                StringToText(lv_player.name + "\nlv." + IntToString(lv_player.level) + "\n" + IntToString(lv_player.points) + " pts"));
+                StringToText("lv." + IntToString(lv_player.level) + " " + IntToString(lv_player.points) + "pts"));
         }
     }
 
@@ -715,8 +722,8 @@ bool gameplay_changeTips_Func(bool testConds, bool runActions) {
     int lv_index;
     int lv_count;
     int lv_ts = DateTimeToInt(CurrentDateTimeGet());
-    string lv_weaponTips = "可选武器：   ";
-    string lv_abilityTips = "可选技能：   ";
+    string lv_weaponTips = "可选武器：";
+    string lv_abilityTips = "可选技能：";
 
     if (!runActions) {
         return true;

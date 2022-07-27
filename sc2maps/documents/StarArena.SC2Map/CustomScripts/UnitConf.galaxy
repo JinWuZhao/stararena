@@ -214,7 +214,7 @@ void InitUnitData() {
 
     for (lv_index = 0; lv_index < c_UnitDataTypesCount; lv_index += 1) {
         if (gv_unitdata_unitTypes[lv_index].baseExp > 0) {
-            gv_unitdata_unitTypes[lv_index].rewardExp = gv_unitdata_unitTypes[lv_index].baseExp;
+            gv_unitdata_unitTypes[lv_index].rewardExp = gv_unitdata_unitTypes[lv_index].baseExp / 2;
         }
         if (gv_unitdata_unitTypes[lv_index].baseScale <= 0) {
             gv_unitdata_unitTypes[lv_index].baseScale = 100;
