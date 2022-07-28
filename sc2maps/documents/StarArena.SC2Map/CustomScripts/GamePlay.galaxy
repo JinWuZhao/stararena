@@ -24,12 +24,14 @@ static timer gv_gameplay_raceTimer;
 static timer gv_gameplay_tipsTimer;
 static GiftItem gv_gameplay_basicGift;
 static GiftItem gv_gameplay_advancedGift;
+static GiftItem gv_gameplay_deluxeGift;
 static int[c_unitPlayersCap][2] gv_gameplay_playerInfoItmes;
 static int gv_gameplay_RankBoard;
 static int gv_gameplay_RankBoardTitle;
 static int gv_gameplay_RankBoardList;
 static int gv_gameplay_BasicGiftMsg;
 static int gv_gameplay_AdvancedGiftMsg;
+static int gv_gameplay_DeluxeGiftMsg;
 static int gv_gameplay_WeaponTipsMsg;
 static int gv_gameplay_AbilityTipsMsg;
 static int gv_gameplay_GameTipsMsg;
@@ -87,6 +89,8 @@ void InitGamePlay() {
         c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/GiftBoard/BasicGifts");
     gv_gameplay_AdvancedGiftMsg = DialogControlHookupStandard(
         c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/GiftBoard/AdvancedGifts");
+    gv_gameplay_DeluxeGiftMsg = DialogControlHookupStandard(
+        c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/GiftBoard/DeluxeGifts");
     gv_gameplay_WeaponTipsMsg = DialogControlHookupStandard(
         c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/RightTips/weaponTips");
     gv_gameplay_AbilityTipsMsg = DialogControlHookupStandard(
@@ -339,7 +343,7 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
     }
     lv_player.revivePoint = RandomInt(1, 4);
     lv_player.props[c_unitPlayerPropsMaxLife] = 0;
-    lv_player.props[c_unitPlayerPropsDamageMultiplier] = 1;
+    lv_player.props[c_unitPlayerPropsDamageMultiplier] = 2;
     lv_player.props[c_unitPlayerPropsRangeMultiplier] = 0;
     lv_player.props[c_unitPlayerPropsMoveSpeed] = 0;
     lv_player.props[c_unitPlayerPropsAttackSpeed] = 0;
@@ -656,11 +660,15 @@ bool gameplay_GiftChange_Func(bool testConds, bool runActions) {
     }
     if (GiftItemGet(c_GiftKindBasic, RandomInt(0, c_GiftKindBasicCount-1), gv_gameplay_basicGift)) {
         DialogControlSetPropertyAsText(gv_gameplay_BasicGiftMsg, c_triggerControlPropertyText, PlayerGroupAll(), 
-            StringToText("辣条X1：" + gv_gameplay_basicGift.name + FixedToString(gv_gameplay_basicGift.duration, 0) + "s"));
+            StringToText("1辣条：" + gv_gameplay_basicGift.name + FixedToString(gv_gameplay_basicGift.duration, 0) + "s"));
     }
     if (GiftItemGet(c_GiftKindAdvanced, RandomInt(0, c_GiftKindAdvancedCount-1), gv_gameplay_advancedGift)) {
         DialogControlSetPropertyAsText(gv_gameplay_AdvancedGiftMsg, c_triggerControlPropertyText, PlayerGroupAll(), 
-            StringToText("小花花X1：" + gv_gameplay_advancedGift.name + FixedToString(gv_gameplay_advancedGift.duration, 0) + "s"));
+            StringToText("1小花花：" + gv_gameplay_advancedGift.name + FixedToString(gv_gameplay_advancedGift.duration, 0) + "s"));
+    }
+    if (GiftItemGet(c_GiftKindDeluxe, RandomInt(0, c_GiftKindDeluxeCount-1), gv_gameplay_deluxeGift)) {
+        DialogControlSetPropertyAsText(gv_gameplay_DeluxeGiftMsg, c_triggerControlPropertyText, PlayerGroupAll(), 
+            StringToText("10粉丝团灯牌：" + gv_gameplay_deluxeGift.name + FixedToString(gv_gameplay_deluxeGift.duration, 0) + "s"));
     }
     return true;
 }
@@ -678,6 +686,8 @@ bool gameplay_ApplyGift_Func(bool testConds, bool runActions) {
     UnitPlayer lv_player;
     GiftItemRef lv_gift;
     UnitPlayerBuff lv_buff;
+    int lv_index;
+    UnitPlayerArray lv_allPlayers;
 
     if (!runActions) {
         return true;
@@ -687,6 +697,8 @@ bool gameplay_ApplyGift_Func(bool testConds, bool runActions) {
         lv_gift = gv_gameplay_basicGift;
     } else if (lv_kind == c_GiftKindAdvanced) {
         lv_gift = gv_gameplay_advancedGift;
+    }  else if (lv_kind == c_GiftKindDeluxe) {
+        lv_gift = gv_gameplay_deluxeGift;
     } else {
         return false;
     }
@@ -707,6 +719,20 @@ bool gameplay_ApplyGift_Func(bool testConds, bool runActions) {
 
     if (UnitIsAlive(lv_unit)) {
         GiftItemApply(lv_unit, lv_gift, lv_number);
+    }
+
+    if (lv_gift.group) {
+        UnitPlayersGetAll(lv_allPlayers);
+        for (lv_index = 0; lv_index < UnitPlayersCount(); lv_index += 1) {
+            if (lv_allPlayers[lv_index].name != lv_player.name && lv_allPlayers[lv_index].playerId == lv_player.playerId) {
+                UnitPlayerAddBuff(lv_allPlayers[lv_index], lv_buff);
+                SaveUnitPlayer(lv_allPlayers[lv_index]);
+                lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_allPlayers[lv_index].name));
+                if (UnitIsAlive(lv_unit)) {
+                    GiftItemApply(lv_unit, lv_gift, lv_number);
+                }
+            }
+        }
     }
     return true;
 }

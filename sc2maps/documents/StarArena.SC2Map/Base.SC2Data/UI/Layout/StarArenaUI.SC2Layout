@@ -345,16 +345,24 @@
             <Frame type="Label" name="BasicGifts">
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
                 <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.5" offset="0"/>
+                <Anchor side="Left" relative="$parent" pos="0.05" offset="0"/>
+                <Anchor side="Right" relative="$parent" pos="0.35" offset="0"/>
                 <Text val=""/>
                 <Style val="SystemInfoStyle"/>
             </Frame>
             <Frame type="Label" name="AdvancedGifts">
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
                 <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Anchor side="Left" relative="$parent" pos="0.5" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
+                <Anchor side="Left" relative="$parent" pos="0.35" offset="0"/>
+                <Anchor side="Right" relative="$parent" pos="0.65" offset="0"/>
+                <Text val=""/>
+                <Style val="SystemInfoStyle"/>
+            </Frame>
+            <Frame type="Label" name="DeluxeGifts">
+                <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
+                <Anchor side="Left" relative="$parent" pos="0.65" offset="0"/>
+                <Anchor side="Right" relative="$parent" pos="0.95" offset="0"/>
                 <Text val=""/>
                 <Style val="SystemInfoStyle"/>
             </Frame>

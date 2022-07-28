@@ -424,7 +424,7 @@ func GiftItemOptsGift(player string, gift string, number uint32) GiftItemOpts {
 			cmd.kind = 0
 		} else if gift == "小花花" {
 			cmd.kind = 1
-		} else {
+		} else if gift == "粉丝团灯牌" {
 			cmd.kind = 2
 		}
 		cmd.number = number

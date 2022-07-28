@@ -1,5 +1,4 @@
 const string c_GiftBehaviorLifeRegen = "StarArenaLifeRegen";
-const string c_GiftBehaviorTempShield = "StarArenaTempShield";
 const string c_GiftBehaviorMaxLifeEnhance = "StarArenaMaxLifeTempEnhance";
 const string c_GiftBehaviorAttackDamageEnhance = "StarArenaAttackDamageTempEnhance";
 const string c_GiftBehaviorAttackRangeEnhance = "StarArenaAttackRangeTempEnhance";
@@ -11,6 +10,7 @@ struct GiftItem {
     string behavior;
     int count;
     fixed duration;
+    bool group;
 };
 typedef structref<GiftItem> GiftItemRef;
 
@@ -18,9 +18,9 @@ const int c_GiftKindBasic = 0;
 const int c_GiftKindBasicCount = 6;
 const int c_GiftKindAdvanced = 1;
 const int c_GiftKindAdvancedCount = 6;
-//const int c_GiftKindDeluxe = 2;
-//const int c_GiftKindDeluxeCount = 6;
-const int c_GiftKindCount = 2;
+const int c_GiftKindDeluxe = 2;
+const int c_GiftKindDeluxeCount = 6;
+const int c_GiftKindCount = 3;
 const int c_GiftItemCapPerKind = 6;
 
 static GiftItem[c_GiftKindCount][c_GiftItemCapPerKind] gv_giftitem_data;
@@ -38,72 +38,126 @@ void InitGiftItme() {
     lv_item.behavior = c_GiftBehaviorLifeRegen;
     lv_item.count = 160;
     lv_item.duration = 5;
+    lv_item.group = false;
 
     lv_item = gv_giftitem_data[c_GiftKindBasic][1];
     lv_item.name = "提升生命上限";
     lv_item.behavior = c_GiftBehaviorMaxLifeEnhance;
     lv_item.count = 5;
     lv_item.duration = 5;
+    lv_item.group = false;
 
     lv_item = gv_giftitem_data[c_GiftKindBasic][2];
     lv_item.name = "增加伤害";
     lv_item.behavior = c_GiftBehaviorAttackDamageEnhance;
     lv_item.count = 5;
     lv_item.duration = 5;
+    lv_item.group = false;
 
     lv_item = gv_giftitem_data[c_GiftKindBasic][3];
     lv_item.name = "延长攻击范围";
     lv_item.behavior = c_GiftBehaviorAttackRangeEnhance;
     lv_item.count = 5;
     lv_item.duration = 5;
+    lv_item.group = false;
 
     lv_item = gv_giftitem_data[c_GiftKindBasic][4];
     lv_item.name = "提升移动速度";
     lv_item.behavior = c_GiftBehaviorMoveSpeedEnhance;
     lv_item.count = 5;
     lv_item.duration = 5;
+    lv_item.group = false;
 
     lv_item = gv_giftitem_data[c_GiftKindBasic][5];
     lv_item.name = "提升攻击速度";
     lv_item.behavior = c_GiftBehaviorAttackSpeedEnhance;
     lv_item.count = 5;
     lv_item.duration = 5;
+    lv_item.group = false;
 
     lv_item = gv_giftitem_data[c_GiftKindAdvanced][0];
     lv_item.name = "强效恢复生命";
     lv_item.behavior = c_GiftBehaviorLifeRegen;
     lv_item.count = 640;
     lv_item.duration = 5;
+    lv_item.group = false;
 
     lv_item = gv_giftitem_data[c_GiftKindAdvanced][1];
     lv_item.name = "大幅提升生命上限";
     lv_item.behavior = c_GiftBehaviorMaxLifeEnhance;
     lv_item.count = 20;
     lv_item.duration = 5;
+    lv_item.group = false;
 
     lv_item = gv_giftitem_data[c_GiftKindAdvanced][2];
     lv_item.name = "大幅提升伤害";
     lv_item.behavior = c_GiftBehaviorAttackDamageEnhance;
     lv_item.count = 20;
     lv_item.duration = 5;
+    lv_item.group = false;
 
     lv_item = gv_giftitem_data[c_GiftKindAdvanced][3];
     lv_item.name = "大幅延长攻击范围";
     lv_item.behavior = c_GiftBehaviorAttackRangeEnhance;
     lv_item.count = 20;
     lv_item.duration = 5;
+    lv_item.group = false;
 
     lv_item = gv_giftitem_data[c_GiftKindAdvanced][4];
     lv_item.name = "大幅提升移动速度";
     lv_item.behavior = c_GiftBehaviorMoveSpeedEnhance;
     lv_item.count = 20;
     lv_item.duration = 5;
+    lv_item.group = false;
 
     lv_item = gv_giftitem_data[c_GiftKindAdvanced][5];
     lv_item.name = "大幅提升攻击速度";
     lv_item.behavior = c_GiftBehaviorAttackSpeedEnhance;
     lv_item.count = 20;
     lv_item.duration = 5;
+    lv_item.group = false;
+
+    lv_item = gv_giftitem_data[c_GiftKindDeluxe][0];
+    lv_item.name = "全队恢复生命";
+    lv_item.behavior = c_GiftBehaviorLifeRegen;
+    lv_item.count = 320;
+    lv_item.duration = 5;
+    lv_item.group = true;
+
+    lv_item = gv_giftitem_data[c_GiftKindDeluxe][1];
+    lv_item.name = "全队提升生命上限";
+    lv_item.behavior = c_GiftBehaviorMaxLifeEnhance;
+    lv_item.count = 10;
+    lv_item.duration = 5;
+    lv_item.group = true;
+
+    lv_item = gv_giftitem_data[c_GiftKindDeluxe][2];
+    lv_item.name = "全队提升伤害";
+    lv_item.behavior = c_GiftBehaviorAttackDamageEnhance;
+    lv_item.count = 10;
+    lv_item.duration = 5;
+    lv_item.group = true;
+
+    lv_item = gv_giftitem_data[c_GiftKindDeluxe][3];
+    lv_item.name = "全队延长攻击范围";
+    lv_item.behavior = c_GiftBehaviorAttackRangeEnhance;
+    lv_item.count = 10;
+    lv_item.duration = 5;
+    lv_item.group = true;
+
+    lv_item = gv_giftitem_data[c_GiftKindDeluxe][4];
+    lv_item.name = "全队提升移动速度";
+    lv_item.behavior = c_GiftBehaviorMoveSpeedEnhance;
+    lv_item.count = 10;
+    lv_item.duration = 5;
+    lv_item.group = true;
+
+    lv_item = gv_giftitem_data[c_GiftKindDeluxe][5];
+    lv_item.name = "全队提升攻击速度";
+    lv_item.behavior = c_GiftBehaviorAttackSpeedEnhance;
+    lv_item.count = 10;
+    lv_item.duration = 5;
+    lv_item.group = true;
 }
 
 void GiftItemCopy(GiftItemRef dest, GiftItemRef source) {
@@ -111,6 +165,7 @@ void GiftItemCopy(GiftItemRef dest, GiftItemRef source) {
     dest.behavior = source.behavior;
     dest.count = source.count;
     dest.duration = source.duration;
+    dest.group = source.group;
 }
 
 bool GiftItemGet(int inKind, int inIndex, GiftItemRef outItem) {
@@ -140,9 +195,7 @@ bool GiftItemApply(unit inUnit, GiftItemRef inItem, int inNum) {
         UnitBehaviorRemove(inUnit, inItem.behavior, lv_count - inItem.count);
     }
     UnitBehaviorSetDuration(inUnit, inItem.behavior, lv_duration + inItem.duration * inNum);
-    if (inItem.behavior == c_GiftBehaviorTempShield) {
-        UnitSetPropertyInt(inUnit, c_unitPropShields, UnitGetPropertyInt(inUnit, c_unitPropShieldsMax, true));
-    } else if (inItem.behavior == c_GiftBehaviorMaxLifeEnhance) {
+    if (inItem.behavior == c_GiftBehaviorMaxLifeEnhance) {
         UnitSetPropertyInt(inUnit, c_unitPropLife, UnitGetPropertyInt(inUnit, c_unitPropLifeMax, true));
     }
     return true;
