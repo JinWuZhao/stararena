@@ -36,7 +36,7 @@ void InitGiftItme() {
     lv_item = gv_giftitem_data[c_GiftKindBasic][0];
     lv_item.name = "恢复生命";
     lv_item.behavior = c_GiftBehaviorLifeRegen;
-    lv_item.count = 40;
+    lv_item.count = 160;
     lv_item.duration = 5;
 
     lv_item = gv_giftitem_data[c_GiftKindBasic][1];
@@ -48,7 +48,7 @@ void InitGiftItme() {
     lv_item = gv_giftitem_data[c_GiftKindBasic][2];
     lv_item.name = "增加伤害";
     lv_item.behavior = c_GiftBehaviorAttackDamageEnhance;
-    lv_item.count = 2;
+    lv_item.count = 5;
     lv_item.duration = 5;
 
     lv_item = gv_giftitem_data[c_GiftKindBasic][3];
@@ -72,7 +72,7 @@ void InitGiftItme() {
     lv_item = gv_giftitem_data[c_GiftKindAdvanced][0];
     lv_item.name = "强效恢复生命";
     lv_item.behavior = c_GiftBehaviorLifeRegen;
-    lv_item.count = 160;
+    lv_item.count = 640;
     lv_item.duration = 5;
 
     lv_item = gv_giftitem_data[c_GiftKindAdvanced][1];
@@ -84,25 +84,25 @@ void InitGiftItme() {
     lv_item = gv_giftitem_data[c_GiftKindAdvanced][2];
     lv_item.name = "大幅提升伤害";
     lv_item.behavior = c_GiftBehaviorAttackDamageEnhance;
-    lv_item.count = 4;
+    lv_item.count = 20;
     lv_item.duration = 5;
 
     lv_item = gv_giftitem_data[c_GiftKindAdvanced][3];
     lv_item.name = "大幅延长攻击范围";
     lv_item.behavior = c_GiftBehaviorAttackRangeEnhance;
-    lv_item.count = 10;
+    lv_item.count = 20;
     lv_item.duration = 5;
 
     lv_item = gv_giftitem_data[c_GiftKindAdvanced][4];
     lv_item.name = "大幅提升移动速度";
     lv_item.behavior = c_GiftBehaviorMoveSpeedEnhance;
-    lv_item.count = 10;
+    lv_item.count = 20;
     lv_item.duration = 5;
 
     lv_item = gv_giftitem_data[c_GiftKindAdvanced][5];
     lv_item.name = "大幅提升攻击速度";
     lv_item.behavior = c_GiftBehaviorAttackSpeedEnhance;
-    lv_item.count = 10;
+    lv_item.count = 20;
     lv_item.duration = 5;
 }
 

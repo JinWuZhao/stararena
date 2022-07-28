@@ -112,7 +112,6 @@ bool unitctrl_SetWeapon_Func(bool testConds, bool runActions) {
     string lv_weaponType = WeaponDataGetType(lv_index);
     UnitPlayer lv_player;
     unit lv_unit;
-    int lv_costPoints = 1;
 
     if (!runActions) {
         return true;
@@ -124,12 +123,8 @@ bool unitctrl_SetWeapon_Func(bool testConds, bool runActions) {
     if (arena_gf_StringIsEmpty(lv_name) || !UnitPlayerFromName(lv_name, lv_player)) {
         return false;
     }
-    if (lv_player.points < lv_costPoints) {
-        return false;
-    }
 
     lv_player.weaponType = lv_weaponType;
-    lv_player.points -= lv_costPoints;
     SaveUnitPlayer(lv_player);
 
     arena_gf_ShowMessage(lv_player.name + " 切换武器 " + WeaponDataGetName(lv_index) + "(" + IntToString(lv_index) + ")");
@@ -281,7 +276,6 @@ bool unitctrl_SetAbility_Func(bool testConds, bool runActions) {
     string lv_ability = AbilityDataGetType(lv_index);
     UnitPlayer lv_player;
     unit lv_unit;
-    int lv_costPoints = 4;
 
     if(!runActions) {
         return true;
@@ -295,11 +289,7 @@ bool unitctrl_SetAbility_Func(bool testConds, bool runActions) {
         return false;
     }
 
-    if (lv_player.points < lv_costPoints) {
-        return false;
-    }
     lv_player.abilityType = lv_ability;
-    lv_player.points -= lv_costPoints;
     SaveUnitPlayer(lv_player);
 
     arena_gf_ShowMessage(lv_player.name + " 切换技能 " + AbilityDataGetName(lv_index) + "(" + IntToString(lv_index) + ")");

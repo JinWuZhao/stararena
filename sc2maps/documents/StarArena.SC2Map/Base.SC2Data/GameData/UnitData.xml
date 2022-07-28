@@ -9,7 +9,7 @@
         </CardLayouts>
     </CUnit>
     <CUnit id="SiegeTank">
-        <LifeStart value="320"/>
-        <LifeMax value="320"/>
+        <LifeStart value="640"/>
+        <LifeMax value="640"/>
     </CUnit>
 </Catalog>

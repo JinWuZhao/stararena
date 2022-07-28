@@ -415,7 +415,7 @@
                 <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,255,255"/>
                 <Style val="SystemInfoStyle"/>
-                <Text val="L0~L23切换武器(消耗1pt)；K1~K6切换技能(消耗4pts)；"/>
+                <Text val="击杀敌人可升级并获得属性点，属性编号+数量分配属性点，"/>
             </Frame>
             <Frame type="Label" name="Tips3">
                 <Anchor side="Top" relative="$parent" pos="Min" offset="62"/>
@@ -424,7 +424,7 @@
                 <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,255,255"/>
                 <Style val="SystemInfoStyle"/>
-                <Text val="击杀敌人可升级并获得属性点，P+编号+数量分配属性点，"/>
+                <Text val="属性编号：P0生命，P1伤害，P2射程，P3移速，P4攻速；"/>
             </Frame>
             <Frame type="Label" name="Tips4">
                 <Anchor side="Top" relative="$parent" pos="Min" offset="93"/>
@@ -433,7 +433,7 @@
                 <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,255,255"/>
                 <Style val="SystemInfoStyle"/>
-                <Text val="属性编号：0生命，1伤害，2射程，3移速，4攻速；"/>
+                <Text val="例如：分配4点属性到生命(P04)，分配4点属性到伤害(P14)等；"/>
             </Frame>
             <Frame type="Label" name="Tips5">
                 <Anchor side="Top" relative="$parent" pos="Min" offset="124"/>

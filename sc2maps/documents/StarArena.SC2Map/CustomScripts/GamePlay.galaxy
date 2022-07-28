@@ -326,10 +326,8 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
     lv_player.isBot = lv_isBot;
     if (lv_isBot) {
         lv_index = RandomInt(0, c_WeaponDataTypeCount-1);
-        lv_player.points = 0;
     } else {
         lv_index = c_WeaponDataType90mmCannons;
-        lv_player.points = 1;
     }
     lv_player.weaponType = WeaponDataGetType(lv_index);
     lv_player.abilityType = AbilityDataGetType(c_AbilityTypeNone);
@@ -341,7 +339,7 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
     }
     lv_player.revivePoint = RandomInt(1, 4);
     lv_player.props[c_unitPlayerPropsMaxLife] = 0;
-    lv_player.props[c_unitPlayerPropsDamageMultiplier] = 0;
+    lv_player.props[c_unitPlayerPropsDamageMultiplier] = 1;
     lv_player.props[c_unitPlayerPropsRangeMultiplier] = 0;
     lv_player.props[c_unitPlayerPropsMoveSpeed] = 0;
     lv_player.props[c_unitPlayerPropsAttackSpeed] = 0;
@@ -722,8 +720,8 @@ bool gameplay_changeTips_Func(bool testConds, bool runActions) {
     int lv_index;
     int lv_count;
     int lv_ts = DateTimeToInt(CurrentDateTimeGet());
-    string lv_weaponTips = "可选武器：";
-    string lv_abilityTips = "可选技能：";
+    string lv_weaponTips = "切换武器：";
+    string lv_abilityTips = "切换技能：";
 
     if (!runActions) {
         return true;
@@ -751,7 +749,7 @@ bool gameplay_changeTips_Func(bool testConds, bool runActions) {
     }
     DialogControlSetPropertyAsText(gv_gameplay_AbilityTipsMsg, c_triggerControlPropertyText, PlayerGroupAll(), StringToText(lv_abilityTips));
     DialogControlSetPropertyAsText(gv_gameplay_GameTipsMsg, c_triggerControlPropertyText, PlayerGroupAll(), 
-        StringToText("一局超过15分钟自动结束，按照杀敌数决胜负。\n指令提示：分配4点属性到生命(P04)，分配4点属性到伤害(P14)..."));
+        StringToText("摧毁对手基地获得胜利，\n一局超过15分钟自动结束，按照杀敌数决胜负。"));
     return true;
 }
 
