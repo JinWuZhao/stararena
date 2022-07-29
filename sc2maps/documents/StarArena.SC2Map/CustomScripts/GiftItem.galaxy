@@ -195,8 +195,5 @@ bool GiftItemApply(unit inUnit, GiftItemRef inItem, int inNum) {
         UnitBehaviorRemove(inUnit, inItem.behavior, lv_count - inItem.count);
     }
     UnitBehaviorSetDuration(inUnit, inItem.behavior, lv_duration + inItem.duration * inNum);
-    if (inItem.behavior == c_GiftBehaviorMaxLifeEnhance) {
-        UnitSetPropertyInt(inUnit, c_unitPropLife, UnitGetPropertyInt(inUnit, c_unitPropLifeMax, true));
-    }
     return true;
 }

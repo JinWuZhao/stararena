@@ -35,19 +35,21 @@
     <CBehaviorBuff id="StarArenaAttackDamageEnhance">
         <MaxStackCount value="9999"/>
         <Modification>
-            <DamageDealtFraction index="Spell" value="1"/>
-            <DamageDealtFraction index="Melee" value="1"/>
-            <DamageDealtFraction index="Ranged" value="1"/>
-            <DamageDealtFraction index="Splash" value="1"/>
+            <DamageDealtFraction index="Spell" value="0.5"/>
+            <DamageDealtFraction index="Melee" value="0.5"/>
+            <DamageDealtFraction index="Ranged" value="0.5"/>
+            <DamageDealtFraction index="Splash" value="0.5"/>
+            <DamageDealtFraction index="NoProc" value="0.5"/>
         </Modification>
     </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaAttackDamageTempEnhance">
         <MaxStackCount value="9999"/>
         <Modification>
-            <DamageDealtFraction index="Spell" value="1"/>
-            <DamageDealtFraction index="Melee" value="1"/>
-            <DamageDealtFraction index="Ranged" value="1"/>
-            <DamageDealtFraction index="Splash" value="1"/>
+            <DamageDealtFraction index="Spell" value="0.5"/>
+            <DamageDealtFraction index="Melee" value="0.5"/>
+            <DamageDealtFraction index="Ranged" value="0.5"/>
+            <DamageDealtFraction index="Splash" value="0.5"/>
+            <DamageDealtFraction index="NoProc" value="0.5"/>
         </Modification>
     </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaAttackRangeEnhance">
@@ -75,7 +77,7 @@
     <CBehaviorBuff id="StarArenaMaxLifeTempEnhance">
         <MaxStackCount value="9999"/>
         <Modification>
-            <VitalMaxFractionArray index="Life" value="1"/>
+            <VitalMaxAdditiveMultiplierArray index="Life" value="1"/>
         </Modification>
     </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaMoveSpeedEnhance">
@@ -99,7 +101,7 @@
     <CBehaviorBuff id="StarArenaMaxLifeEnhance">
         <MaxStackCount value="9999"/>
         <Modification>
-            <VitalMaxFractionArray index="Life" value="1"/>
+            <VitalMaxAdditiveMultiplierArray index="Life" value="1"/>
         </Modification>
     </CBehaviorBuff>
 </Catalog>

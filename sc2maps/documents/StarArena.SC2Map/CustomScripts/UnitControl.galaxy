@@ -182,6 +182,8 @@ bool unitctrl_AssignPoints_Func(bool testConds, bool runActions) {
     UnitPlayer lv_player;
     unit lv_unit;
     UnitData lv_data;
+    int lv_originLife;
+    int lv_originMaxLife;
 
     if (!runActions) {
         return false;
@@ -199,8 +201,15 @@ bool unitctrl_AssignPoints_Func(bool testConds, bool runActions) {
 
     lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
     if (UnitIsAlive(lv_unit) && UnitDataGetByUnitType(lv_player.unitType, lv_data)) {
+        if (lv_propIndex == c_unitPlayerPropsMaxLife) {
+            lv_originLife = UnitGetPropertyInt(lv_unit, c_unitPropLife, true);
+            lv_originMaxLife = UnitGetPropertyInt(lv_unit, c_unitPropLifeMax, true);
+        }
         lv_points = lv_player.props[lv_propIndex];
         UnitDataSetUnitProp(lv_propIndex, lv_points, lv_data, lv_unit);
+        if (lv_propIndex == c_unitPlayerPropsMaxLife) {
+            UnitSetPropertyInt(lv_unit, c_unitPropLife, lv_originLife * UnitGetPropertyInt(lv_unit, c_unitPropLifeMax, true) / lv_originMaxLife);
+        }
     }
     return true;
 }

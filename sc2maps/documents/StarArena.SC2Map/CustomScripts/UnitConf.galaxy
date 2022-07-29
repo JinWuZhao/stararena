@@ -106,7 +106,6 @@ bool UnitDataSetUnitProp(int inProp, int inPoints, UnitDataRef inData, unit inUn
         lv_behavior = "StarArenaMaxLifeEnhance";
     } else if (inProp == c_unitPlayerPropsDamageMultiplier) {
         lv_behavior = "StarArenaAttackDamageEnhance";
-        lv_points /= 2;
     } else if (inProp == c_unitPlayerPropsRangeMultiplier) {
         lv_behavior = "StarArenaAttackRangeEnhance";
     } else if (inProp == c_unitPlayerPropsMoveSpeed) {
