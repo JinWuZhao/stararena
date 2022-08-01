@@ -35,6 +35,9 @@ static int gv_gameplay_DeluxeGiftMsg;
 static int gv_gameplay_WeaponTipsMsg;
 static int gv_gameplay_AbilityTipsMsg;
 static int gv_gameplay_GameTipsMsg;
+static int gv_gameplay_TimeBoard;
+
+static datetime gv_gameplay_startTime = CurrentDateTimeGet();
 
 static const int c_gameplay_UnitRedCenter = 1585478384;
 static const int c_gameplay_UnitBlueCenter = 177235035;
@@ -97,6 +100,8 @@ void InitGamePlay() {
         c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/RightTips/abilityTips");
     gv_gameplay_GameTipsMsg = DialogControlHookupStandard(
         c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/RightTips/gameTips");
+    gv_gameplay_TimeBoard = DialogControlHookupStandard(
+        c_triggerControlTypeLabel, "UIContainer/FullscreenUpperContainer/GameStateBoard/TimeBoard");
 
     gameplay_initMap_Init();
     gameplay_Victory_Init();
@@ -203,6 +208,9 @@ bool gameplay_Victory_Func(bool testConds, bool runActions) {
 
         UnitPlayersOfRanked(rankedUnitPlayers);
         lv_rankLength = UnitPlayersCount();
+        if (lv_rankLength > 20) {
+            lv_rankLength = 20;
+        }
         for (index = 0; index < lv_rankLength; index += 1) {
             lv_playerName = rankedUnitPlayers[index].name;
             if (rankedUnitPlayers[index].isBot) {
@@ -628,6 +636,9 @@ static void gameplay_UnitSelected_Init() {
 bool gameplay_TimerLoop_Func(bool testConds, bool runActions) {
     int lv_index;
     UnitPlayer lv_player;
+    datetime lv_timePast = IntToDateTime(DateTimeToInt(CurrentDateTimeGet()) - DateTimeToInt(gv_gameplay_startTime));
+    string lv_timeMinute = IntToString(GetDateTimeMinute(lv_timePast));
+    string lv_timeSecond = IntToString(GetDateTimeSecond(lv_timePast));
 
     if (!runActions) {
         return true;
@@ -645,6 +656,15 @@ bool gameplay_TimerLoop_Func(bool testConds, bool runActions) {
                 StringToText("lv." + IntToString(lv_player.level) + " " + IntToString(lv_player.points) + "pts"));
         }
     }
+
+    if (StringLength(lv_timeMinute) == 1) {
+        lv_timeMinute = "0" + lv_timeMinute;
+    }
+    if (StringLength(lv_timeSecond) == 1) {
+        lv_timeSecond = "0" + lv_timeSecond;
+    }
+    DialogControlSetPropertyAsText(gv_gameplay_TimeBoard, c_triggerControlPropertyText, PlayerGroupAll(), 
+        StringToText(lv_timeMinute + ":" + lv_timeSecond));
 
     return true;
 }
@@ -668,7 +688,7 @@ bool gameplay_GiftChange_Func(bool testConds, bool runActions) {
     }
     if (GiftItemGet(c_GiftKindDeluxe, RandomInt(0, c_GiftKindDeluxeCount-1), gv_gameplay_deluxeGift)) {
         DialogControlSetPropertyAsText(gv_gameplay_DeluxeGiftMsg, c_triggerControlPropertyText, PlayerGroupAll(), 
-            StringToText("10粉丝团灯牌：" + gv_gameplay_deluxeGift.name + FixedToString(gv_gameplay_deluxeGift.duration, 0) + "s"));
+            StringToText("1粉丝团灯牌：" + gv_gameplay_deluxeGift.name + FixedToString(gv_gameplay_deluxeGift.duration, 0) + "s"));
     }
     return true;
 }

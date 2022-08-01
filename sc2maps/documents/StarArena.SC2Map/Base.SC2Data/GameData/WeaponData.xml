@@ -5,19 +5,14 @@
     </CWeaponLegacy>
     <CWeaponLegacy id="LanzerTorpedoes">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
-        <Range value="8"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="LiberatorAGWeapon">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
-        <Range value="8"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="LiberatorMissileLaunchers">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="ParasiteSpore">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
-    </CWeaponLegacy>
-    <CWeaponLegacy id="PsionicShockwave">
-        <Range value="6"/>
     </CWeaponLegacy>
 </Catalog>
