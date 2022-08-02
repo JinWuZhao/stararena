@@ -192,7 +192,7 @@ void InitUnitData() {
     data.dataType = c_UnitDataTypeCommandCenter;
     data.unitType = "CommandCenter";
     data.name = "指挥中心";
-    data.lifeMax = 10000;
+    data.lifeMax = 20000;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeCommandCenter], data);
 
     UnitDataCopy(data, emptyData);
@@ -200,7 +200,7 @@ void InitUnitData() {
     data.unitType = "DestructibleGarage";
     data.name = "围墙";
     data.baseExp = 400;
-    data.lifeMax = 2000;
+    data.lifeMax = 4000;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeDestructibleGarage], data);
 
     UnitDataCopy(data, emptyData);
@@ -208,7 +208,7 @@ void InitUnitData() {
     data.unitType = "ValhallaDestructibleWall";
     data.name = "围墙";
     data.baseExp = 200;
-    data.lifeMax = 1000;
+    data.lifeMax = 2000;
     UnitDataCopy(gv_unitdata_unitTypes[c_UnitDataTypeValhallaDestructibleWall], data);
 
     for (lv_index = 0; lv_index < c_UnitDataTypesCount; lv_index += 1) {

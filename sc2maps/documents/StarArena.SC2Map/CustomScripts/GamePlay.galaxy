@@ -349,7 +349,6 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
     if (lv_player.level > 1) {
         lv_player.points += (lv_player.level - 1) * 4;
     }
-    lv_player.revivePoint = RandomInt(1, 4);
     lv_player.props[c_unitPlayerPropsMaxLife] = 0;
     lv_player.props[c_unitPlayerPropsDamageMultiplier] = 2;
     lv_player.props[c_unitPlayerPropsRangeMultiplier] = 0;
