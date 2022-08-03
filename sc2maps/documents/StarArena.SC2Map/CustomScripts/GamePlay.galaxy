@@ -794,7 +794,7 @@ bool gameplay_changeTips_Func(bool testConds, bool runActions) {
     }
     DialogControlSetPropertyAsText(gv_gameplay_AbilityTipsMsg, c_triggerControlPropertyText, PlayerGroupAll(), StringToText(lv_abilityTips));
     DialogControlSetPropertyAsText(gv_gameplay_GameTipsMsg, c_triggerControlPropertyText, PlayerGroupAll(), 
-        StringToText("摧毁对手基地获得胜利，\n一局超过15分钟自动结束，按照杀敌数决胜负。"));
+        StringToText("摧毁对手基地获得胜利，超过15分钟自动结束。\n企鹅交流群：750945541。"));
     return true;
 }
 
