@@ -38,6 +38,9 @@
     <CBehaviorBuff id="ShrineGuardianAntiGravHeight">
         <Duration value="3.75"/>
     </CBehaviorBuff>
+    <CBehaviorBuff id="Slow">
+        <Modification AttackSpeedMultiplier="0.5"/>
+    </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaAttackDamageEnhance">
         <MaxStackCount value="9999"/>
         <Modification>
@@ -60,11 +63,11 @@
     </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaAttackRangeEnhance">
         <MaxStackCount value="9999"/>
-        <Modification WeaponRange="1"/>
+        <Modification WeaponRange="0.8"/>
     </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaAttackRangeTempEnhance">
         <MaxStackCount value="9999"/>
-        <Modification WeaponRange="1"/>
+        <Modification WeaponRange="0.8"/>
     </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaAttackSpeedEnhance">
         <MaxStackCount value="9999"/>

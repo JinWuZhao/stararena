@@ -2,12 +2,18 @@
 <Catalog>
     <CWeaponLegacy id="90mmCannons">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <Period value="0.9"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="ATSLaserBattery">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="BacklashRockets">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <DisplayAttackCount value="6"/>
+        <Range value="9"/>
+    </CWeaponLegacy>
+    <CWeaponLegacy id="DisruptionBeam">
+        <Range value="9"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="InfernalFlameThrower">
         <!--        <Icon value="Assets\Textures\btn-weapon-terran-infantry.dds"/> -->
@@ -21,18 +27,21 @@
     </CWeaponLegacy>
     <CWeaponLegacy id="LiberatorAGWeapon">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <Period value="2.8"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="LiberatorMissileLaunchers">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="MengskThorsHammer">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <Period value="1.5"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="ParasiteSpore">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="PhaseDisruptors">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <Period value="1.6"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="PunisherGrenades">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
@@ -42,11 +51,15 @@
     </CWeaponLegacy>
     <CWeaponLegacy id="ShrineGuardian">
         <TargetFilters value="-;Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <Period value="1.5"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="TempestGround">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <Range value="11"/>
+        <Period value="2.6"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="ThermalLances">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <Period value="2.2"/>
     </CWeaponLegacy>
 </Catalog>
