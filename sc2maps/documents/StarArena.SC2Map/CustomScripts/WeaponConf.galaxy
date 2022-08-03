@@ -23,7 +23,8 @@ const int c_WeaponDataTypeAcidSaliva = 20; // 酸性唾液
 const int c_WeaponDataTypeGlaiveWurm = 21; // 刃虫
 const int c_WeaponDataTypeParasiteSpore = 22; // 寄生孢子
 const int c_WeaponDataTypeRavagerWeapon = 23; // 等离子发射
-const int c_WeaponDataTypeCount = 24;
+const int c_WeaponDataTypeShrineGuardian = 24; // 神殿守护者
+const int c_WeaponDataTypeCount = 25;
 
 struct WeaponData {
     int index;
@@ -178,6 +179,10 @@ void InitWeaponData() {
     lv_weaponData = gv_weapondata_types[c_WeaponDataTypeRavagerWeapon];
     lv_weaponData.type = "RavagerWeapon";
     lv_weaponData.name = "等离子发射";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeShrineGuardian];
+    lv_weaponData.type = "ShrineGuardian";
+    lv_weaponData.name = "神殿守护者";
 
     DataTableInstanceCreate();
     gv_weapondata_dataByType = DataTableInstanceLastCreated();

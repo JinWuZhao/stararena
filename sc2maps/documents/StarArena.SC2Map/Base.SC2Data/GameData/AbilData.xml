@@ -58,6 +58,21 @@
             <Flags index="CreateDefaultButton" value="1"/>
         </CmdButtonArray>
     </CAbilEffectTarget>
+    <CAbilEffectTarget id="ShrineGuardianAntiGrav">
+        <Cost index="0">
+            <Cooldown TimeUse="10"/>
+        </Cost>
+        <TargetFilters index="0" value="Visible;Missile,Item,Stasis,Dead,Hidden,Invulnerable"/>
+        <Range index="0" value="200"/>
+        <CmdButtonArray index="Execute">
+            <Flags index="UseDefaultButton" value="1"/>
+            <Flags index="CreateDefaultButton" value="1"/>
+        </CmdButtonArray>
+        <CmdButtonArray index="Cancel">
+            <Flags index="UseDefaultButton" value="1"/>
+            <Flags index="CreateDefaultButton" value="1"/>
+        </CmdButtonArray>
+    </CAbilEffectTarget>
     <CAbilEffectTarget id="SpawnBanelings">
         <Cost index="0">
             <Vital index="Energy" value="0"/>

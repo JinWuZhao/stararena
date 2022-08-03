@@ -32,6 +32,12 @@
         <RemoveValidatorArray index="0" value="CasterIsNotHidden"/>
         <RemoveValidatorArray index="1" removed="1"/>
     </CBehaviorBuff>
+    <CBehaviorBuff id="ShrineGuardianAntiGrav">
+        <Duration value="4"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ShrineGuardianAntiGravHeight">
+        <Duration value="3.75"/>
+    </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaAttackDamageEnhance">
         <MaxStackCount value="9999"/>
         <Modification>

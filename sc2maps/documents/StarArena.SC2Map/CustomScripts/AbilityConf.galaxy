@@ -5,7 +5,8 @@ const int c_AbilityTypePurificationNovaTargeted = 3;
 const int c_AbilityTypeRavagerCorrosiveBile = 4;
 const int c_AbilityTypeParasiticBomb = 5;
 const int c_AbilityTypeSpawnBanelings = 6;
-const int c_AbilityTypeCount = 7;
+const int c_AbilityTypeShrineGuardianAntiGrav = 7;
+const int c_AbilityTypeCount = 8;
 
 bool AbilityCastAction(unit inCaster, unit inTaget, string type);
 
@@ -161,6 +162,13 @@ void InitAbilityData() {
     lv_ability.type = "SpawnBanelings";
     lv_ability.cooldown = "SpawnBanelings";
     lv_ability.name = "召唤毒爆虫";
+    lv_ability.castAction = abilitydata_CastTargetUnit;
+
+    lv_ability = gv_abilitydata_types[c_AbilityTypeShrineGuardianAntiGrav];
+    lv_ability.index = c_AbilityTypeShrineGuardianAntiGrav;
+    lv_ability.type = "ShrineGuardianAntiGrav";
+    lv_ability.cooldown = "Abil/ShrineGuardianAntiGrav";
+    lv_ability.name = "反重力";
     lv_ability.castAction = abilitydata_CastTargetUnit;
 
     for (lv_index = 0; lv_index < c_AbilityTypeCount; lv_index += 1) {

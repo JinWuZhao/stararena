@@ -12,6 +12,9 @@
     <CButton id="RavagerCorrosiveBile">
         <DefaultButtonLayout Row="2" CardId="1"/>
     </CButton>
+    <CButton id="ShrineGuardianAntiGrav">
+        <DefaultButtonLayout Row="2" CardId="1"/>
+    </CButton>
     <CButton id="SpawnBanelings">
         <DefaultButtonLayout Row="2" CardId="1"/>
     </CButton>
