@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Catalog>
+    <CModel id="BattlecruiserYamatoAttackChargeModel">
+        <ScaleMax value="2.000000,2.000000,2.000000"/>
+        <ScaleMin value="2.000000,2.000000,2.000000"/>
+    </CModel>
+    <CModel id="BattlecruiserYamatoAttackImpact">
+        <ScaleMax value="1.500000,1.500000,1.500000"/>
+        <ScaleMin value="1.500000,1.500000,1.500000"/>
+    </CModel>
     <CModel id="ImmortalAttackImpact">
+        <ScaleMax value="2.000000,2.000000,2.000000"/>
+        <ScaleMin value="2.000000,2.000000,2.000000"/>
+    </CModel>
+    <CModel id="ParasiticBomb">
+        <ScaleMax value="1.500000,1.500000,1.500000"/>
+        <ScaleMin value="1.500000,1.500000,1.500000"/>
+        <!--ScaleMax value="0.300000,0.300000,0.300000"/>
+        <ScaleMin value="0.300000,0.300000,0.300000"\-->
+    </CModel>
+    <CModel id="RavagerCorrosiveBileImpact">
+        <RadiusLoose value="2.000000"/>
+    </CModel>
+    <CModel id="RavagerCorrosiveBileMissile">
         <ScaleMax value="2.000000,2.000000,2.000000"/>
         <ScaleMin value="2.000000,2.000000,2.000000"/>
     </CModel>
@@ -10,5 +31,8 @@
     <CModel id="StalkerWeapon">
         <ScaleMax value="1.700000,1.700000,1.700000"/>
         <ScaleMin value="1.700000,1.700000,1.700000"/>
+    </CModel>
+    <CModel id="YamatoWeapon">
+        <ScaleMax value="2.000000,2.000000,2.000000"/>
     </CModel>
 </Catalog>

@@ -42,7 +42,7 @@
         <Amount value="38"/>
     </CEffectDamage>
     <CEffectDamage id="ParasiticBombDotDamage">
-        <Amount value="5"/>
+        <Amount value="10"/>
         <SearchFilters value="-;Self,Player,Ally,Missile,Item,Dead,Hidden,Invulnerable"/>
     </CEffectDamage>
     <CEffectEnumArea id="ParasiticBombSearchEffect">
@@ -54,6 +54,14 @@
         <SearchFilters value="-;Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
     </CEffectEnumArea>
     <CEffectDamage id="ParticleDisruptorsU">
+        <Amount value="30"/>
+    </CEffectDamage>
+    <CEffectDamage id="PsiStormDamage">
+        <DamageModifierSource Value="Caster"/>
+        <Amount value="30"/>
+    </CEffectDamage>
+    <CEffectDamage id="PsiStormDamageInitial">
+        <DamageModifierSource Value="Caster"/>
         <Amount value="30"/>
     </CEffectDamage>
     <CEffectEnumArea id="PsiStormSearch">
@@ -69,6 +77,9 @@
     <CEffectDamage id="PunisherGrenadesU">
         <Amount value="20"/>
     </CEffectDamage>
+    <CEffectDamage id="PurificationNovaDamage">
+        <Amount value="200"/>
+    </CEffectDamage>
     <CEffectEnumArea id="PurificationNovaNotificationSearch">
         <SearchFilters value="-;Self,Ally,RawResource,HarvestableResource,Missile,Item,Dead,Hidden,Invulnerable"/>
     </CEffectEnumArea>
@@ -83,7 +94,7 @@
         <ExpireDelay value="1"/>
     </CEffectCreatePersistent>
     <CEffectDamage id="RavagerCorrosiveBileDamage">
-        <Amount value="120"/>
+        <Amount value="240"/>
         <SearchFilters value="-;Self,Player,Ally,Missile,Item,Dead,Hidden,Invulnerable"/>
     </CEffectDamage>
     <CEffectEnumArea id="RavagerCorrosiveBileSearch">
@@ -105,6 +116,7 @@
     <CEffectCreateUnit id="SpawnBanelings">
         <WhichLocation Value="CasterUnit"/>
         <SpawnUnit index="0" value="Baneling"/>
+        <SpawnCount value="10"/>
     </CEffectCreateUnit>
     <CEffectEnumArea id="StalkerEntropyLanceSearch">
         <ValidatorArray index="0" removed="1"/>
@@ -121,6 +133,9 @@
         <SearchFlags index="CallForHelp" value="0"/>
         <SearchFlags index="SameCliff" value="0"/>
     </CEffectDamage>
+    <CEffectApplyBehavior id="StarArenaSpawnDamageBehavior">
+        <EditorCategories value=""/>
+    </CEffectApplyBehavior>
     <CEffectEnumArea id="ThermalLancesE">
         <SearchFilters value="-;Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
         <AreaArray index="0" Radius="2"/>
@@ -158,7 +173,7 @@
     </CEffectCreatePersistent>
     <CEffectSet id="UnburrowAndFollow">
         <EffectArray index="0" value="HotSSplitterlingTimedLifeCreationAB"/>
-        <EffectArray index="1" value="SapStructureIssueAttackOrder"/>
-        <EffectArray index="2" removed="1"/>
+        <EffectArray index="1" value="StarArenaSpawnDamageBehavior"/>
+        <EffectArray index="2" value="SapStructureIssueAttackOrder"/>
     </CEffectSet>
 </Catalog>

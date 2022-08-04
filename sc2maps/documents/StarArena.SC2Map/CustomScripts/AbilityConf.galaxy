@@ -157,12 +157,12 @@ void InitAbilityData() {
     lv_ability.name = "寄生弹";
     lv_ability.castAction = abilitydata_CastTargetUnit;
 
-    lv_ability = gv_abilitydata_types[c_AbilityTypeSpawnBanelings];
-    lv_ability.index = c_AbilityTypeSpawnBanelings;
-    lv_ability.type = "SpawnBanelings";
-    lv_ability.cooldown = "SpawnBanelings";
-    lv_ability.name = "召唤毒爆虫";
-    lv_ability.castAction = abilitydata_CastTargetUnit;
+    // lv_ability = gv_abilitydata_types[c_AbilityTypeSpawnBanelings];
+    // lv_ability.index = c_AbilityTypeSpawnBanelings;
+    // lv_ability.type = "SpawnBanelings";
+    // lv_ability.cooldown = "SpawnBanelings";
+    // lv_ability.name = "召唤毒爆虫";
+    // lv_ability.castAction = abilitydata_CastTargetUnit;
 
     lv_ability = gv_abilitydata_types[c_AbilityTypeShrineGuardianAntiGrav];
     lv_ability.index = c_AbilityTypeShrineGuardianAntiGrav;
@@ -173,6 +173,8 @@ void InitAbilityData() {
 
     for (lv_index = 0; lv_index < c_AbilityTypeCount; lv_index += 1) {
         lv_ability = gv_abilitydata_types[lv_index];
-        DataTableInstanceSetInt(gv_abilitydata_dataByType, lv_ability.type, lv_index);
+        if (lv_ability.name != null) {
+            DataTableInstanceSetInt(gv_abilitydata_dataByType, lv_ability.type, lv_index);
+        }
     }
 }

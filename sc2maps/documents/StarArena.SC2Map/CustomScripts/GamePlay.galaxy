@@ -350,7 +350,7 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
         lv_player.points += (lv_player.level - 1) * 4;
     }
     lv_player.props[c_unitPlayerPropsMaxLife] = 0;
-    lv_player.props[c_unitPlayerPropsDamageMultiplier] = 1;
+    lv_player.props[c_unitPlayerPropsDamageMultiplier] = 0;
     lv_player.props[c_unitPlayerPropsRangeMultiplier] = 0;
     lv_player.props[c_unitPlayerPropsMoveSpeed] = 0;
     lv_player.props[c_unitPlayerPropsAttackSpeed] = 0;
@@ -791,8 +791,10 @@ bool gameplay_changeTips_Func(bool testConds, bool runActions) {
         if (lv_index >= c_AbilityTypeCount) {
             lv_index = 0;
         }
-        lv_abilityTips += AbilityDataGetName(lv_index) + "(K" + IntToString(lv_index) + ")  ";
-        lv_count -= 1;
+        if (!arena_gf_StringIsEmpty(AbilityDataGetName(lv_index))) {
+            lv_abilityTips += AbilityDataGetName(lv_index) + "(K" + IntToString(lv_index) + ")  ";
+            lv_count -= 1;
+        }
     }
     DialogControlSetPropertyAsText(gv_gameplay_AbilityTipsMsg, c_triggerControlPropertyText, PlayerGroupAll(), StringToText(lv_abilityTips));
     DialogControlSetPropertyAsText(gv_gameplay_GameTipsMsg, c_triggerControlPropertyText, PlayerGroupAll(), 

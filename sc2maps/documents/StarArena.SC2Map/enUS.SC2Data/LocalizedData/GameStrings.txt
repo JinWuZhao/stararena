@@ -10,6 +10,7 @@ Behavior/Name/StarArenaMaxLifeTempEnhance=StarArenaMaxLifeTempEnhance
 Behavior/Name/StarArenaMoveSpeedEnhance=StarArenaMoveSpeedEnhance
 Behavior/Name/StarArenaMoveSpeedTempEnhance=StarArenaMoveSpeedTempEnhance
 Behavior/Name/StarArenaTempShield=StarArenaTempShield
+Effect/Name/StarArenaSpawnDamageBehavior=StarArenaSpawnDamageBehavior
 LoadingScreen/Tip= 
 LoadingScreen/TipRestart= 
 LoadingScreen/Title=<c val="FFFF00">星际竞技场</c>
