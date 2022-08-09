@@ -15,5 +15,15 @@
     <CUnit id="SiegeTank">
         <LifeStart value="800"/>
         <LifeMax value="800"/>
+        <AbilArray/>
+        <CardLayouts index="0">
+            <LayoutButtons index="5" Column="1"/>
+        </CardLayouts>
+    </CUnit>
+    <CUnit id="SiegeTankSieged">
+        <AbilArray/>
+        <AbilArray/>
+        <LifeStart value="1600"/>
+        <LifeMax value="1600"/>
     </CUnit>
 </Catalog>

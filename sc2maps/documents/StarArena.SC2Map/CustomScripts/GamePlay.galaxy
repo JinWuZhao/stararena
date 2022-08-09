@@ -15,6 +15,10 @@ static trigger gt_gameplay_TimerLoop;
 static trigger gt_gameplay_GiftChange;
 static trigger gt_gameplay_ApplyGift;
 static trigger gt_gameplay_changeTips;
+static trigger gt_gameplay_TankSieged;
+static trigger gt_gameplay_TankUnsieged;
+static trigger gt_gameplay_TankSiege;
+static trigger gt_gameplay_TankUnsiege;
 
 // Variable Declarations
 static int gv_gameplay_winnerPlayer;
@@ -61,6 +65,10 @@ static void gameplay_TimerLoop_Init();
 static void gameplay_GiftChange_Init();
 static void gameplay_ApplyGift_Init();
 static void gameplay_changeTips_Init();
+static void gameplay_TankSieged_Init();
+static void gameplay_TankUnsieged_Init();
+static void gameplay_TankSiege_Init();
+static void gameplay_TankUnsiege_Init();
 
 // Functions
 void InitGamePlay() {
@@ -119,6 +127,10 @@ void InitGamePlay() {
     gameplay_GiftChange_Init();
     gameplay_ApplyGift_Init();
     gameplay_changeTips_Init();
+    gameplay_TankSieged_Init();
+    gameplay_TankUnsieged_Init();
+    gameplay_TankSiege_Init();
+    gameplay_TankUnsiege_Init();
 }
 
 bool gameplay_initMap_Func(bool testConds, bool runActions) {
@@ -596,12 +608,13 @@ bool gameplay_UnitSelected_Func(bool testConds, bool runActions) {
         return false;
     }
     // arena_gf_DebugLog(lv_name + " datetime: " + IntToString(DateTimeToInt(CurrentDateTimeGet())));
+    arena_gf_DebugLog(lv_name + " unit: " + UnitGetType(lv_unit));
     arena_gf_DebugLog(lv_name + " weapon: " + lv_player.weaponType);
     arena_gf_DebugLog(lv_name + " level: " + IntToString(lv_player.level));
     arena_gf_DebugLog(lv_name + " exp: " + IntToString(lv_player.exp));
     arena_gf_DebugLog(lv_name + " points: " + IntToString(lv_player.points));
-    arena_gf_DebugLog(lv_name + " score: " + IntToString(lv_player.score));
-    arena_gf_DebugLog(lv_name + " combo: " + IntToString(lv_player.combo));
+    //arena_gf_DebugLog(lv_name + " score: " + IntToString(lv_player.score));
+    //arena_gf_DebugLog(lv_name + " combo: " + IntToString(lv_player.combo));
     arena_gf_DebugLog(lv_name + " aiMode: " + IntToString(lv_player.aiMode));
     // arena_gf_DebugLog(lv_name + " TotalTakenDamage: " + IntToString(lv_player.aiStates[0]));
     // arena_gf_DebugLog(lv_name + " WillBrokenTime: " + IntToString(lv_player.aiStates[1]));
@@ -805,4 +818,99 @@ bool gameplay_changeTips_Func(bool testConds, bool runActions) {
 static void gameplay_changeTips_Init() {
     gt_gameplay_changeTips = TriggerCreate("gameplay_changeTips_Func");
     TriggerAddEventTimer(gt_gameplay_changeTips, gv_gameplay_tipsTimer);
+}
+
+bool gameplay_TankSieged_Func(bool testConds, bool runActions) {
+    unit lv_unit = EventUnit();
+    string lv_name = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_unit))));
+    UnitPlayer lv_player;
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (!UnitPlayerFromName(lv_name, lv_player)) {
+        return false;
+    }
+
+    UnitWeaponRemove(lv_unit, "CrucioShockCannon");
+    UnitWeaponAdd(lv_unit, lv_player.weaponType, "SiegeTankSieged");
+    return true;
+}
+
+bool gameplay_TankUnsieged_Func(bool testConds, bool runActions) {
+    unit lv_unit = EventUnit();
+    string lv_name = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_unit))));
+    UnitPlayer lv_player;
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (!UnitPlayerFromName(lv_name, lv_player)) {
+        return false;
+    }
+
+    UnitWeaponRemove(lv_unit, "FusionCutter");
+    UnitWeaponAdd(lv_unit, lv_player.weaponType, "SiegeTank");
+
+    UnitBehaviorRemove(lv_unit, "StarArenaAttackRangeEnhance", 10);
+    return true;
+}
+
+static void gameplay_TankSieged_Init() {
+    gt_gameplay_TankSieged = TriggerCreate("gameplay_TankSieged_Func");
+    TriggerAddEventUnitAbility(gt_gameplay_TankSieged, null, AbilityCommand("SiegeMode", 0), c_abilMorphStageUnitEnd, false);
+}
+
+static void gameplay_TankUnsieged_Init() {
+    gt_gameplay_TankUnsieged = TriggerCreate("gameplay_TankUnsieged_Func");
+    TriggerAddEventUnitAbility(gt_gameplay_TankUnsieged, null, AbilityCommand("Unsiege", 0), c_abilMorphStageUnitEnd, false);
+}
+
+bool gameplay_TankSiege_Func(bool testConds, bool runActions) {
+    unit lv_unit = EventUnit();
+    string lv_name = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_unit))));
+    UnitPlayer lv_player;
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (!UnitPlayerFromName(lv_name, lv_player)) {
+        return false;
+    }
+
+    UnitWeaponRemove(lv_unit, lv_player.weaponType);
+    UnitWeaponAdd(lv_unit, "FusionCutter", "SiegeTank");
+
+    UnitBehaviorAdd(lv_unit, "StarArenaAttackRangeEnhance", lv_unit, 10);
+    return true;
+}
+
+bool gameplay_TankUnsiege_Func(bool testConds, bool runActions) {
+    unit lv_unit = EventUnit();
+    string lv_name = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_unit))));
+    UnitPlayer lv_player;
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (!UnitPlayerFromName(lv_name, lv_player)) {
+        return false;
+    }
+
+    UnitWeaponRemove(lv_unit, lv_player.weaponType);
+    return true;
+}
+
+static void gameplay_TankSiege_Init() {
+    gt_gameplay_TankSiege = TriggerCreate("gameplay_TankSiege_Func");
+    TriggerAddEventUnitAbility(gt_gameplay_TankSiege, null, AbilityCommand("SiegeMode", 0), c_abilMorphStageUnitStart, false);
+}
+
+static void gameplay_TankUnsiege_Init() {
+    gt_gameplay_TankUnsiege = TriggerCreate("gameplay_TankUnsiege_Func");
+    TriggerAddEventUnitAbility(gt_gameplay_TankUnsiege, null, AbilityCommand("Unsiege", 0), c_abilMorphStageUnitStart, false);
 }

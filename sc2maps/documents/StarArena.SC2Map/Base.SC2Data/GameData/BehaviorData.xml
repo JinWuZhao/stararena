@@ -63,11 +63,11 @@
     </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaAttackRangeEnhance">
         <MaxStackCount value="9999"/>
-        <Modification WeaponRange="0.8"/>
+        <Modification WeaponRange="0.7"/>
     </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaAttackRangeTempEnhance">
         <MaxStackCount value="9999"/>
-        <Modification WeaponRange="0.8"/>
+        <Modification WeaponRange="0.7"/>
     </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaAttackSpeedEnhance">
         <MaxStackCount value="9999"/>

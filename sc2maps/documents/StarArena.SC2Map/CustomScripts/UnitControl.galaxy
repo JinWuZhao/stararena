@@ -39,12 +39,11 @@ void InitUnitControl() {
 }
 
 bool unitctrl_SetAIMode_Func(bool testConds, bool runActions) {
-    string lv_textTag;
-    int lv_aiMode;
+    string lv_textTag = arena_gf_CurrentCommandArgument(1);
+    int lv_aiMode = StringToInt(arena_gf_CurrentCommandArgument(2));
     UnitPlayer lv_unitPlayer;
+    unit lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_textTag));
 
-    lv_textTag = arena_gf_CurrentCommandArgument(1);
-    lv_aiMode = StringToInt(arena_gf_CurrentCommandArgument(2));
     if (!AIModeValidMode(lv_aiMode)) {
         return false;
     }
@@ -54,6 +53,16 @@ bool unitctrl_SetAIMode_Func(bool testConds, bool runActions) {
     }
 
     if (!UnitPlayerFromName(lv_textTag, lv_unitPlayer)) {
+        return false;
+    }
+
+    if (UnitIsAlive(lv_unit)) {
+        if (lv_unitPlayer.aiMode != c_AIModeDefence && lv_aiMode == c_AIModeDefence) {
+            UnitIssueOrder(lv_unit, Order(AbilityCommand("SiegeMode", 0)), c_orderQueueReplace);
+        } else if (lv_unitPlayer.aiMode == c_AIModeDefence && lv_aiMode != c_AIModeDefence) {
+            UnitIssueOrder(lv_unit, Order(AbilityCommand("Unsiege", 0)), c_orderQueueReplace);
+        }
+    } else if (lv_aiMode == c_AIModeDefence) {
         return false;
     }
 
@@ -124,15 +133,15 @@ bool unitctrl_SetWeapon_Func(bool testConds, bool runActions) {
         return false;
     }
 
+    lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
+    if (UnitIsAlive(lv_unit)) {
+        WeaponDataApplyUnit(lv_player.weaponType, lv_weaponType, lv_unit);
+    }
+
     lv_player.weaponType = lv_weaponType;
     SaveUnitPlayer(lv_player);
 
     arena_gf_ShowMessage(lv_player.name + " 切换武器 " + WeaponDataGetName(lv_index) + "(" + IntToString(lv_index) + ")");
-
-    lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
-    if (UnitIsAlive(lv_unit)) {
-        WeaponDataApplyUnit(lv_weaponType, lv_unit);
-    }
 
     return true;
 }
@@ -159,13 +168,13 @@ bool unitctrl_SetWeaponTest_Func(bool testConds, bool runActions) {
         return false;
     }
 
-    lv_player.weaponType = lv_weaponType;
-    SaveUnitPlayer(lv_player);
-
     lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
     if (UnitIsAlive(lv_unit)) {
-        WeaponDataApplyUnit(lv_weaponType, lv_unit);
+        WeaponDataApplyUnit(lv_player.weaponType, lv_weaponType, lv_unit);
     }
+
+    lv_player.weaponType = lv_weaponType;
+    SaveUnitPlayer(lv_player);
 
     return true;
 }

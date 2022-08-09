@@ -12,6 +12,11 @@
         <DisplayAttackCount value="6"/>
         <Range value="9"/>
     </CWeaponLegacy>
+    <CWeaponLegacy id="CrucioShockCannon">
+        <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <Range value="200"/>
+        <MinimumRange value="0"/>
+    </CWeaponLegacy>
     <CWeaponLegacy id="DisruptionBeam">
         <Range value="9"/>
     </CWeaponLegacy>

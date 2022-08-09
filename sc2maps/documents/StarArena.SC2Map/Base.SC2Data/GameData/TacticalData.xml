@@ -46,8 +46,8 @@
         <Validator value=""/>
     </CTacticalOrder>
     <CTacticalOrder id="SiegeTankSieged">
-        <Abil value=""/>
         <Validator value=""/>
+        <Abil value=""/>
     </CTacticalOrder>
     <CTacticalOrder id="SwarmHostMP">
         <Abil value=""/>

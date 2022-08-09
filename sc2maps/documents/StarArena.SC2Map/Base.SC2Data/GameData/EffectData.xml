@@ -12,6 +12,12 @@
     <CEffectDamage id="BacklashRocketsU">
         <Amount value="10"/>
     </CEffectDamage>
+    <CEffectDamage id="CrucioShockCannonBlast">
+        <SearchFilters value="-;Self,Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectDamage>
+    <CEffectDamage id="CrucioShockCannonDirected">
+        <SearchFilters value="-;Self,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectDamage>
     <CEffectDamage id="DisruptionBeamDamage">
         <Amount value="40"/>
     </CEffectDamage>

@@ -57,7 +57,7 @@ void InitGiftItme() {
     lv_item = gv_giftitem_data[c_GiftKindBasic][3];
     lv_item.name = "延长攻击范围";
     lv_item.behavior = c_GiftBehaviorAttackRangeEnhance;
-    lv_item.count = 5;
+    lv_item.count = 10;
     lv_item.duration = 5;
     lv_item.group = false;
 
@@ -141,7 +141,7 @@ void InitGiftItme() {
     lv_item = gv_giftitem_data[c_GiftKindDeluxe][3];
     lv_item.name = "全队延长攻击范围";
     lv_item.behavior = c_GiftBehaviorAttackRangeEnhance;
-    lv_item.count = 10;
+    lv_item.count = 20;
     lv_item.duration = 5;
     lv_item.group = true;
 

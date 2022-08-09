@@ -40,7 +40,7 @@ void WeaponDataCopy(WeaponDataRef dest, WeaponDataRef source);
 string WeaponDataGetType(int inIndex);
 string WeaponDataGetName(int inIndex);
 bool WeaponDataGetByType(string inType, WeaponDataRef outData);
-void WeaponDataApplyUnit(string inWeapon, unit inUnit);
+void WeaponDataApplyUnit(string oldWeapon, string newWeapon, unit inUnit);
 void InitWeaponData();
 
 string WeaponDataGetType(int inIndex) {
@@ -71,12 +71,18 @@ void WeaponDataCopy(WeaponDataRef dest, WeaponDataRef source) {
     dest.type = source.type;
 }
 
-void WeaponDataApplyUnit(string inWeapon, unit inUnit) {
-    int lv_index;
-    for (lv_index = UnitWeaponCount(inUnit); lv_index > 0; lv_index -= 1) {
-        UnitWeaponRemove(inUnit, UnitWeaponGet(inUnit, lv_index));
+void WeaponDataApplyUnit(string oldWeapon, string newWeapon, unit inUnit) {
+    string lv_turret;
+    if (oldWeapon == newWeapon) {
+        return;
     }
-    UnitWeaponAdd(inUnit, inWeapon, "SiegeTank");
+    UnitWeaponRemove(inUnit, oldWeapon);
+    if (UnitGetType(inUnit) == "SiegeTank") {
+        lv_turret = "SiegeTank";
+    } else if (UnitGetType(inUnit) == "SiegeTankSieged") {
+        lv_turret = "SiegeTankSieged";
+    }
+    UnitWeaponAdd(inUnit, newWeapon, lv_turret);
 }
 
 void InitWeaponData() {

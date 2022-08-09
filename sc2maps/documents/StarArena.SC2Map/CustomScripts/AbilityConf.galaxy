@@ -78,7 +78,7 @@ fixed AbilityDataGetCoolDown(unit inUnit, AbilityDataRef inAbility) {
 }
 
 bool AbilityDataApply(unit inUnit, string inType) {
-    UnitAbilityRemove(inUnit, UnitAbilityGet(inUnit, 4));
+    UnitAbilityRemove(inUnit, UnitAbilityGet(inUnit, 5));
     if (inType != "None") {
         UnitAbilityAdd(inUnit, inType);
     }
@@ -86,10 +86,18 @@ bool AbilityDataApply(unit inUnit, string inType) {
 }
 
 bool AbilityDataCast(unit inCaster, unit inTarget, AbilityDataRef inAbility) {
+    int lv_index;
+    fixed lv_range;
+
     if (!UnitIsAlive(inCaster) || !UnitIsAlive(inTarget)) {
         return false;
     }
-    if ((UnitWeaponRange(inCaster, 1) + UnitGetPropertyFixed(inCaster, c_unitPropRadius, true)) * 1.5 < DistanceBetweenPoints(UnitGetPosition(inCaster), UnitGetPosition(inTarget))) {
+    for (lv_index = 1; lv_index <= UnitWeaponCount(inCaster); lv_index += 1) {
+        if (UnitWeaponIsEnabled(inCaster, lv_index) && UnitWeaponRange(inCaster, lv_index) > lv_range) {
+            lv_range = UnitWeaponRange(inCaster, lv_index);
+        }
+    }
+    if ((lv_range + UnitGetPropertyFixed(inCaster, c_unitPropRadius, true)) * 1.5 < DistanceBetweenPoints(UnitGetPosition(inCaster), UnitGetPosition(inTarget))) {
         return false;
     }
     if (inAbility.index == c_AbilityTypeNone) {
