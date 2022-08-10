@@ -466,7 +466,7 @@
                 <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,255,255"/>
                 <Style val="SystemInfoStyle"/>
-                <Text val="控制坦克：M1进攻，M2猎杀，M3防御，M4撤退。"/>
+                <Text val="控制坦克：M1进攻，M2猎杀，M3狙击，M4防御，M5撤退。"/>
             </Frame>
         </Frame>
 

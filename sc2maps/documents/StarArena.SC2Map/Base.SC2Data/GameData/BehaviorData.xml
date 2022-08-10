@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Catalog>
+    <CBehaviorBuff id="AlarakDeadlyChargeDamageReady">
+        <Duration value="1"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="AlarakDeadlyCharging">
+        <Duration value="30"/>
+        <Modification>
+            <MoveSpeedBonus value="20"/>
+            <MoveSpeedMultiplier value="1"/>
+            <MeleeWeaponRange value="4"/>
+            <RangedWeaponRange value="-100"/>
+            <WeaponArray Link="DarkArchonChampionWeapon" Turret="SiegeTank"/>
+        </Modification>
+    </CBehaviorBuff>
     <!--CBehaviorBuff id="ParasiticBomb">-->
     <!--        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>-->
     <!--        <Duration value="10"/>-->
@@ -63,11 +76,11 @@
     </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaAttackRangeEnhance">
         <MaxStackCount value="9999"/>
-        <Modification WeaponRange="0.7"/>
+        <Modification RangedWeaponRange="0.7"/>
     </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaAttackRangeTempEnhance">
         <MaxStackCount value="9999"/>
-        <Modification WeaponRange="0.7"/>
+        <Modification RangedWeaponRange="0.7"/>
     </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaAttackSpeedEnhance">
         <MaxStackCount value="9999"/>
@@ -92,13 +105,13 @@
     <CBehaviorBuff id="StarArenaMoveSpeedEnhance">
         <MaxStackCount value="9999"/>
         <Modification>
-            <AdditiveMoveSpeedFactor value="0.2"/>
+            <AdditiveMoveSpeedFactor value="0.4"/>
         </Modification>
     </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaMoveSpeedTempEnhance">
         <MaxStackCount value="9999"/>
         <Modification>
-            <AdditiveMoveSpeedFactor value="0.2"/>
+            <AdditiveMoveSpeedFactor value="0.4"/>
         </Modification>
     </CBehaviorBuff>
     <CBehaviorBuff id="StarArenaTempShield">

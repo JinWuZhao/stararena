@@ -248,8 +248,9 @@ func (c *ChangeModeCmd) Parser(ast *parsec.AST) parsec.Parser {
 			parsec.Atom(`0`, "manual"),
 			parsec.Atom(`1`, "attack"),
 			parsec.Atom(`2`, "hunter"),
-			parsec.Atom(`3`, "defence"),
-			parsec.Atom(`4`, "retreat")))
+			parsec.Atom(`3`, "sniping"),
+			parsec.Atom(`4`, "defence"),
+			parsec.Atom(`5`, "retreat")))
 }
 
 func (c *ChangeModeCmd) Init(ctx Context, query parsec.Queryable) error {

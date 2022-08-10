@@ -4,7 +4,7 @@ const int c_AbilityTypePsiStorm = 2;
 const int c_AbilityTypePurificationNovaTargeted = 3;
 const int c_AbilityTypeRavagerCorrosiveBile = 4;
 const int c_AbilityTypeParasiticBomb = 5;
-const int c_AbilityTypeSpawnBanelings = 6;
+const int c_AbilityTypeAlarakDeadlyCharge = 6;
 const int c_AbilityTypeShrineGuardianAntiGrav = 7;
 const int c_AbilityTypeCount = 8;
 
@@ -100,7 +100,7 @@ bool AbilityDataCast(unit inCaster, unit inTarget, AbilityDataRef inAbility) {
     if ((lv_range + UnitGetPropertyFixed(inCaster, c_unitPropRadius, true)) * 1.5 < DistanceBetweenPoints(UnitGetPosition(inCaster), UnitGetPosition(inTarget))) {
         return false;
     }
-    if (inAbility.index == c_AbilityTypeNone) {
+    if (inAbility.index == c_AbilityTypeNone || inAbility.castAction == null) {
         return true;
     }
     return inAbility.castAction(inCaster, inTarget, inAbility.type);
@@ -165,12 +165,12 @@ void InitAbilityData() {
     lv_ability.name = "寄生弹";
     lv_ability.castAction = abilitydata_CastTargetUnit;
 
-    // lv_ability = gv_abilitydata_types[c_AbilityTypeSpawnBanelings];
-    // lv_ability.index = c_AbilityTypeSpawnBanelings;
-    // lv_ability.type = "SpawnBanelings";
-    // lv_ability.cooldown = "SpawnBanelings";
-    // lv_ability.name = "召唤毒爆虫";
-    // lv_ability.castAction = abilitydata_CastTargetUnit;
+    lv_ability = gv_abilitydata_types[c_AbilityTypeAlarakDeadlyCharge];
+    lv_ability.index = c_AbilityTypeAlarakDeadlyCharge;
+    lv_ability.type = "AlarakDeadlyCharge";
+    lv_ability.cooldown = "Charge";
+    lv_ability.name = "致命冲锋";
+    lv_ability.castAction = null;
 
     lv_ability = gv_abilitydata_types[c_AbilityTypeShrineGuardianAntiGrav];
     lv_ability.index = c_AbilityTypeShrineGuardianAntiGrav;

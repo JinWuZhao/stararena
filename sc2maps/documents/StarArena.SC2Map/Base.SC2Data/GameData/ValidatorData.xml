@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Catalog>
+    <CValidatorLocationCompareRange id="ChargeMaxDistance">
+        <Range value="25"/>
+    </CValidatorLocationCompareRange>
+    <CValidatorUnitCompareOrderTargetRange id="ChargeMinDistance">
+        <Value value="4"/>
+    </CValidatorUnitCompareOrderTargetRange>
+    <CValidatorUnitCompareOrderTargetRange id="ChargeMinTriggerDistance">
+        <Value value="5"/>
+    </CValidatorUnitCompareOrderTargetRange>
     <CValidatorUnitFilters id="PsiStormUTargetFilters">
         <Filters value="-;Missile,Stasis,Dead,Hidden,Invulnerable"/>
     </CValidatorUnitFilters>

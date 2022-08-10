@@ -5,6 +5,7 @@ static trigger gt_gameplay_DestroyCenters;
 static trigger gt_gameplay_EndGame;
 static trigger gt_gameplay_RaceTimeOut;
 static trigger gt_gameplay_AddUnitPlayer;
+static trigger gt_gameplay_AddUnitTest;
 static trigger gt_gameplay_RemoveUnitPlayer;
 static trigger gt_gameplay_ShowUnitPlayerPoints;
 static trigger gt_gameplay_KillUnit;
@@ -55,6 +56,7 @@ static void gameplay_DestroyCenters_Init();
 static void gameplay_EndGame_Init();
 static void gameplay_RaceTimeOut_Init();
 static void gameplay_AddUnitPlayer_Init();
+static void gameplay_AddUnitTest_Init();
 static void gameplay_RemoveUnitPlayer_Init();
 static void gameplay_ShowUnitPlayerPoints();
 static void gameplay_KillUnit_Init();
@@ -117,6 +119,7 @@ void InitGamePlay() {
     gameplay_EndGame_Init();
     gameplay_RaceTimeOut_Init();
     gameplay_AddUnitPlayer_Init();
+    gameplay_AddUnitTest_Init();
     gameplay_RemoveUnitPlayer_Init();
     gameplay_ShowUnitPlayerPoints();
     gameplay_KillUnit_Init();
@@ -385,6 +388,33 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
 static void gameplay_AddUnitPlayer_Init() {
     gt_gameplay_AddUnitPlayer = TriggerCreate("gameplay_AddUnitPlayer_Func");
     TriggerAddEventGeneric(gt_gameplay_AddUnitPlayer, (arena_gv_commandPrefix + "add-player"));
+}
+
+bool gameplay_AddUnitTest_Func(bool testConds, bool runActions) {
+    string lv_name = arena_gf_CurrentCommandArgument(1);
+    string lv_unitType = arena_gf_CurrentCommandArgument(2);
+    int lv_playerId = StringToInt(arena_gf_CurrentCommandArgument(3));
+    string lv_pointName;
+
+    if (!runActions) {
+        return true;
+    }
+
+    if (lv_playerId == c_GameStatePlayerIdRed) {
+        lv_pointName = "Red-0" + IntToString(1);
+    } else if (lv_playerId == c_GameStatePlayerIdBlue) {
+        lv_pointName = "Blue-0" + IntToString(1);
+    } else {
+        lv_pointName = "NPC-Start";
+    }
+    arena_gf_CreateUnit(lv_playerId, PointFromName(lv_pointName), lv_unitType, 
+                    PointGetFacing(PointFromName(lv_pointName)), 150, lv_name, 2, true);
+    return true;
+}
+
+static void gameplay_AddUnitTest_Init() {
+    gt_gameplay_AddUnitTest = TriggerCreate("gameplay_AddUnitTest_Func");
+    TriggerAddEventGeneric(gt_gameplay_AddUnitTest, (arena_gv_commandPrefix + "add-unit"));
 }
 
 bool gameplay_RemoveUnitPlayer_Func(bool testConds, bool runActions) {

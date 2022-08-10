@@ -6,6 +6,13 @@
     <CEffectDamage id="ATSLaserBatteryU">
         <Amount value="15"/>
     </CEffectDamage>
+    <CEffectDamage id="AlarakDeadlyChargeDamage">
+        <Amount value="300"/>
+        <!--ImpactLocation Effect="AlarakDeadlyCharge" Value="TargetUnit"/-->
+    </CEffectDamage>
+    <CEffectCreatePersistent id="AlarakKnockbackInitialCP">
+        <InitialOffset value="0,-12,0"/>
+    </CEffectCreatePersistent>
     <CEffectCreatePersistent id="BacklashRockets">
         <PeriodCount value="6"/>
     </CEffectCreatePersistent>
@@ -17,6 +24,12 @@
     </CEffectDamage>
     <CEffectDamage id="CrucioShockCannonDirected">
         <SearchFilters value="-;Self,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+    </CEffectDamage>
+    <CEffectDamage id="DestructionWaveDamage">
+        <Amount value="200"/>
+    </CEffectDamage>
+    <CEffectDamage id="DestructionWaveDamageAir">
+        <Amount value="200"/>
     </CEffectDamage>
     <CEffectDamage id="DisruptionBeamDamage">
         <Amount value="40"/>

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Catalog>
+    <CButton id="AlarakDeadlyCharge">
+        <DefaultButtonLayout Row="2" CardId="1"/>
+    </CButton>
+    <CButton id="AlarakKnockback">
+        <DefaultButtonLayout Row="2" CardId="1"/>
+    </CButton>
     <CButton id="ParasiticBomb">
         <DefaultButtonLayout Row="2" CardId="1"/>
     </CButton>
