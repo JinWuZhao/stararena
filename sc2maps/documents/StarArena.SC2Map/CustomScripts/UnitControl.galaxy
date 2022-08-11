@@ -141,7 +141,7 @@ bool unitctrl_SetWeapon_Func(bool testConds, bool runActions) {
     lv_player.weaponType = lv_weaponType;
     SaveUnitPlayer(lv_player);
 
-    arena_gf_ShowMessage(lv_player.name + " 切换武器 " + WeaponDataGetName(lv_index) + "(" + IntToString(lv_index) + ")");
+    arena_gf_ShowMessage(lv_player.name + " 切换武器 " + WeaponDataGetName(lv_index) + "(L" + IntToString(lv_index) + ")");
 
     return true;
 }
@@ -310,7 +310,7 @@ bool unitctrl_SetAbility_Func(bool testConds, bool runActions) {
     lv_player.abilityType = lv_ability;
     SaveUnitPlayer(lv_player);
 
-    arena_gf_ShowMessage(lv_player.name + " 切换技能 " + AbilityDataGetName(lv_index) + "(" + IntToString(lv_index) + ")");
+    arena_gf_ShowMessage(lv_player.name + " 切换技能 " + AbilityDataGetName(lv_index) + "(K" + IntToString(lv_index) + ")");
 
     lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
     if (UnitIsAlive(lv_unit)) {

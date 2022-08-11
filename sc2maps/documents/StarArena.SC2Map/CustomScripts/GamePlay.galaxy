@@ -223,8 +223,8 @@ bool gameplay_Victory_Func(bool testConds, bool runActions) {
 
         UnitPlayersOfRanked(rankedUnitPlayers);
         lv_rankLength = UnitPlayersCount();
-        if (lv_rankLength > 20) {
-            lv_rankLength = 20;
+        if (lv_rankLength > 30) {
+            lv_rankLength = 30;
         }
         for (index = 0; index < lv_rankLength; index += 1) {
             lv_playerName = rankedUnitPlayers[index].name;
@@ -379,7 +379,7 @@ bool gameplay_AddUnitPlayer_Func(bool testConds, bool runActions) {
         } else if (lv_player.playerId == c_GameStatePlayerIdRed) {
             lv_teamName = "红方";
         }
-        arena_gf_ShowMessage(lv_player.name + " 加入了 " + lv_teamName + " 队伍，初始武器 " + WeaponDataGetName(lv_index) + "(" + IntToString(lv_index) + ")");
+        arena_gf_ShowMessage(lv_player.name + " 加入了 " + lv_teamName + " 队伍，初始武器 " + WeaponDataGetName(lv_index) + "(L" + IntToString(lv_index) + ")");
     }
 
     return true;
