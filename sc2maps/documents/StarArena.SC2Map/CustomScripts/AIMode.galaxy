@@ -67,6 +67,8 @@ void AIModeSetMode(UnitPlayerRef refPlayer, int inMode) {
             refPlayer.aiStates[c_aimode_stateWillBrokenTime] = 0;
             refPlayer.aiStates[c_aimode_stateOriginAIMode] = 0;
         }
+    } else if (refPlayer.aiMode == c_AIModeDefence) {
+        refPlayer.aiStates[c_aimode_stateOriginAIMode] = 0;
     }
 }
 
@@ -305,7 +307,7 @@ static void aimode_SnipingStep(UnitPlayerRef refPlayer, unit inUnit) {
     
             if (UnitIsAlive(lv_unit) && UnitGetOwner(lv_unit) != refPlayer.playerId && UnitCanAttackTarget(inUnit, lv_unit)) {
                 lv_distance = DistanceBetweenPoints(UnitGetPosition(lv_unit), UnitGetPosition(inUnit));
-                lv_weight = lv_distance * 2;
+                lv_weight = lv_distance;
     
                 lv_targetPlayer = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_unit))));
                 if (!arena_gf_StringIsEmpty(lv_targetPlayer) && UnitPlayerFromName(lv_targetPlayer, lv_targetUnitPlayer)) {

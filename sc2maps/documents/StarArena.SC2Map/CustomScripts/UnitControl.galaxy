@@ -57,9 +57,9 @@ bool unitctrl_SetAIMode_Func(bool testConds, bool runActions) {
     }
 
     if (UnitIsAlive(lv_unit)) {
-        if (lv_unitPlayer.aiMode != c_AIModeDefence && lv_aiMode == c_AIModeDefence) {
+        if (lv_aiMode == c_AIModeDefence && UnitGetType(lv_unit) == "SiegeTank") {
             UnitIssueOrder(lv_unit, Order(AbilityCommand("SiegeMode", 0)), c_orderQueueReplace);
-        } else if (lv_unitPlayer.aiMode == c_AIModeDefence && lv_aiMode != c_AIModeDefence) {
+        } else if (lv_aiMode != c_AIModeDefence && UnitGetType(lv_unit) == "SiegeTankSieged") {
             UnitIssueOrder(lv_unit, Order(AbilityCommand("Unsiege", 0)), c_orderQueueReplace);
         }
     } else if (lv_aiMode == c_AIModeDefence) {
