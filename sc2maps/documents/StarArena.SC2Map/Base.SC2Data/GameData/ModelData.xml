@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Catalog>
+    <CModel id="AdeptImpact">
+        <ScaleMax value="3.000000,3.000000,3.000000"/>
+        <ScaleMin value="3.000000,3.000000,3.000000"/>
+    </CModel>
+    <CModel id="AdeptWeapon">
+        <ScaleMax value="3.000000,3.000000,3.000000"/>
+        <ScaleMin value="3.000000,3.000000,3.000000"/>
+    </CModel>
     <CModel id="AlarakDeadlyCharge">
         <ScaleMax value="4.000000,4.000000,4.000000"/>
         <ScaleMin value="4.000000,4.000000,4.000000"/>

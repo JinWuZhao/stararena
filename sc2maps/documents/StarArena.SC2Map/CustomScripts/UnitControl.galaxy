@@ -335,7 +335,7 @@ bool unitctrl_ShowWeaponInfo_Func(bool testConds, bool runActions) {
     if (arena_gf_StringIsEmpty(lv_weapon)) {
         return false;
     }
-    arena_gf_ShowMessage("武器信息：" + lv_weapon + "(" + IntToString(lv_index) + ")");
+    arena_gf_ShowMessage("武器信息：" + lv_weapon + "(L" + IntToString(lv_index) + ")");
 
     return true;
 }
@@ -356,7 +356,7 @@ bool unitctrl_ShowAbilityInfo_Func(bool testConds, bool runActions) {
     if (!AbilityDataGet(lv_index, lv_ability)) {
         return false;
     }
-    arena_gf_ShowMessage("技能信息：" + lv_ability.name + "(" + IntToString(lv_index) + ")，");
+    arena_gf_ShowMessage("技能信息：" + lv_ability.name + "(K" + IntToString(lv_index) + ")，");
 
     return true;
 }

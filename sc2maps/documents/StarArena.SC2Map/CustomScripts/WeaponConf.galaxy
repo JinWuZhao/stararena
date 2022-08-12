@@ -17,13 +17,13 @@ const int c_WeaponDataTypeThermalLances = 9; // 热能射线枪
 // const int c_WeaponDataTypeVoidRayChargeBeamBase = 15; // 棱镜光束
 // const int c_WeaponDataTypeMothershipBeam = 17; // 净化光束
 const int c_WeaponDataTypeTempestGround = 10; // 谐振盘
-// const int c_WeaponDataTypeAdept = 19; // 刃炮
 // const int c_WeaponDataTypeAcidSaliva = 20; // 酸性唾液
 // const int c_WeaponDataTypeGlaiveWurm = 21; // 刃虫
 // const int c_WeaponDataTypeParasiteSpore = 22; // 寄生孢子
 // const int c_WeaponDataTypeRavagerWeapon = 23; // 等离子发射
 const int c_WeaponDataTypeShrineGuardian = 11; // 灵能冲击波
-const int c_WeaponDataTypeCount = 12;
+const int c_WeaponDataTypeAdept = 12; // 刃炮
+const int c_WeaponDataTypeCount = 13;
 
 struct WeaponData {
     int index;
@@ -161,10 +161,6 @@ void InitWeaponData() {
     lv_weaponData.type = "TempestGround";
     lv_weaponData.name = "谐振盘";
 
-    // lv_weaponData = gv_weapondata_types[c_WeaponDataTypeAdept];
-    // lv_weaponData.type = "Adept";
-    // lv_weaponData.name = "刃炮";
-
     // lv_weaponData = gv_weapondata_types[c_WeaponDataTypeAcidSaliva];
     // lv_weaponData.type = "AcidSaliva";
     // lv_weaponData.name = "酸性唾液";
@@ -184,6 +180,10 @@ void InitWeaponData() {
     lv_weaponData = gv_weapondata_types[c_WeaponDataTypeShrineGuardian];
     lv_weaponData.type = "ShrineGuardian";
     lv_weaponData.name = "灵能冲击波";
+
+    lv_weaponData = gv_weapondata_types[c_WeaponDataTypeAdept];
+    lv_weaponData.type = "Adept";
+    lv_weaponData.name = "刃炮";
 
     DataTableInstanceCreate();
     gv_weapondata_dataByType = DataTableInstanceLastCreated();

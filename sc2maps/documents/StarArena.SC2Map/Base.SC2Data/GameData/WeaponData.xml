@@ -7,6 +7,10 @@
     <CWeaponLegacy id="ATSLaserBattery">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
     </CWeaponLegacy>
+    <CWeaponLegacy id="Adept">
+        <Range value="4"/>
+        <Effect value="AdeptUpgradeLM"/>
+    </CWeaponLegacy>
     <CWeaponLegacy id="BacklashRockets">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
         <DisplayAttackCount value="6"/>

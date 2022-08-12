@@ -6,13 +6,38 @@
     <CEffectDamage id="ATSLaserBatteryU">
         <Amount value="15"/>
     </CEffectDamage>
+    <CEffectDamage id="AdeptDamage">
+        <AttributeBonus index="Light" value="0"/>
+        <AttributeBonus index="Armored" value="10"/>
+        <Amount value="50"/>
+    </CEffectDamage>
+    <CEffectEnumArea id="AdeptUpgradeDeathSearch">
+        <SearchFilters value="-;Self,Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray index="0" Radius="5"/>
+    </CEffectEnumArea>
     <CEffectDamage id="AlarakDeadlyChargeDamage">
-        <Amount value="300"/>
+        <Amount value="500"/>
         <!--ImpactLocation Effect="AlarakDeadlyCharge" Value="TargetUnit"/-->
     </CEffectDamage>
     <CEffectCreatePersistent id="AlarakKnockbackInitialCP">
         <InitialOffset value="0,-12,0"/>
     </CEffectCreatePersistent>
+    <CEffectDamage id="ArtanisResurgenceEnemyImpactDamage">
+        <Amount value="600"/>
+        <!--Death value="Blast"/-->
+    </CEffectDamage>
+    <CEffectModifyUnit id="ArtanisResurgenceHeal">
+        <VitalArray index="Life">
+            <ChangeFraction value="0.2"/>
+        </VitalArray>
+        <VitalArray index="Shields">
+            <ChangeFraction value="0"/>
+        </VitalArray>
+    </CEffectModifyUnit>
+    <CEffectEnumArea id="ArtanisResurgenceSearch">
+        <SearchFilters value="-;Self,Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray index="0" Radius="6"/>
+    </CEffectEnumArea>
     <CEffectCreatePersistent id="BacklashRockets">
         <PeriodCount value="6"/>
     </CEffectCreatePersistent>

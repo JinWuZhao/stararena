@@ -1,17 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Catalog>
     <CBehaviorBuff id="AlarakDeadlyChargeDamageReady">
-        <Duration value="1"/>
+        <Duration value="0.5"/>
     </CBehaviorBuff>
     <CBehaviorBuff id="AlarakDeadlyCharging">
         <Duration value="30"/>
         <Modification>
             <MoveSpeedBonus value="20"/>
             <MoveSpeedMultiplier value="1"/>
-            <MeleeWeaponRange value="4"/>
+            <MeleeWeaponRange value="3"/>
             <RangedWeaponRange value="-100"/>
             <WeaponArray Link="DarkArchonChampionWeapon" Turret="SiegeTank"/>
         </Modification>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ArtanisResurgenceDisable">
+        <Duration value="30"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ArtanisResurgenceInvulnerable">
+        <Duration value="2"/>
+        <Period value="2"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ArtanisResurgenceReviveSupressed">
+        <Cost>
+            <Cooldown TimeStart="30"/>
+        </Cost>
+        <Duration value="30"/>
+    </CBehaviorBuff>
+    <CBehaviorBuff id="ArtanisResurgenceStun">
+        <Duration value="2"/>
     </CBehaviorBuff>
     <!--CBehaviorBuff id="ParasiticBomb">-->
     <!--        <EditorCategories value="Race:Zerg,AbilityorEffectType:Units"/>-->

@@ -4,10 +4,10 @@
         <Range value="25"/>
     </CValidatorLocationCompareRange>
     <CValidatorUnitCompareOrderTargetRange id="ChargeMinDistance">
-        <Value value="4"/>
+        <Value value="3.1"/>
     </CValidatorUnitCompareOrderTargetRange>
     <CValidatorUnitCompareOrderTargetRange id="ChargeMinTriggerDistance">
-        <Value value="5"/>
+        <Value value="3.6"/>
     </CValidatorUnitCompareOrderTargetRange>
     <CValidatorUnitFilters id="PsiStormUTargetFilters">
         <Filters value="-;Missile,Stasis,Dead,Hidden,Invulnerable"/>
