@@ -7,10 +7,14 @@ const int c_AbilityTypeParasiticBomb = 5;
 const int c_AbilityTypeAlarakDeadlyCharge = 6;
 const int c_AbilityTypeShrineGuardianAntiGrav = 7;
 const int c_AbilityTypeArtanisResurgence = 8;
-const int c_AbilityTypeCount = 9;
+const int c_AbilityTypeAlarakKnockback = 9;
+const int c_AbilityTypeCount = 10;
 
 const int c_AbilityKindActive = 0;
 const int c_AbilityKindPassive = 1;
+
+const int c_AbilityRangeWeapon = 0;
+const int c_AbilityRangeFixed = 1;
 
 bool AbilityCastAction(unit inCaster, unit inTaget, string type);
 
@@ -20,6 +24,7 @@ struct AbilityData {
     string cooldown;
     string name;
     int kind;
+    int rangeType;
     funcref<AbilityCastAction> castAction;
 };
 typedef structref<AbilityData> AbilityDataRef;
@@ -42,6 +47,7 @@ void AbilityDataCopy(AbilityDataRef dest, AbilityDataRef source) {
     dest.type = source.type;
     dest.cooldown = source.cooldown;
     dest.kind = source.kind;
+    dest.rangeType = source.rangeType;
     dest.name = source.name;
     dest.castAction = source.castAction;
 }
@@ -103,13 +109,20 @@ bool AbilityDataCast(unit inCaster, unit inTarget, AbilityDataRef inAbility) {
     if (!UnitIsAlive(inCaster) || !UnitIsAlive(inTarget)) {
         return false;
     }
-    for (lv_index = 1; lv_index <= UnitWeaponCount(inCaster); lv_index += 1) {
-        if (UnitWeaponIsEnabled(inCaster, lv_index) && UnitWeaponRange(inCaster, lv_index) > lv_range) {
-            lv_range = UnitWeaponRange(inCaster, lv_index);
+    if (inAbility.rangeType == c_AbilityRangeWeapon) {
+        for (lv_index = 1; lv_index <= UnitWeaponCount(inCaster); lv_index += 1) {
+            if (UnitWeaponIsEnabled(inCaster, lv_index) && UnitWeaponRange(inCaster, lv_index) > lv_range) {
+                lv_range = UnitWeaponRange(inCaster, lv_index);
+            }
         }
-    }
-    if ((lv_range + UnitGetPropertyFixed(inCaster, c_unitPropRadius, true)) * 1.5 < DistanceBetweenPoints(UnitGetPosition(inCaster), UnitGetPosition(inTarget))) {
-        return false;
+        if ((lv_range + UnitGetPropertyFixed(inCaster, c_unitPropRadius, true)) * 1.2 < DistanceBetweenPoints(UnitGetPosition(inCaster), UnitGetPosition(inTarget))) {
+            return false;
+        }
+    } else if (inAbility.rangeType == c_AbilityRangeFixed) {
+        lv_range = UnitAbilityEffectInstantGetRange(inCaster, inAbility.type);
+        if (lv_range < DistanceBetweenPoints(UnitGetPosition(inCaster), UnitGetPosition(inTarget))) {
+            return false;
+        }
     }
     if (inAbility.castAction == null) {
         return true;
@@ -197,6 +210,14 @@ void InitAbilityData() {
     lv_ability.kind = c_AbilityKindPassive;
     lv_ability.name = "坦克炸弹";
     lv_ability.castAction = null;
+
+    lv_ability = gv_abilitydata_types[c_AbilityTypeAlarakKnockback];
+    lv_ability.index = c_AbilityTypeAlarakKnockback;
+    lv_ability.type = "AlarakKnockback";
+    lv_ability.cooldown = "Abil/AlarakKnockback";
+    lv_ability.rangeType = c_AbilityRangeFixed;
+    lv_ability.name = "湮灭波";
+    lv_ability.castAction = abilitydata_CastTargetPoint;
 
     for (lv_index = 0; lv_index < c_AbilityTypeCount; lv_index += 1) {
         lv_ability = gv_abilitydata_types[lv_index];

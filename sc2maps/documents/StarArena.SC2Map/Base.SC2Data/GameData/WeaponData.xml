@@ -8,8 +8,9 @@
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="Adept">
-        <Range value="4"/>
+        <Range value="3"/>
         <Effect value="AdeptUpgradeLM"/>
+        <Period value="2.5"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="BacklashRockets">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>

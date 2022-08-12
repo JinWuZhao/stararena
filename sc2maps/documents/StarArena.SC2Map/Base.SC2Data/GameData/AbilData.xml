@@ -16,6 +16,7 @@
             <Flags index="UseDefaultButton" value="1"/>
             <Flags index="CreateDefaultButton" value="1"/>
         </CmdButtonArray>
+        <Range index="0" value="16"/>
     </CAbilEffectTarget>
     <CAbilEffectTarget id="ParasiticBomb">
         <Cost index="0">
@@ -108,7 +109,7 @@
     <CAbilEffectTarget id="Yamato">
         <Cost index="0">
             <Vital index="Energy" value="0"/>
-            <Cooldown TimeUse="10"/>
+            <Cooldown TimeUse="8"/>
         </Cost>
         <CmdButtonArray index="Execute">
             <Flags index="UseDefaultButton" value="1"/>

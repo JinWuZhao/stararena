@@ -24,6 +24,15 @@
         <ScaleMax value="1.500000,1.500000,1.500000"/>
         <ScaleMin value="1.500000,1.500000,1.500000"/>
     </CModel>
+    <CModel id="DisruptorBeam">
+        <RadiusLoose value="2.000000"/>
+    </CModel>
+    <CModel id="HighTemplarPsiStormImpact">
+        <Radius value="3.000000"/>
+    </CModel>
+    <CModel id="HighTemplarPsiStormModel">
+        <RadiusLoose value="3.000000"/>
+    </CModel>
     <CModel id="ImmortalAttackImpact">
         <ScaleMax value="2.000000,2.000000,2.000000"/>
         <ScaleMin value="2.000000,2.000000,2.000000"/>
@@ -33,6 +42,14 @@
         <ScaleMin value="1.500000,1.500000,1.500000"/>
         <!--ScaleMax value="0.300000,0.300000,0.300000"/>
         <ScaleMin value="0.300000,0.300000,0.300000"\-->
+    </CModel>
+    <CModel id="PurificationNova">
+        <ScaleMax value="3.500000,3.500000,3.500000"/>
+        <ScaleMin value="3.000000,3.000000,3.000000"/>
+    </CModel>
+    <CModel id="PurificationNovaImpact">
+        <ScaleMax value="2.000000,2.000000,2.000000"/>
+        <ScaleMin value="2.000000,2.000000,2.000000"/>
     </CModel>
     <CModel id="RavagerCorrosiveBileImpact">
         <RadiusLoose value="2.000000"/>

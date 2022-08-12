@@ -9,11 +9,11 @@
     <CEffectDamage id="AdeptDamage">
         <AttributeBonus index="Light" value="0"/>
         <AttributeBonus index="Armored" value="10"/>
-        <Amount value="50"/>
+        <Amount value="90"/>
     </CEffectDamage>
     <CEffectEnumArea id="AdeptUpgradeDeathSearch">
         <SearchFilters value="-;Self,Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
-        <AreaArray index="0" Radius="5"/>
+        <AreaArray index="0" MaxCount="5" Radius="8"/>
     </CEffectEnumArea>
     <CEffectDamage id="AlarakDeadlyChargeDamage">
         <Amount value="500"/>
@@ -23,12 +23,12 @@
         <InitialOffset value="0,-12,0"/>
     </CEffectCreatePersistent>
     <CEffectDamage id="ArtanisResurgenceEnemyImpactDamage">
-        <Amount value="600"/>
+        <Amount value="700"/>
         <!--Death value="Blast"/-->
     </CEffectDamage>
     <CEffectModifyUnit id="ArtanisResurgenceHeal">
         <VitalArray index="Life">
-            <ChangeFraction value="0.2"/>
+            <ChangeFraction value="0.3"/>
         </VitalArray>
         <VitalArray index="Shields">
             <ChangeFraction value="0"/>
@@ -36,7 +36,7 @@
     </CEffectModifyUnit>
     <CEffectEnumArea id="ArtanisResurgenceSearch">
         <SearchFilters value="-;Self,Player,Ally,Missile,Stasis,Dead,Hidden,Invulnerable"/>
-        <AreaArray index="0" Radius="6"/>
+        <AreaArray index="0" Radius="8"/>
     </CEffectEnumArea>
     <CEffectCreatePersistent id="BacklashRockets">
         <PeriodCount value="6"/>
@@ -51,16 +51,16 @@
         <SearchFilters value="-;Self,Missile,Stasis,Dead,Hidden,Invulnerable"/>
     </CEffectDamage>
     <CEffectDamage id="DestructionWaveDamage">
-        <Amount value="200"/>
+        <Amount value="300"/>
     </CEffectDamage>
     <CEffectDamage id="DestructionWaveDamageAir">
-        <Amount value="200"/>
+        <Amount value="300"/>
     </CEffectDamage>
     <CEffectDamage id="DisruptionBeamDamage">
         <Amount value="40"/>
     </CEffectDamage>
     <CEffectDamage id="ImmortalSplashDamage">
-        <Amount value="20"/>
+        <Amount value="40"/>
     </CEffectDamage>
     <CEffectEnumArea id="ImmortalSplashSearch">
         <ValidatorArray index="0" removed="1"/>
@@ -100,6 +100,9 @@
     <CEffectDamage id="ParticleDisruptorsU">
         <Amount value="30"/>
     </CEffectDamage>
+    <CEffectDamage id="PhaseDisruptors">
+        <Amount value="60"/>
+    </CEffectDamage>
     <CEffectDamage id="PsiStormDamage">
         <DamageModifierSource Value="Caster"/>
         <Amount value="30"/>
@@ -110,6 +113,7 @@
     </CEffectDamage>
     <CEffectEnumArea id="PsiStormSearch">
         <SearchFilters value="-;Player,Ally,Neutral,Missile,Stasis,Dead,Hidden,Invulnerable"/>
+        <AreaArray index="0" Radius="4"/>
         <!--AreaArray index="0" Radius="1.5" Effect="PsiStormImpactSet"/-->
     </CEffectEnumArea>
     <CEffectApplyBehavior id="PunisherGrenadesSlow">
@@ -122,7 +126,7 @@
         <Amount value="20"/>
     </CEffectDamage>
     <CEffectDamage id="PurificationNovaDamage">
-        <Amount value="200"/>
+        <Amount value="300"/>
     </CEffectDamage>
     <CEffectEnumArea id="PurificationNovaNotificationSearch">
         <SearchFilters value="-;Self,Ally,RawResource,HarvestableResource,Missile,Item,Dead,Hidden,Invulnerable"/>
@@ -220,4 +224,7 @@
         <EffectArray index="1" value="StarArenaSpawnDamageBehavior"/>
         <EffectArray index="2" value="SapStructureIssueAttackOrder"/>
     </CEffectSet>
+    <CEffectDamage id="YamatoU">
+        <Amount value="400"/>
+    </CEffectDamage>
 </Catalog>
