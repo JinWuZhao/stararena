@@ -395,6 +395,8 @@ bool gameplay_AddUnitTest_Func(bool testConds, bool runActions) {
     string lv_unitType = arena_gf_CurrentCommandArgument(2);
     int lv_playerId = StringToInt(arena_gf_CurrentCommandArgument(3));
     string lv_pointName;
+    point lv_targetPoint;
+    unit lv_unit;
 
     if (!runActions) {
         return true;
@@ -402,13 +404,17 @@ bool gameplay_AddUnitTest_Func(bool testConds, bool runActions) {
 
     if (lv_playerId == c_GameStatePlayerIdRed) {
         lv_pointName = "Red-0" + IntToString(1);
+        lv_targetPoint = UnitGetPosition(UnitFromId(c_gameplay_UnitBlueCenter));
     } else if (lv_playerId == c_GameStatePlayerIdBlue) {
         lv_pointName = "Blue-0" + IntToString(1);
+        lv_targetPoint = UnitGetPosition(UnitFromId(c_gameplay_UnitRedCenter));
     } else {
         lv_pointName = "NPC-Start";
     }
-    arena_gf_CreateUnit(lv_playerId, PointFromName(lv_pointName), lv_unitType, 
-                    PointGetFacing(PointFromName(lv_pointName)), 150, lv_name, 2, true);
+    lv_unit = arena_gf_CreateUnit(lv_playerId, PointFromName(lv_pointName), lv_unitType, PointGetFacing(PointFromName(lv_pointName)), 150, lv_name, 2, true);
+    if (lv_targetPoint != null) {
+        UnitIssueOrder(lv_unit, OrderTargetingPoint(AbilityCommand("move", 3), lv_targetPoint), c_orderQueueReplace);
+    }
     return true;
 }
 
@@ -865,6 +871,7 @@ bool gameplay_TankSieged_Func(bool testConds, bool runActions) {
 
     UnitWeaponRemove(lv_unit, "CrucioShockCannon");
     UnitWeaponAdd(lv_unit, lv_player.weaponType, "SiegeTankSieged");
+    libNtve_gf_SendActorMessageToUnit(lv_unit, libNtve_gf_ModelSwap("MengskSiegeTankSieged", 0));
     return true;
 }
 
@@ -883,6 +890,7 @@ bool gameplay_TankUnsieged_Func(bool testConds, bool runActions) {
 
     UnitWeaponRemove(lv_unit, "FusionCutter");
     UnitWeaponAdd(lv_unit, lv_player.weaponType, "SiegeTank");
+    libNtve_gf_SendActorMessageToUnit(lv_unit, libNtve_gf_ModelSwap("MengskSiegeTank", 0));
 
     UnitBehaviorRemove(lv_unit, "StarArenaAttackRangeEnhance", 10);
     return true;
@@ -911,10 +919,13 @@ bool gameplay_TankSiege_Func(bool testConds, bool runActions) {
         return false;
     }
 
-    UnitWeaponRemove(lv_unit, lv_player.weaponType);
-    UnitWeaponAdd(lv_unit, "FusionCutter", "SiegeTank");
-
-    UnitBehaviorAdd(lv_unit, "StarArenaAttackRangeEnhance", lv_unit, 10);
+    if (EventUnitAbilityStage() == c_abilMorphStageActorStart) {
+        libNtve_gf_SendActorMessageToUnit(lv_unit, libNtve_gf_ModelSwap("MengskSiegeTankSiegedMorph", 0));
+    } else if (EventUnitAbilityStage() == c_abilMorphStageUnitStart) {
+        UnitWeaponRemove(lv_unit, lv_player.weaponType);
+        UnitWeaponAdd(lv_unit, "FusionCutter", "SiegeTank");
+        UnitBehaviorAdd(lv_unit, "StarArenaAttackRangeEnhance", lv_unit, 10);
+    }
     return true;
 }
 
@@ -931,16 +942,23 @@ bool gameplay_TankUnsiege_Func(bool testConds, bool runActions) {
         return false;
     }
 
-    UnitWeaponRemove(lv_unit, lv_player.weaponType);
+    if (EventUnitAbilityStage() == c_abilMorphStageActorStart) {
+        libNtve_gf_SendActorMessageToUnit(lv_unit, libNtve_gf_ModelSwap("MengskSiegeTankSiegedMorph", 0));
+    } else if (EventUnitAbilityStage() == c_abilMorphStageUnitStart) {
+        UnitWeaponRemove(lv_unit, lv_player.weaponType);
+        libNtve_gf_SendActorMessageToUnit(lv_unit, libNtve_gf_ModelSwap("MengskSiegeTankSiegedMorph", 0));
+    }
     return true;
 }
 
 static void gameplay_TankSiege_Init() {
     gt_gameplay_TankSiege = TriggerCreate("gameplay_TankSiege_Func");
     TriggerAddEventUnitAbility(gt_gameplay_TankSiege, null, AbilityCommand("SiegeMode", 0), c_abilMorphStageUnitStart, false);
+    TriggerAddEventUnitAbility(gt_gameplay_TankSiege, null, AbilityCommand("SiegeMode", 0), c_abilMorphStageActorStart, false);
 }
 
 static void gameplay_TankUnsiege_Init() {
     gt_gameplay_TankUnsiege = TriggerCreate("gameplay_TankUnsiege_Func");
     TriggerAddEventUnitAbility(gt_gameplay_TankUnsiege, null, AbilityCommand("Unsiege", 0), c_abilMorphStageUnitStart, false);
+    TriggerAddEventUnitAbility(gt_gameplay_TankUnsiege, null, AbilityCommand("Unsiege", 0), c_abilMorphStageActorStart, false);
 }

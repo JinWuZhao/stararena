@@ -188,6 +188,7 @@ static void aimode_PlayerStep(UnitPlayerRef refPlayer, unit inUnit) {
                 }
                 inUnit = arena_gf_CreateUnit(refPlayer.playerId, PointFromName(lv_pointName), lv_unitData.unitType, 
                     PointGetFacing(PointFromName(lv_pointName)), lv_unitData.baseScale, refPlayer.name, 2, !refPlayer.isBot);
+                libNtve_gf_SendActorMessageToUnit(inUnit, libNtve_gf_ModelSwap("MengskSiegeTank", 0));
                 UnitDataInitPlayerUnitProps(refPlayer, inUnit);
                 WeaponDataApplyUnit(UnitWeaponGet(inUnit, 1), refPlayer.weaponType, inUnit);
                 AbilityDataApply(inUnit, refPlayer.abilityType);
