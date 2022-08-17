@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Catalog>
+    <CActorModel id="StarArenaBeaconRed" parent="ModelAddition">
+        <Remove Terms="ActorOrphan" Send="Destroy"/>
+        <On Terms="ActorOrphan" Send="AnimBracketStop BSD"/>
+        <On Terms="ActorCreation" Send="AnimPlay GL GLstand PlayForever"/>
+        <On Terms="Behavior.StarArenaTeamRed.Create" Send="Create"/>
+        <On Terms="Behavior.StarArenaTeamRed.Destroy" Send="Destroy Immediate"/>
+        <Model value="Beacon_Zerg"/>
+    </CActorModel>
     <CActorMissile id="StalkerAttackMissile">
         <On Terms="UnitBirth.StalkerSecondaryWeapon" Send="Create"/>
     </CActorMissile>
+    <CActorModel id="StarArenaBeaconBlue2" parent="ModelAddition">
+        <Remove Terms="ActorOrphan" Send="Destroy"/>
+        <On Terms="ActorOrphan" Send="AnimBracketStop BSD"/>
+        <On Terms="ActorCreation" Send="AnimPlay GL GLstand PlayForever"/>
+        <On Terms="Behavior.StarArenaTeamBlue.Create" Send="Create"/>
+        <On Terms="Behavior.StarArenaTeamBlue.Destroy" Send="Destroy Immediate"/>
+        <Model value="Beacon_Protoss"/>
+    </CActorModel>
+    <CActorModel id="StarArenaBeaconGiftUnit" parent="ModelAddition">
+        <Remove Terms="ActorOrphan" Send="Destroy"/>
+        <On Terms="ActorOrphan" Send="AnimBracketStop BSD"/>
+        <On Terms="ActorCreation" Send="AnimPlay GL GLstand PlayForever"/>
+        <On Terms="Behavior.StarArenaGiftUnit.Create" Send="Create"/>
+        <On Terms="Behavior.StarArenaGiftUnit.Destroy" Send="Destroy Immediate"/>
+        <Model value="Beacon_Terran"/>
+    </CActorModel>
 </Catalog>

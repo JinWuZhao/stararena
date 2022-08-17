@@ -29,11 +29,16 @@ type State struct {
 	JoinCap   int `toml:"join_cap"`
 }
 
+type Log struct {
+	FilePath string `toml:"file_path"`
+}
+
 type Conf struct {
 	BiliDanMu `toml:"bilidanmu"`
 	SC2Client `toml:"sc2client"`
 	Msq       `toml:"msq"`
 	State     `toml:"state"`
+	Log       `toml:"log"`
 }
 
 func NewConf(file string) (*Conf, error) {

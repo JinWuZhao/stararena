@@ -1,0 +1,94 @@
+struct ArmyData {
+    int level;
+    int unitType;
+    int spawnInterval;
+    int[c_unitPlayerPropsCap] props;
+};
+typedef structref<ArmyData> ArmyDataRef;
+
+const int c_ArmyDataLevelsCount = 6;
+typedef ArmyData[c_ArmyDataLevelsCount] ArmyDataArray;
+
+static ArmyDataArray gv_armydata_armyLevels;
+
+void ArmyDataCopy(ArmyDataRef dest, ArmyDataRef source);
+bool ArmyDataGet(int level, ArmyDataRef outData);
+bool ArmyDataInitUnitProps(ArmyDataRef armyData, unit inUnit);
+void InitArmyData();
+
+void ArmyDataCopy(ArmyDataRef dest, ArmyDataRef source) {
+    int lv_index;
+
+    dest.level = source.level;
+    dest.unitType = source.unitType;
+    dest.spawnInterval = source.spawnInterval;
+    for (lv_index = 0; lv_index < c_unitPlayerPropsCap; lv_index += 1) {
+        dest.props[lv_index] = source.props[lv_index];
+    }
+}
+
+bool ArmyDataGet(int level, ArmyDataRef outData) {
+    if (level < 0 || level >= c_ArmyDataLevelsCount) {
+        return false;
+    }
+    ArmyDataCopy(outData, gv_armydata_armyLevels[level]);
+    return true;
+}
+
+bool ArmyDataInitUnitProps(ArmyDataRef armyData, unit inUnit) {
+    UnitData lv_unitData;
+    int lv_propIndex;
+    if (!UnitDataGet(armyData.unitType, lv_unitData)) {
+        return false;
+    }
+    for (lv_propIndex = 0; lv_propIndex < c_unitPlayerPropsCap; lv_propIndex += 1) {
+        UnitDataSetUnitProp(lv_propIndex, armyData.props[lv_propIndex], lv_unitData, inUnit);
+    }
+    return true;
+}
+
+void InitArmyData() {
+    ArmyDataRef lv_army;
+
+    lv_army = gv_armydata_armyLevels[0];
+    lv_army.level = 0;
+    lv_army.unitType = c_UnitDataTypeSiegeTank;
+    lv_army.spawnInterval = 3;
+    lv_army.props[c_unitPlayerPropsMaxLife] = 0;
+    lv_army.props[c_unitPlayerPropsDamageMultiplier] = 0;
+
+    lv_army = gv_armydata_armyLevels[1];
+    lv_army.level = 1;
+    lv_army.unitType = c_UnitDataTypeSiegeTank;
+    lv_army.spawnInterval = 3;
+    lv_army.props[c_unitPlayerPropsMaxLife] = 1;
+    lv_army.props[c_unitPlayerPropsDamageMultiplier] = 2;
+
+    lv_army = gv_armydata_armyLevels[2];
+    lv_army.level = 2;
+    lv_army.unitType = c_UnitDataTypeThor;
+    lv_army.spawnInterval = 5;
+    lv_army.props[c_unitPlayerPropsMaxLife] = 2;
+    lv_army.props[c_unitPlayerPropsDamageMultiplier] = 2;
+
+    lv_army = gv_armydata_armyLevels[3];
+    lv_army.level = 3;
+    lv_army.unitType = c_UnitDataTypeThor;
+    lv_army.spawnInterval = 5;
+    lv_army.props[c_unitPlayerPropsMaxLife] = 3;
+    lv_army.props[c_unitPlayerPropsDamageMultiplier] = 3;
+
+    lv_army = gv_armydata_armyLevels[4];
+    lv_army.level = 4;
+    lv_army.unitType = c_UnitDataTypeMengskThor;
+    lv_army.spawnInterval = 6;
+    lv_army.props[c_unitPlayerPropsMaxLife] = 3;
+    lv_army.props[c_unitPlayerPropsDamageMultiplier] = 3;
+
+    lv_army = gv_armydata_armyLevels[5];
+    lv_army.level = 5;
+    lv_army.unitType = c_UnitDataTypeMengskThor;
+    lv_army.spawnInterval = 5;
+    lv_army.props[c_unitPlayerPropsMaxLife] = 4;
+    lv_army.props[c_unitPlayerPropsDamageMultiplier] = 4;
+}

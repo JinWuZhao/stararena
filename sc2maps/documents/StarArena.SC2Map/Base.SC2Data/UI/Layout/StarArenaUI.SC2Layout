@@ -10,10 +10,15 @@
         <Style val="SystemInfoStyle"/>
     </Frame>
     <Frame type="GameMessageDisplay" name="GameUI/UIContainer/FullscreenUpperContainer/DirectiveDisplay" file="GameUI">
+        <Anchor side="Top" relative="$parent" pos="Min" offset="190"/>
+        <Anchor side="Left" relative="$parent" pos="Mid" offset="0"/>
+        <Anchor side="Right" relative="$parent" pos="Mid" offset="0"/>
         <MessageDuration val="6000"/>
         <FadeDuration val="3000"/>
         <MaxMessages val="3"/>
         <HideClippedMessages val="True"/>
+        <Width val="1400"/>
+        <Height val="250"/>
         <Style val="SystemInfoStyle"/>
     </Frame>
     <Frame type="Frame" name="PlayerInfo">
@@ -26,8 +31,8 @@
         </Frame>
 
         <Frame type="Label" name="name">
-            <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-            <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+            <Anchor side="Top" relative="$parent" pos="0" offset="0"/>
+            <Anchor side="Bottom" relative="$parent" pos="0.25" offset="0"/>
             <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
             <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
             <Color val="255,255,255"/>
@@ -35,14 +40,34 @@
             <Style val="PlayerInfoStyle"/>
         </Frame>
 
-        <Frame type="Label" name="info">
-            <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-            <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
+        <Frame type="Label" name="level">
+            <Anchor side="Top" relative="$parent" pos="0.25" offset="0"/>
+            <Anchor side="Bottom" relative="$parent" pos="0.45" offset="0"/>
             <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
             <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
             <Color val="255,255,255"/>
             <Text val=""/>
-            <Style val="PlayerInfoStyle"/>
+            <Style val="PlayerPropStyle"/>
+        </Frame>
+
+        <Frame type="Label" name="exp">
+            <Anchor side="Top" relative="$parent" pos="0.45" offset="0"/>
+            <Anchor side="Bottom" relative="$parent" pos="0.65" offset="0"/>
+            <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
+            <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
+            <Color val="255,255,255"/>
+            <Text val=""/>
+            <Style val="PlayerPropStyle"/>
+        </Frame>
+
+        <Frame type="Label" name="props">
+            <Anchor side="Top" relative="$parent" pos="0.65" offset="0"/>
+            <Anchor side="Bottom" relative="$parent" pos="1" offset="0"/>
+            <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
+            <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
+            <Color val="255,255,255"/>
+            <Text val=""/>
+            <Style val="PlayerPropStyle"/>
         </Frame>
     </Frame>
     <Frame type="Frame" name="GameUI/UIContainer/FullscreenUpperContainer" file="GameUI">
@@ -50,286 +75,146 @@
             <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
             <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
             <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
-            <Height val="120"/>
+            <Height val="130"/>
 
             <Frame type="Frame" name="0" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.05" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,0,0"/>
             </Frame>
             <Frame type="Frame" name="1" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.05" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.1" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,0,0"/>
             </Frame>
             <Frame type="Frame" name="2" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.1" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.15" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,0,0"/>
             </Frame>
             <Frame type="Frame" name="3" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.15" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.2" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,0,0"/>
             </Frame>
             <Frame type="Frame" name="4" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.2" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.25" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,0,0"/>
             </Frame>
             <Frame type="Frame" name="5" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.25" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.3" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,0,0"/>
             </Frame>
             <Frame type="Frame" name="6" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.3" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.35" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,0,0"/>
             </Frame>
             <Frame type="Frame" name="7" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.35" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.4" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,0,0"/>
             </Frame>
             <Frame type="Frame" name="8" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.4" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.45" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,0,0"/>
             </Frame>
             <Frame type="Frame" name="9" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.45" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.5" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
-                <Color val="255,0,0"/>
-            </Frame>
-            <Frame type="Frame" name="10" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.05" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="255,0,0"/>
-            </Frame>
-            <Frame type="Frame" name="11" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.05" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.1" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="255,0,0"/>
-            </Frame>
-            <Frame type="Frame" name="12" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.1" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.15" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="255,0,0"/>
-            </Frame>
-            <Frame type="Frame" name="13" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.15" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.2" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="255,0,0"/>
-            </Frame>
-            <Frame type="Frame" name="14" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.2" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.25" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="255,0,0"/>
-            </Frame>
-            <Frame type="Frame" name="15" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.25" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.3" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="255,0,0"/>
-            </Frame>
-            <Frame type="Frame" name="16" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.3" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.35" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="255,0,0"/>
-            </Frame>
-            <Frame type="Frame" name="17" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.35" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.4" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="255,0,0"/>
-            </Frame>
-            <Frame type="Frame" name="18" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.4" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.45" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="255,0,0"/>
-            </Frame>
-            <Frame type="Frame" name="19" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.45" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.5" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
                 <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,0,0"/>
             </Frame>
 
-            <Frame type="Frame" name="20" template="StarArenaUI/PlayerInfo">
+            <Frame type="Frame" name="10" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.95" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="1" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="0,0,255"/>
             </Frame>
-            <Frame type="Frame" name="21" template="StarArenaUI/PlayerInfo">
+            <Frame type="Frame" name="11" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.9" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.95" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="0,0,255"/>
             </Frame>
-            <Frame type="Frame" name="22" template="StarArenaUI/PlayerInfo">
+            <Frame type="Frame" name="12" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.85" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.9" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="0,0,255"/>
             </Frame>
-            <Frame type="Frame" name="23" template="StarArenaUI/PlayerInfo">
+            <Frame type="Frame" name="13" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.8" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.85" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="0,0,255"/>
             </Frame>
-            <Frame type="Frame" name="24" template="StarArenaUI/PlayerInfo">
+            <Frame type="Frame" name="14" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.75" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.8" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="0,0,255"/>
             </Frame>
-            <Frame type="Frame" name="25" template="StarArenaUI/PlayerInfo">
+            <Frame type="Frame" name="15" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.7" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.75" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="0,0,255"/>
             </Frame>
-            <Frame type="Frame" name="26" template="StarArenaUI/PlayerInfo">
+            <Frame type="Frame" name="16" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.65" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.7" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="0,0,255"/>
             </Frame>
-            <Frame type="Frame" name="27" template="StarArenaUI/PlayerInfo">
+            <Frame type="Frame" name="17" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.6" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.65" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="0,0,255"/>
             </Frame>
-            <Frame type="Frame" name="28" template="StarArenaUI/PlayerInfo">
+            <Frame type="Frame" name="18" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.55" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.6" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="0,0,255"/>
             </Frame>
-            <Frame type="Frame" name="29" template="StarArenaUI/PlayerInfo">
+            <Frame type="Frame" name="19" template="StarArenaUI/PlayerInfo">
                 <Anchor side="Left" relative="$parent" pos="0.5" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="0.55" offset="0"/>
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Mid" offset="0"/>
-                <Color val="0,0,255"/>
-            </Frame>
-            <Frame type="Frame" name="30" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.95" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="1" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="0,0,255"/>
-            </Frame>
-            <Frame type="Frame" name="31" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.9" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.95" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="0,0,255"/>
-            </Frame>
-            <Frame type="Frame" name="32" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.85" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.9" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="0,0,255"/>
-            </Frame>
-            <Frame type="Frame" name="33" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.8" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.85" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="0,0,255"/>
-            </Frame>
-            <Frame type="Frame" name="34" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.75" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.8" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="0,0,255"/>
-            </Frame>
-            <Frame type="Frame" name="35" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.7" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.75" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="0,0,255"/>
-            </Frame>
-            <Frame type="Frame" name="36" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.65" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.7" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="0,0,255"/>
-            </Frame>
-            <Frame type="Frame" name="37" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.6" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.65" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="0,0,255"/>
-            </Frame>
-            <Frame type="Frame" name="38" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.55" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.6" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
-                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Color val="0,0,255"/>
-            </Frame>
-            <Frame type="Frame" name="39" template="StarArenaUI/PlayerInfo">
-                <Anchor side="Left" relative="$parent" pos="0.5" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.55" offset="0"/>
-                <Anchor side="Top" relative="$parent" pos="Mid" offset="0"/>
                 <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
                 <Color val="0,0,255"/>
             </Frame>
@@ -338,31 +223,39 @@
         <Frame type="Frame" name="GiftBoard">
             <Anchor side="Top" relative="$parent/Players" pos="Max" offset="2"/>
             <Anchor side="Bottom" relative="$parent/Players" pos="Max" offset="34"/>
-            <Anchor side="Left" relative="$parent" pos="0.2" offset="0"/>
-            <Anchor side="Right" relative="$parent" pos="0.8" offset="0"/>
+            <Anchor side="Left" relative="$parent" pos="0.1" offset="0"/>
+            <Anchor side="Right" relative="$parent" pos="0.9" offset="0"/>
             <Height val="32"/>
 
+            <Frame type="Label" name="Upvote">
+                <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
+                <Anchor side="Left" relative="$parent" pos="0" offset="0"/>
+                <Anchor side="Right" relative="$parent" pos="0.25" offset="0"/>
+                <Text val=""/>
+                <Style val="SystemInfoStyle"/>
+            </Frame>
             <Frame type="Label" name="BasicGifts">
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
                 <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Anchor side="Left" relative="$parent" pos="0.05" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.35" offset="0"/>
+                <Anchor side="Left" relative="$parent" pos="0.25" offset="0"/>
+                <Anchor side="Right" relative="$parent" pos="0.5" offset="0"/>
                 <Text val=""/>
                 <Style val="SystemInfoStyle"/>
             </Frame>
             <Frame type="Label" name="AdvancedGifts">
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
                 <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Anchor side="Left" relative="$parent" pos="0.35" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.65" offset="0"/>
+                <Anchor side="Left" relative="$parent" pos="0.5" offset="0"/>
+                <Anchor side="Right" relative="$parent" pos="0.75" offset="0"/>
                 <Text val=""/>
                 <Style val="SystemInfoStyle"/>
             </Frame>
             <Frame type="Label" name="DeluxeGifts">
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
                 <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
-                <Anchor side="Left" relative="$parent" pos="0.65" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="0.95" offset="0"/>
+                <Anchor side="Left" relative="$parent" pos="0.75" offset="0"/>
+                <Anchor side="Right" relative="$parent" pos="1" offset="0"/>
                 <Text val=""/>
                 <Style val="SystemInfoStyle"/>
             </Frame>
@@ -384,13 +277,29 @@
             </Frame>
         </Frame>
 
+        <Frame type="Frame" name="NoticeBoard">
+            <Anchor side="Top" relative="$parent" pos="Max" offset="-210"/>
+            <Anchor side="Bottom" relative="$parent" pos="Max" offset="-170"/>
+            <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
+            <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
+
+            <Frame type="Label" name="Notice">
+                <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
+                <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
+                <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
+                <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
+                <Text val=""/>
+                <Style val="SystemInfoStyle"/>
+            </Frame>
+        </Frame>
+
         <Frame type="Frame" name="RankBoard">
             <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
             <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
             <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
             <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
             <Width val="700"/>
-            <Height val="1000"/>
+            <Height val="800"/>
 
             <Frame type="Image" name="Background">
                 <Anchor relative="$parent"/>
@@ -413,7 +322,7 @@
                 <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,255,255"/>
-                <Text val="本局击杀排行榜"/>
+                <Text val="本局得分排名"/>
                 <Style val="RankListStyle"/>
             </Frame>
         </Frame>
@@ -423,6 +332,11 @@
             <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
             <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
             <Anchor side="Right" relative="$parent" pos="Mid" offset="-320"/>
+            <Frame type="Image" name="Background">
+                <Anchor relative="$parent"/>
+                <Alpha val="80"/>
+                <Color val="50,50,50"/>
+            </Frame>
             <Frame type="Label" name="Tips">
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
                 <Anchor side="Bottom" relative="$parent" pos="Min" offset="31"/>
@@ -430,43 +344,34 @@
                 <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,255,255"/>
                 <Style val="SystemInfoStyle"/>
-                <Text val="输入弹幕指令进行游戏，不区分大小写：JR加入红队，JB加入蓝队；"/>
+                <Text val="输入J加入游戏，摧毁敌方基地！"/>
             </Frame>
-            <Frame type="Label" name="Tips2">
+            <Frame type="Label" name="TemplateTips">
                 <Anchor side="Top" relative="$parent" pos="Min" offset="31"/>
-                <Anchor side="Bottom" relative="$parent" pos="Min" offset="62"/>
-                <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
-                <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
-                <Color val="255,255,255"/>
-                <Style val="SystemInfoStyle"/>
-                <Text val="击杀敌人可升级并获得属性点，属性编号+数量分配属性点，"/>
-            </Frame>
-            <Frame type="Label" name="Tips3">
-                <Anchor side="Top" relative="$parent" pos="Min" offset="62"/>
                 <Anchor side="Bottom" relative="$parent" pos="Min" offset="93"/>
                 <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,255,255"/>
                 <Style val="SystemInfoStyle"/>
-                <Text val="属性编号：P0生命，P1伤害，P2射程，P3移速，P4攻速；"/>
+                <Text val=""/>
             </Frame>
-            <Frame type="Label" name="Tips4">
+            <Frame type="Label" name="Tips3">
                 <Anchor side="Top" relative="$parent" pos="Min" offset="93"/>
                 <Anchor side="Bottom" relative="$parent" pos="Min" offset="124"/>
                 <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,255,255"/>
                 <Style val="SystemInfoStyle"/>
-                <Text val="例如：P04(分配4点属性到生命)，P14(分配4点属性到伤害)等；"/>
+                <Text val="控制：M1拆塔，M2猎杀，M3前进，M4防御，M5撤退"/>
             </Frame>
-            <Frame type="Label" name="Tips5">
+            <Frame type="Label" name="Tips4">
                 <Anchor side="Top" relative="$parent" pos="Min" offset="124"/>
                 <Anchor side="Bottom" relative="$parent" pos="Min" offset="155"/>
                 <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
                 <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
                 <Color val="255,255,255"/>
                 <Style val="SystemInfoStyle"/>
-                <Text val="控制坦克：M1进攻，M2猎杀，M3狙击，M4防御，M5撤退。"/>
+                <Text val="属性描述：A生命，B伤害，C射程，D攻速，E能量，F韧性"/>
             </Frame>
         </Frame>
 
@@ -475,6 +380,11 @@
             <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
             <Anchor side="Left" relative="$parent" pos="Mid" offset="320"/>
             <Anchor side="Right" relative="$parent" pos="Max" offset="0"/>
+            <Frame type="Image" name="Background">
+                <Anchor relative="$parent"/>
+                <Alpha val="80"/>
+                <Color val="50,50,50"/>
+            </Frame>
             <Frame type="Label" name="weaponTips">
                 <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
                 <Anchor side="Bottom" relative="$parent" pos="Min" offset="62"/>

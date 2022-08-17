@@ -1,6 +1,7 @@
 package state
 
 import (
+	"math/rand"
 	"sync"
 
 	"github.com/bwmarrin/snowflake"
@@ -90,10 +91,6 @@ func (m *Game) Start() {
 }
 
 func (m *Game) HandleJoinPlayers() {
-	randSC2PlayerId := []uint32{
-		m.config.RedPlayer,
-		m.config.BluePlayer,
-	}
 	for i := 0; i < 2; i++ {
 		if m.GetProgress() != GameProgressStarted {
 			break
@@ -107,14 +104,16 @@ func (m *Game) HandleJoinPlayers() {
 		var player *Player
 		select {
 		case player = <-m.joinQueue:
-			if m.GetPlayerCount() >= m.config.PlayerCap {
-				botPlayer := m.FindOneBotPlayer(player.GetSC2PlayerId())
-				if botPlayer != nil {
-					m.RemovePlayer(botPlayer.name)
-				}
+			botPlayer := m.FindOneBotPlayer(player.GetSC2PlayerId())
+			if botPlayer != nil {
+				m.RemovePlayer(botPlayer.name)
 			}
 		default:
-			player = NewBotPlayer(m.botIdGen.Generate().String(), randSC2PlayerId[i])
+			m.m.RLock()
+			if m.redPlayersNum != m.bluePlayersNum || m.redPlayersNum+m.bluePlayersNum < 10 {
+				player = NewBotPlayer(m.botIdGen.Generate().String(), m.findAvailablePlayerId(false))
+			}
+			m.m.RUnlock()
 		}
 		if player == nil {
 			break
@@ -225,4 +224,36 @@ func (m *Game) FindOneBotPlayer(sc2PlayerId uint32) *Player {
 		}
 	}
 	return bot
+}
+
+func (m *Game) findAvailablePlayerId(humanOnly bool) uint32 {
+	var redPlayersNum, bluePlayersNum int
+	if humanOnly {
+		for _, p := range m.players {
+			if !p.IsBot() {
+				if p.GetSC2PlayerId() == m.config.RedPlayer {
+					redPlayersNum += 1
+				} else if p.GetSC2PlayerId() == m.config.BluePlayer {
+					bluePlayersNum += 1
+				}
+			}
+		}
+	} else {
+		redPlayersNum = m.redPlayersNum
+		bluePlayersNum = m.bluePlayersNum
+	}
+
+	if redPlayersNum > bluePlayersNum {
+		return m.config.BluePlayer
+	}
+	if redPlayersNum < bluePlayersNum {
+		return m.config.RedPlayer
+	}
+	return []uint32{m.config.BluePlayer, m.config.RedPlayer}[rand.Intn(2)]
+}
+
+func (m *Game) FindAvailablePlayerId(humanOnly bool) uint32 {
+	m.m.RLock()
+	defer m.m.RUnlock()
+	return m.findAvailablePlayerId(humanOnly)
 }

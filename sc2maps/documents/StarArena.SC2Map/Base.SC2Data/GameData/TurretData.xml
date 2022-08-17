@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Catalog>
+    <CTurret id="KorhalPalaceTurret">
+        <YawArc value="360"/>
+    </CTurret>
+    <CTurret id="SiegeTank">
+        <Idle value="Reset"/>
+    </CTurret>
+    <CTurret id="SiegeTankSieged">
+        <Idle value="Reset"/>
+        <YawStart value="0"/>
+        <YawRate value="720"/>
+    </CTurret>
+</Catalog>

@@ -1,9 +1,12 @@
 package control
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"log"
+	"os"
+	"regexp"
 
 	"github.com/JinWuZhao/bilidanmu"
 
@@ -19,10 +22,11 @@ type Services struct {
 }
 
 type Controller struct {
-	config    *conf.Conf
-	client    *bilidanmu.Client
-	cmdQueue  *msq.Queue[command.Command]
-	gameState *state.Game
+	config         *conf.Conf
+	client         *bilidanmu.Client
+	cmdQueue       *msq.Queue[command.Command]
+	gameState      *state.Game
+	fakeClientStop chan struct{}
 }
 
 func NewController(cfg *conf.Conf, svc *Services) (*Controller, error) {
@@ -38,10 +42,40 @@ func NewController(cfg *conf.Conf, svc *Services) (*Controller, error) {
 	}, nil
 }
 
+func NewFakeController(cfg *conf.Conf, svc *Services) *Controller {
+	return &Controller{
+		config:         cfg,
+		cmdQueue:       svc.CmdQueue,
+		gameState:      svc.GameState,
+		fakeClientStop: make(chan struct{}, 1),
+	}
+}
+
+var fakeMsgRegex = regexp.MustCompile(`^([a-zA-Z0-9\p{Han}_.-]{1,10}):\s*([a-zA-Z0-9]+)$`)
+
 func (s *Controller) Start(ctx context.Context) error {
-	err := s.client.Start(ctx, s.ReceiveMessage)
-	if err != nil {
-		return fmt.Errorf("s.client.Start() error: %w", err)
+	if s.client != nil {
+		err := s.client.Start(ctx, s.ReceiveMessage)
+		if err != nil {
+			return fmt.Errorf("s.client.Start() error: %w", err)
+		}
+	} else {
+		go func() {
+			scanner := bufio.NewScanner(os.Stdin)
+			for ctx.Err() == nil && scanner.Scan() {
+				matches := fakeMsgRegex.FindStringSubmatch(scanner.Text())
+				if len(matches) >= 3 {
+					msg := new(bilidanmu.DanMuMsg)
+					msg.Uname = matches[1]
+					msg.Text = matches[2]
+					s.ReceiveMessage(msg)
+				}
+			}
+			if err := scanner.Err(); err != nil {
+				log.Println("scanner.Scan() error:", err)
+			}
+			s.fakeClientStop <- struct{}{}
+		}()
 	}
 	return nil
 }
@@ -54,6 +88,7 @@ func (s *Controller) ReceiveMessage(message bilidanmu.Message) {
 			SC2RedPlayer:  s.config.RedPlayer,
 			SC2BluePlayer: s.config.BluePlayer,
 			Player:        m.Uname,
+			State:         s.gameState,
 		}
 		cmd, err := command.ParseCommand(ctx, m.Text)
 		if err == nil {
@@ -71,8 +106,13 @@ func (s *Controller) ReceiveMessage(message bilidanmu.Message) {
 }
 
 func (s *Controller) WaitForStop() {
-	err := s.client.WaitForStop()
-	if err != nil {
-		log.Println("s.client.WaitForStop() error:", err)
+	if s.client != nil {
+		err := s.client.WaitForStop()
+		if err != nil {
+			log.Println("s.client.WaitForStop() error:", err)
+		}
+	} else {
+		<-s.fakeClientStop
+		log.Println("fake controller stopped")
 	}
 }

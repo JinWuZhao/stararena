@@ -1,0 +1,282 @@
+const int c_PlayerTemplateTypePrototype = 0;
+const int c_PlayerTemplateTypeExperimental = 1;
+const int c_PlayerTemplateTypeProduction = 2;
+const int c_PlayerTemplateTypeArmorHero = 3;
+const int c_PlayerTemplateTypeWarGear = 4;
+const int c_PlayerTemplateTypeHunter = 5;
+const int c_PlayerTemplateTypeTurret = 6;
+const int c_PlayerTemplateTypeThunderbolt = 7;
+const int c_PlayerTemplateTypeCount = 8;
+
+void PlayerTemplateAssign(UnitPlayerRef refPlayer, UnitPlayerPropsRef inProps, int inOverflowProp);
+void PlayerTemplateAction(UnitPlayerRef refPlayer);
+
+struct PlayerTemplate {
+    int type;
+    string name;
+    int weapon;
+    UnitPlayerProps props;
+    int overflowProp;
+    string desc;
+    funcref<PlayerTemplateAssign> assign;
+    funcref<PlayerTemplateAction> aiTactic;
+};
+typedef structref<PlayerTemplate> PlayerTemplateRef;
+
+static PlayerTemplate[c_PlayerTemplateTypeCount] gv_playertemp_templates;
+
+void PlayerTemplateCopy(PlayerTemplateRef dest, PlayerTemplateRef source);
+bool PlayerTemplateGet(int type, PlayerTemplateRef outTemplate);
+string PlayerTemplateGetName(int type);
+void PlayerTemplateApply(UnitPlayerRef refPlayer, PlayerTemplateRef inTemplate);
+void InitPlayerTemplate();
+
+void PlayerTemplateCopy(PlayerTemplateRef dest, PlayerTemplateRef source) {
+    int lv_index;
+
+    dest.type = source.type;
+    dest.name = source.name;
+    dest.weapon = source.weapon;
+    for (lv_index = 0; lv_index < c_unitPlayerPropsCap; lv_index += 1) {
+        dest.props[lv_index] = source.props[lv_index];
+    }
+    dest.overflowProp = source.overflowProp;
+    dest.desc = source.desc;
+    dest.assign = source.assign;
+    dest.aiTactic = source.aiTactic;
+}
+
+bool PlayerTemplateGet(int type, PlayerTemplateRef outTemplate) {
+    if (type < 0 || type >= c_PlayerTemplateTypeCount) {
+        return false;
+    }
+    PlayerTemplateCopy(outTemplate, gv_playertemp_templates[type]);
+    return true;
+}
+
+string PlayerTemplateGetName(int type) {
+    if (type < 0 || type >= c_PlayerTemplateTypeCount) {
+        return "";
+    }
+    return gv_playertemp_templates[type].name;
+}
+
+static void aiTacticPlayer(UnitPlayerRef refPlayer) {
+    if (refPlayer.aiMode == c_AIModeNone) {
+        AIModeSetMode(refPlayer, RandomInt(c_AIModeAttack, c_AIModeFarmming));
+    }
+}
+
+void PlayerTemplateApply(UnitPlayerRef refPlayer, PlayerTemplateRef inTemplate) {
+    if (inTemplate.assign != null) {
+        inTemplate.assign(refPlayer, inTemplate.props, inTemplate.overflowProp);
+    }
+    if (refPlayer.isBot) {
+        inTemplate.aiTactic(refPlayer);
+    } else {
+        aiTacticPlayer(refPlayer);
+    }
+    SaveUnitPlayer(refPlayer);
+}
+
+static void autoAssignProps(UnitPlayerRef refPlayer, UnitPlayerPropsRef inProps, int inOverflowProp) {
+    int lv_index;
+    fixed lv_propPercent;
+    fixed lv_minPropPercent;
+    int targetProp;
+
+    if (refPlayer.level <= c_UnitPlayerMaxLevel) {
+        while (refPlayer.points > 0) {
+            lv_minPropPercent = 1;
+            targetProp = -1;
+            for (lv_index = 0; lv_index < c_unitPlayerPropsCap; lv_index += 1) {
+                if (inProps[lv_index] > 0 && refPlayer.props[lv_index] < inProps[lv_index]) {
+                    lv_propPercent = IntToFixed(refPlayer.props[lv_index]) / IntToFixed(inProps[lv_index]);
+                    if (lv_propPercent < lv_minPropPercent) {
+                        lv_minPropPercent = lv_propPercent;
+                        targetProp = lv_index;
+                    }
+                }
+            }
+            if (targetProp >= 0) {
+                refPlayer.props[targetProp] += 1;
+                refPlayer.points -= 1;
+            } else {
+                break;
+            }
+        }
+    } else {
+        if (refPlayer.points > 0) {
+            refPlayer.props[inOverflowProp] += refPlayer.points;
+            refPlayer.points = 0;
+        }
+    }
+}
+
+static void randomAssignProps(UnitPlayerRef refPlayer, UnitPlayerPropsRef inProps, int inOverflowProp) {
+    int lv_prop;
+    while (refPlayer.points > 0) {
+        lv_prop = RandomInt(c_unitPlayerPropsMaxLife, c_unitplayerPropsToughness);
+        refPlayer.props[lv_prop] += 1;
+        refPlayer.points -= 1;
+    }
+}
+
+static void aiTacticChaos(UnitPlayerRef refPlayer) {
+    int lv_index;
+    if (refPlayer.aiMode == c_AIModeNone) {
+        AIModeSetMode(refPlayer, RandomInt(c_AIModeAttack, c_AIModeFarmming));
+        for (lv_index = 0; lv_index < c_UnitPlayerAbilityQueueCap; lv_index += 1) {
+            refPlayer.savedAbilities[lv_index] = RandomInt(c_AbilityTypeYamatoGun, c_AbilityTypeCount-1);
+        }
+    }
+}
+
+static void aiTacticWarrior(UnitPlayerRef refPlayer) {
+    if (refPlayer.aiMode != c_AIModeDefence) {
+        if (refPlayer.level <= c_UnitPlayerMaxLevel / 2) {
+            AIModeSetMode(refPlayer, c_AIModeFarmming);
+            refPlayer.savedAbilities[0] = c_AbilityTypePsiStorm;
+        } else if (refPlayer.level <= c_UnitPlayerMaxLevel * 8 / 10) {
+            AIModeSetMode(refPlayer, c_AIModeHunter);
+            refPlayer.savedAbilities[0] = c_AbilityTypeAlarakDeadlyCharge;
+            refPlayer.savedAbilities[1] = c_AbilityTypeAlarakKnockback;
+            refPlayer.savedAbilities[2] = c_AbilityTypeYamatoGun;
+            refPlayer.savedAbilities[3] = c_AbilityTypeYamatoGun;
+        } else {
+            AIModeSetMode(refPlayer, c_AIModeAttack);
+            refPlayer.savedAbilities[0] = c_AbilityTypeAlarakDeadlyCharge;
+            refPlayer.savedAbilities[1] = c_AbilityTypeYamatoGun;
+            refPlayer.savedAbilities[2] = c_AbilityTypeYamatoGun;
+            refPlayer.savedAbilities[3] = c_AbilityTypeYamatoGun;
+            refPlayer.savedAbilities[4] = c_AbilityTypeArtanisResurgence;
+        }
+    }
+}
+
+static void aiTacticSnipper(UnitPlayerRef refPlayer) {
+    if (refPlayer.aiMode != c_AIModeDefence) {
+        if (refPlayer.level <= c_UnitPlayerMaxLevel / 2) {
+            AIModeSetMode(refPlayer, c_AIModeFarmming);
+            refPlayer.savedAbilities[0] = c_AbilityTypeParasiticBomb;
+        } else {
+            AIModeSetMode(refPlayer, c_AIModeHunter);
+            refPlayer.savedAbilities[0] = c_AbilityTypeShrineGuardianAntiGrav;
+            refPlayer.savedAbilities[1] = c_AbilityTypeYamatoGun;
+            refPlayer.savedAbilities[2] = c_AbilityTypeYamatoGun;
+            refPlayer.savedAbilities[3] = c_AbilityTypeYamatoGun;
+            refPlayer.savedAbilities[4] = c_AbilityTypeYamatoGun;
+        }
+    }
+}
+
+static void aiTacticGuard(UnitPlayerRef refPlayer) {
+    if (refPlayer.aiMode != c_AIModeDefence) {
+        if (refPlayer.level <= c_UnitPlayerMaxLevel / 2) {
+            AIModeSetMode(refPlayer, c_AIModeFarmming);
+            refPlayer.savedAbilities[0] = c_AbilityTypeAlarakKnockback;
+        } else {
+            AIModeSetMode(refPlayer, c_AIModeHunter);
+            refPlayer.savedAbilities[0] = c_AbilityTypeShrineGuardianAntiGrav;
+            refPlayer.savedAbilities[1] = c_AbilityTypeAlarakKnockback;
+            refPlayer.savedAbilities[2] = c_AbilityTypeShrineGuardianAntiGrav;
+            refPlayer.savedAbilities[3] = c_AbilityTypeYamatoGun;
+            refPlayer.savedAbilities[4] = c_AbilityTypeAlarakKnockback;
+        }
+    }
+}
+
+void InitPlayerTemplate() {
+    PlayerTemplateRef lv_template;
+
+    lv_template = gv_playertemp_templates[c_PlayerTemplateTypePrototype];
+    lv_template.type = c_PlayerTemplateTypePrototype;
+    lv_template.name = "原型机";
+    lv_template.weapon = c_WeaponDataType90mmCannons;
+    lv_template.desc = "手动分配属性点，使用 \"字母\"加\"数字\"指令 分配属性";
+
+    lv_template = gv_playertemp_templates[c_PlayerTemplateTypeExperimental];
+    lv_template.type = c_PlayerTemplateTypeExperimental;
+    lv_template.name = "试验机";
+    lv_template.weapon = RandomInt(0, c_WeaponDataTypeCount-1);
+    lv_template.assign = randomAssignProps;
+    lv_template.aiTactic = aiTacticChaos;
+    lv_template.desc = "随机分配属性点";
+
+    lv_template = gv_playertemp_templates[c_PlayerTemplateTypeProduction];
+    lv_template.type = c_PlayerTemplateTypeProduction;
+    lv_template.name = "量产机";
+    lv_template.weapon = c_WeaponDataType90mmCannons;
+    lv_template.props[c_unitPlayerPropsMaxLife] = 24;
+    lv_template.props[c_unitPlayerPropsDamageMultiplier] = 24;
+    lv_template.props[c_unitPlayerPropsRangeMultiplier] = 8;
+    lv_template.props[c_unitPlayerPropsAttackSpeed] = 8;
+    lv_template.props[c_unitPlayerPropsMaxEnergy] = 8;
+    lv_template.props[c_unitplayerPropsToughness] = 8;
+    lv_template.overflowProp = c_unitPlayerPropsDamageMultiplier;
+    lv_template.assign = autoAssignProps;
+    lv_template.aiTactic = aiTacticWarrior;
+    lv_template.desc = "属性方案：A24 B24+ C8 D8 E8 F8";
+
+    lv_template = gv_playertemp_templates[c_PlayerTemplateTypeArmorHero];
+    lv_template.type = c_PlayerTemplateTypeArmorHero;
+    lv_template.name = "铠甲勇士";
+    lv_template.weapon = c_WeaponDataTypeAdept;
+    lv_template.props[c_unitPlayerPropsMaxLife] = 48;
+    lv_template.props[c_unitPlayerPropsMaxEnergy] = 12;
+    lv_template.props[c_unitplayerPropsToughness] = 20;
+    lv_template.overflowProp = c_unitPlayerPropsMaxLife;
+    lv_template.assign = autoAssignProps;
+    lv_template.aiTactic = aiTacticGuard;
+    lv_template.desc = "属性方案：A48+ E12 F20";
+
+    lv_template = gv_playertemp_templates[c_PlayerTemplateTypeWarGear];
+    lv_template.type = c_PlayerTemplateTypeWarGear;
+    lv_template.name = "战争机器";
+    lv_template.weapon = c_WeaponDataTypePhaseDisruptors;
+    lv_template.props[c_unitPlayerPropsMaxLife] = 32;
+    lv_template.props[c_unitPlayerPropsDamageMultiplier] = 28;
+    lv_template.props[c_unitPlayerPropsMaxEnergy] = 12;
+    lv_template.props[c_unitplayerPropsToughness] = 8;
+    lv_template.overflowProp = c_unitPlayerPropsDamageMultiplier;
+    lv_template.assign = autoAssignProps;
+    lv_template.aiTactic = aiTacticWarrior;
+    lv_template.desc = "属性方案：A32 B28+ E12 F8";
+
+    lv_template = gv_playertemp_templates[c_PlayerTemplateTypeHunter];
+    lv_template.type = c_PlayerTemplateTypeHunter;
+    lv_template.name = "时空猎人";
+    lv_template.weapon = c_WeaponDataTypeLiberatorAGWeapon;
+    lv_template.props[c_unitPlayerPropsMaxLife] = 8;
+    lv_template.props[c_unitPlayerPropsDamageMultiplier] = 32;
+    lv_template.props[c_unitPlayerPropsRangeMultiplier] = 28;
+    lv_template.props[c_unitPlayerPropsMaxEnergy] = 12;
+    lv_template.overflowProp = c_unitPlayerPropsDamageMultiplier;
+    lv_template.assign = autoAssignProps;
+    lv_template.aiTactic = aiTacticSnipper;
+    lv_template.desc = "属性方案：A8 B32+ C28 E12";
+
+    lv_template = gv_playertemp_templates[c_PlayerTemplateTypeTurret];
+    lv_template.type = c_PlayerTemplateTypeTurret;
+    lv_template.name = "移动堡垒";
+    lv_template.weapon = c_WeaponDataTypeShrineGuardian;
+    lv_template.props[c_unitPlayerPropsMaxLife] = 32;
+    lv_template.props[c_unitPlayerPropsDamageMultiplier] = 28;
+    lv_template.props[c_unitPlayerPropsRangeMultiplier] = 20;
+    lv_template.overflowProp = c_unitPlayerPropsDamageMultiplier;
+    lv_template.assign = autoAssignProps;
+    lv_template.aiTactic = aiTacticSnipper;
+    lv_template.desc = "属性方案：A32 B28+ C20";
+
+    lv_template = gv_playertemp_templates[c_PlayerTemplateTypeThunderbolt];
+    lv_template.type = c_PlayerTemplateTypeThunderbolt;
+    lv_template.name = "雷霆战队";
+    lv_template.weapon = c_WeaponDataTypeThermalLances;
+    lv_template.props[c_unitPlayerPropsMaxLife] = 32;
+    lv_template.props[c_unitPlayerPropsDamageMultiplier] = 28;
+    lv_template.props[c_unitplayerPropsToughness] = 20;
+    lv_template.overflowProp = c_unitPlayerPropsDamageMultiplier;
+    lv_template.assign = autoAssignProps;
+    lv_template.aiTactic = aiTacticWarrior;
+    lv_template.desc = "属性方案：A32 B28+ F20";
+}

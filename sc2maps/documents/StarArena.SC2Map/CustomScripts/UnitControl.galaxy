@@ -7,6 +7,8 @@ static trigger gt_unitctrl_AssignPoints;
 static trigger gt_unitctrl_SetBehaviorTest;
 static trigger gt_unitctrl_SetAbilityTest;
 static trigger gt_unitctrl_SetAbility;
+static trigger gt_unitctrl_SetTemplate;
+static trigger gt_unitctrl_SetSkin;
 static trigger gt_unitctrl_ShowWeaponInfo;
 static trigger gt_unitctrl_ShowAbilityInfo;
 
@@ -21,6 +23,8 @@ static void unitctrl_AssignPoints_Init();
 static void unitctrl_SetBehaviorTest_Init();
 static void unitctrl_SetAbilityTest_Init();
 static void unitctrl_SetAbility_Init();
+static void unitctrl_SetTemplate_Init();
+static void unitctrl_SetSkin_Init();
 static void unitctrl_ShowWeaponInfo_Init();
 static void unitctrl_ShowAbilityInfo_Init();
 
@@ -34,6 +38,8 @@ void InitUnitControl() {
     unitctrl_SetBehaviorTest_Init();
     unitctrl_SetAbilityTest_Init();
     unitctrl_SetAbility_Init();
+    unitctrl_SetTemplate_Init();
+    unitctrl_SetSkin_Init();
     unitctrl_ShowWeaponInfo_Init();
     unitctrl_ShowAbilityInfo_Init();
 }
@@ -57,10 +63,10 @@ bool unitctrl_SetAIMode_Func(bool testConds, bool runActions) {
     }
 
     if (UnitIsAlive(lv_unit)) {
-        if (lv_aiMode == c_AIModeDefence && UnitGetType(lv_unit) == "SiegeTank") {
-            UnitIssueOrder(lv_unit, Order(AbilityCommand("SiegeMode", 0)), c_orderQueueReplace);
-        } else if (lv_aiMode != c_AIModeDefence && UnitGetType(lv_unit) == "SiegeTankSieged") {
-            UnitIssueOrder(lv_unit, Order(AbilityCommand("Unsiege", 0)), c_orderQueueReplace);
+        if (lv_aiMode == c_AIModeDefence && UnitGetType(lv_unit) == "MengskSiegeTank") {
+            UnitIssueOrder(lv_unit, Order(AbilityCommand("MengskSiegeTankSiege", 0)), c_orderQueueReplace);
+        } else if (lv_aiMode != c_AIModeDefence && UnitGetType(lv_unit) == "MengskSiegeTankSieged") {
+            UnitIssueOrder(lv_unit, Order(AbilityCommand("MengskSiegeTankUnsiege", 0)), c_orderQueueReplace);
         }
     } else if (lv_aiMode == c_AIModeDefence) {
         return false;
@@ -134,6 +140,9 @@ bool unitctrl_SetWeapon_Func(bool testConds, bool runActions) {
     }
 
     lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
+    if (UnitGetType(lv_unit) == "MengskSiegeTankSieged") {
+        return false;
+    }
     if (UnitIsAlive(lv_unit)) {
         WeaponDataApplyUnit(lv_player.weaponType, lv_weaponType, lv_unit);
     }
@@ -141,7 +150,7 @@ bool unitctrl_SetWeapon_Func(bool testConds, bool runActions) {
     lv_player.weaponType = lv_weaponType;
     SaveUnitPlayer(lv_player);
 
-    arena_gf_ShowMessage(lv_player.name + " 切换武器 " + WeaponDataGetName(lv_index) + "(L" + IntToString(lv_index) + ")");
+    arena_gf_ShowMessage(lv_player.name + " 装备武器 " + WeaponDataGetName(lv_index) + "(L" + IntToString(lv_index) + ")");
 
     return true;
 }
@@ -273,13 +282,13 @@ bool unitctrl_SetAbilityTest_Func(bool testConds, bool runActions) {
         return false;
     }
 
-    lv_player.abilityType = lv_ability;
-    SaveUnitPlayer(lv_player);
-
     lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
     if (UnitIsAlive(lv_unit)) {
-        AbilityDataApply(lv_unit, lv_ability);
+        AbilityDataApply(lv_unit, lv_player.abilityType, lv_ability);
     }
+
+    lv_player.abilityType = lv_ability;
+    SaveUnitPlayer(lv_player);
     return true;
 }
 
@@ -290,38 +299,102 @@ static void unitctrl_SetAbilityTest_Init() {
 
 bool unitctrl_SetAbility_Func(bool testConds, bool runActions) {
     string lv_name = arena_gf_CurrentCommandArgument(1);
-    int lv_index = StringToInt(arena_gf_CurrentCommandArgument(2));
-    string lv_ability = AbilityDataGetType(lv_index);
+    string lv_abilIndices = StringReplaceWord(arena_gf_CurrentCommandArgument(2), ",", " ", 0, true);
+    int lv_abilIndex;
+    int lv_index;
+    string lv_ability;
     UnitPlayer lv_player;
-    unit lv_unit;
+    string lv_abilQueueStr = "";
 
     if(!runActions) {
         return true;
-    }
-
-    if (arena_gf_StringIsEmpty(lv_ability)) {
-        return false;
     }
 
     if (arena_gf_StringIsEmpty(lv_name) || !UnitPlayerFromName(lv_name, lv_player)) {
         return false;
     }
 
-    lv_player.abilityType = lv_ability;
-    SaveUnitPlayer(lv_player);
-
-    arena_gf_ShowMessage(lv_player.name + " 切换技能 " + AbilityDataGetName(lv_index) + "(K" + IntToString(lv_index) + ")");
-
-    lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
-    if (UnitIsAlive(lv_unit)) {
-        AbilityDataApply(lv_unit, lv_ability);
+    for (lv_index = 1; StringWord(lv_abilIndices, lv_index) != null; lv_index += 1) {
+        lv_abilIndex = StringToInt(StringWord(lv_abilIndices, lv_index));
+        lv_ability = AbilityDataGetType(AbilityDataExToAbil(lv_abilIndex));
+        if (arena_gf_StringIsEmpty(lv_ability)) {
+            break;
+        }
+        if (lv_index > c_UnitPlayerAbilityQueueCap) {
+            break;
+        }
+        lv_player.savedAbilities[lv_index-1] = lv_abilIndex;
+        lv_abilQueueStr += AbilityDataAbilFlagName(lv_abilIndex) + IntToString(AbilityDataExToAbil(lv_abilIndex));
     }
+    for (; lv_index <= c_UnitPlayerAbilityQueueCap; lv_index += 1) {
+        lv_player.savedAbilities[lv_index-1] = -1;
+    }
+    UnitPlayerClearAbilityQueue(lv_player);
+    SaveUnitPlayer(lv_player);
+    arena_gf_ShowMessage(lv_player.name + " 更新技能队列 " + lv_abilQueueStr);
     return true;
 }
 
 static void unitctrl_SetAbility_Init() {
     gt_unitctrl_SetAbility = TriggerCreate("unitctrl_SetAbility_Func");
     TriggerAddEventGeneric(gt_unitctrl_SetAbility, (arena_gv_commandPrefix + "set-ability"));
+}
+
+bool unitctrl_SetTemplate_Func(bool testConds, bool runActions) {
+    string lv_name = arena_gf_CurrentCommandArgument(1);
+    int lv_tpl = StringToInt(arena_gf_CurrentCommandArgument(2));
+    UnitPlayer lv_player;
+    PlayerTemplate lv_template;
+
+    if (arena_gf_StringIsEmpty(lv_name) || !UnitPlayerFromName(lv_name, lv_player)) {
+        return false;
+    }
+    if (!PlayerTemplateGet(lv_tpl, lv_template)) {
+        return false;
+    }
+
+    if (lv_player.level <= 5) {
+        lv_player.props[c_unitPlayerPropsMaxLife] = 0;
+        lv_player.props[c_unitPlayerPropsDamageMultiplier] = 0;
+        lv_player.props[c_unitPlayerPropsRangeMultiplier] = 0;
+        lv_player.props[c_unitPlayerPropsAttackSpeed] = 0;
+        lv_player.props[c_unitPlayerPropsMaxEnergy] = 0;
+        lv_player.props[c_unitplayerPropsToughness] = 0;
+        lv_player.points = lv_player.level * 4;
+    }
+    lv_player.template = lv_tpl;
+    SaveUnitPlayer(lv_player);
+    arena_gf_ShowMessage(lv_player.name + " 的坦克转化为 " + lv_template.name + "，\n" + lv_template.desc);
+    return true;
+}
+
+static void unitctrl_SetTemplate_Init() {
+    gt_unitctrl_SetTemplate = TriggerCreate("unitctrl_SetTemplate_Func");
+    TriggerAddEventGeneric(gt_unitctrl_SetTemplate, (arena_gv_commandPrefix + "set-template"));
+}
+
+bool unitctrl_SetSkin_Func(bool testConds, bool runActions) {
+    string lv_name = arena_gf_CurrentCommandArgument(1);
+    int lv_index = StringToInt(arena_gf_CurrentCommandArgument(2));
+    UnitPlayer lv_player;
+    unit lv_unit;
+
+    if (arena_gf_StringIsEmpty(lv_name) || !UnitPlayerFromName(lv_name, lv_player)) {
+        return false;
+    }
+
+    lv_unit = DataTableGetUnit(true, (arena_gv_unitNamePrefix + lv_name));
+    if (UnitIsAlive(lv_unit)) {
+        SkinDataSwapModel(lv_unit, lv_index, c_SkinDataStateTank);
+    }
+    lv_player.skinType = lv_index;
+    SaveUnitPlayer(lv_player);
+    return true;
+}
+
+static void unitctrl_SetSkin_Init() {
+    gt_unitctrl_SetSkin = TriggerCreate("unitctrl_SetSkin_Func");
+    TriggerAddEventGeneric(gt_unitctrl_SetSkin, (arena_gv_commandPrefix + "set-skin"));
 }
 
 bool unitctrl_ShowWeaponInfo_Func(bool testConds, bool runActions) {

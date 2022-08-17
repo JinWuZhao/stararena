@@ -4,11 +4,20 @@
         <Range value="25"/>
     </CValidatorLocationCompareRange>
     <CValidatorUnitCompareOrderTargetRange id="ChargeMinDistance">
-        <Value value="3.1"/>
+        <Value value="2.1"/>
     </CValidatorUnitCompareOrderTargetRange>
     <CValidatorUnitCompareOrderTargetRange id="ChargeMinTriggerDistance">
-        <Value value="3.6"/>
+        <Value value="2.6"/>
     </CValidatorUnitCompareOrderTargetRange>
+    <CValidatorCombine id="DisruptorDamageFilter">
+        <Type value="And"/>
+        <CombineArray index="1" value="IsNotFriendly"/>
+        <CombineArray index="2" removed="1"/>
+    </CValidatorCombine>
+    <CValidatorUnitType id="NotMengskSiegedTank">
+        <Value value="MengskSiegeTankSieged"/>
+        <Find value="0"/>
+    </CValidatorUnitType>
     <CValidatorUnitFilters id="PsiStormUTargetFilters">
         <Filters value="-;Missile,Stasis,Dead,Hidden,Invulnerable"/>
     </CValidatorUnitFilters>

@@ -3,6 +3,7 @@ package command
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	parsec "github.com/prataprc/goparsec"
 )
@@ -54,20 +55,12 @@ func (*JoinGameCmd) Name() string {
 
 func (c *JoinGameCmd) Parser(ast *parsec.AST) parsec.Parser {
 	return ast.And(c.Name(), nil,
-		parsec.AtomExact(`j`, "OP"),
-		ast.OrdChoice("SC2PLAYER", nil,
-			parsec.Atom(`r`, "RED"),
-			parsec.Atom(`b`, "BLUE")))
+		parsec.AtomExact(`j`, "OP"))
 }
 
 func (c *JoinGameCmd) Init(ctx Context, query parsec.Queryable) error {
-	switch query.GetChildren()[1].GetName() {
-	case "RED":
-		c.sc2PlayerId = ctx.SC2RedPlayer
-	case "BLUE":
-		c.sc2PlayerId = ctx.SC2BluePlayer
-	}
 	c.player = ctx.Player
+	c.sc2PlayerId = ctx.State.FindAvailablePlayerId(true)
 	return nil
 }
 
@@ -163,71 +156,6 @@ func (c *MoveCmd) String() string {
 	return fmt.Sprintf("cmd-move-toward %s %d %d", c.player, c.angle, c.distance)
 }
 
-type MoveXCmd struct {
-	player    string
-	direction int32
-	distance  int32
-	angle     int32
-}
-
-func (*MoveXCmd) New() Command {
-	return new(MoveXCmd)
-}
-
-func (*MoveXCmd) Name() string {
-	return "MOVEX"
-}
-
-func (c *MoveXCmd) Parser(ast *parsec.AST) parsec.Parser {
-	return ast.And(c.Name(), nil,
-		ast.OrdChoice("OP", nil,
-			parsec.AtomExact(`w`, "UP"),
-			parsec.AtomExact(`s`, "DOWN"),
-			parsec.AtomExact(`a`, "LEFT"),
-			parsec.AtomExact(`d`, "RIGHT")),
-		parsecInt("DISTANCE", 4),
-		ast.Maybe("OPTION", nil,
-			parsecInt("ANGLE", 3)))
-}
-
-func (c *MoveXCmd) Init(ctx Context, query parsec.Queryable) error {
-	op := query.GetChildren()[0].GetName()
-	distance, err := strconv.ParseInt(query.GetChildren()[1].GetValue(), 10, 32)
-	if err != nil {
-		return fmt.Errorf("strconv.ParseInt(distance) error: %w", err)
-	}
-	var angle int64
-	if angleValue := query.GetChildren()[2].GetValue(); angleValue != "" {
-		angle, err = strconv.ParseInt(angleValue, 10, 32)
-		if err != nil {
-			return fmt.Errorf("strconv.ParseInt(angle) error: %w", err)
-		}
-		if angle < -90 {
-			angle = -90
-		} else if angle > 90 {
-			angle = 90
-		}
-	}
-	switch op {
-	case "RIGHT":
-		c.direction = 0
-	case "UP":
-		c.direction = 90
-	case "LEFT":
-		c.direction = 180
-	case "DOWN":
-		c.direction = 270
-	}
-	c.distance = int32(distance)
-	c.angle = int32(angle)
-	c.player = ctx.Player
-	return nil
-}
-
-func (c *MoveXCmd) String() string {
-	return fmt.Sprintf("cmd-move-toward %s %d %d", c.player, c.direction+c.angle, c.distance)
-}
-
 type ChangeModeCmd struct {
 	player string
 	mode   string
@@ -244,13 +172,7 @@ func (*ChangeModeCmd) Name() string {
 func (c *ChangeModeCmd) Parser(ast *parsec.AST) parsec.Parser {
 	return ast.And(c.Name(), nil,
 		parsec.AtomExact(`m`, "OP"),
-		ast.OrdChoice("MODE", nil,
-			parsec.Atom(`0`, "manual"),
-			parsec.Atom(`1`, "attack"),
-			parsec.Atom(`2`, "hunter"),
-			parsec.Atom(`3`, "sniping"),
-			parsec.Atom(`4`, "defence"),
-			parsec.Atom(`5`, "retreat")))
+		ast.OrdChoice("MODE", nil, parsec.Token(`[0-6]`, "INDEX")))
 }
 
 func (c *ChangeModeCmd) Init(ctx Context, query parsec.Queryable) error {
@@ -296,8 +218,8 @@ func (c *SetWeaponCmd) String() string {
 }
 
 type SetAbilityCmd struct {
-	player  string
-	ability int32
+	player    string
+	abilities []string
 }
 
 func (c *SetAbilityCmd) New() Command {
@@ -309,22 +231,39 @@ func (c *SetAbilityCmd) Name() string {
 }
 
 func (c *SetAbilityCmd) Parser(ast *parsec.AST) parsec.Parser {
-	return ast.And(c.Name(), nil,
-		parsec.AtomExact(`k`, "OP"), parsecUint("ABILITY", 2))
+	return ast.ManyUntil(c.Name(), nil,
+		ast.And("ABILITY", nil,
+			parsec.TokenExact(`x?k`, "OP"),
+			parsecUint("INDEX", 2)),
+		parsec.Atom("", "SEP"),
+		ast.End("EOF"))
 }
 
+const exAbilityFlag int64 = 10000
+
 func (c *SetAbilityCmd) Init(ctx Context, query parsec.Queryable) error {
-	ability, err := strconv.ParseInt(query.GetChildren()[1].GetValue(), 10, 32)
-	if err != nil {
-		return fmt.Errorf("strconv.ParseInt(ability): %w", err)
+	var abilities []string
+	for index, node := range query.GetChildren() {
+		if index >= 6 {
+			break
+		}
+		abilFlag := node.GetChildren()[0].GetValue()
+		ability, err := strconv.ParseInt(node.GetChildren()[1].GetValue(), 10, 32)
+		if err != nil {
+			return fmt.Errorf("strconv.ParseInt(ability): %w", err)
+		}
+		if strings.HasPrefix(abilFlag, "x") {
+			ability += exAbilityFlag
+		}
+		abilities = append(abilities, strconv.FormatInt(ability, 10))
 	}
-	c.ability = int32(ability)
+	c.abilities = abilities
 	c.player = ctx.Player
 	return nil
 }
 
 func (c *SetAbilityCmd) String() string {
-	return fmt.Sprintf("cmd-set-ability %s %d", c.player, c.ability)
+	return fmt.Sprintf("cmd-set-ability %s %s", c.player, strings.Join(c.abilities, ","))
 }
 
 type AssignPointsCmd struct {
@@ -343,19 +282,37 @@ func (c *AssignPointsCmd) Name() string {
 
 func (c *AssignPointsCmd) Parser(ast *parsec.AST) parsec.Parser {
 	return ast.And(c.Name(), nil,
-		parsec.AtomExact(`p`, "OP"),
-		parsecUint("PROP", 1),
-		parsecUint("POINTS", 2))
+		parsec.TokenExact(`[A-Fa-f]`, "PROP"),
+		ast.Maybe("", nil, parsecUint("POINTS", 2)))
 }
 
 func (c *AssignPointsCmd) Init(ctx Context, query parsec.Queryable) error {
-	prop, err := strconv.ParseInt(query.GetChildren()[1].GetValue(), 10, 32)
-	if err != nil {
-		return fmt.Errorf("strconv.ParseInt(prop): %w", err)
+	var prop int
+	switch query.GetChildren()[0].GetValue() {
+	case "A", "a":
+		prop = 0
+	case "B", "b":
+		prop = 1
+	case "C", "c":
+		prop = 2
+	case "D", "d":
+		prop = 3
+	case "E", "e":
+		prop = 4
+	case "F", "f":
+		prop = 5
+	default:
+		return fmt.Errorf("unkown prop %s", query.GetChildren()[0].GetValue())
 	}
-	points, err := strconv.ParseInt(query.GetChildren()[2].GetValue(), 10, 32)
-	if err != nil {
-		return fmt.Errorf("strconv.ParseInt(points): %w", err)
+	var points int64
+	var err error
+	if query.GetChildren()[1].GetValue() != "" {
+		points, err = strconv.ParseInt(query.GetChildren()[1].GetValue(), 10, 32)
+		if err != nil {
+			return fmt.Errorf("strconv.ParseInt(points): %w", err)
+		}
+	} else {
+		points = 1
 	}
 	c.prop = int32(prop)
 	c.points = int32(points)
@@ -422,11 +379,11 @@ func GiftItemOptsGift(player string, gift string, number uint32) GiftItemOpts {
 	return func(cmd *GiftItemCmd) {
 		cmd.player = player
 		if gift == "辣条" {
-			cmd.kind = 0
-		} else if gift == "小花花" {
 			cmd.kind = 1
-		} else if gift == "粉丝团灯牌" {
+		} else if gift == "小花花" {
 			cmd.kind = 2
+		} else if gift == "粉丝团灯牌" {
+			cmd.kind = 3
 		}
 		cmd.number = number
 	}
@@ -454,4 +411,93 @@ func (c *GiftItemCmd) Init(_ Context, _ parsec.Queryable) error {
 
 func (c *GiftItemCmd) String() string {
 	return fmt.Sprintf("cmd-apply-gift %s %d %d", c.player, c.kind, c.number)
+}
+
+type UpvoteCmd struct {
+	player string
+}
+
+func (c *UpvoteCmd) New() Command {
+	return new(UpvoteCmd)
+}
+
+func (c *UpvoteCmd) Name() string {
+	return "UPVOTE"
+}
+
+func (c *UpvoteCmd) Parser(ast *parsec.AST) parsec.Parser {
+	return ast.And(c.Name(), nil,
+		parsec.AtomExact(`赞`, "UPVOTE"))
+}
+
+func (c *UpvoteCmd) Init(ctx Context, query parsec.Queryable) error {
+	c.player = ctx.Player
+	return nil
+}
+
+func (c *UpvoteCmd) String() string {
+	return fmt.Sprintf("cmd-apply-gift %s %d %d", c.player, 0, 1)
+}
+
+type SetTemplateCmd struct {
+	player   string
+	template int32
+}
+
+func (c *SetTemplateCmd) New() Command {
+	return new(SetTemplateCmd)
+}
+
+func (c *SetTemplateCmd) Name() string {
+	return "SET_TEMPLATE"
+}
+
+func (c *SetTemplateCmd) Parser(ast *parsec.AST) parsec.Parser {
+	return ast.And(c.Name(), nil,
+		parsec.AtomExact(`t`, "OP"),
+		parsecUint("TEMPLATE", 2))
+}
+
+func (c *SetTemplateCmd) Init(ctx Context, query parsec.Queryable) error {
+	tpl, err := strconv.ParseInt(query.GetChildren()[1].GetValue(), 10, 32)
+	if err != nil {
+		return fmt.Errorf("strconv.ParseInt(tpl): %w", err)
+	}
+	c.template = int32(tpl)
+	c.player = ctx.Player
+	return nil
+}
+
+func (c *SetTemplateCmd) String() string {
+	return fmt.Sprintf("cmd-set-template %s %d", c.player, c.template)
+}
+
+type SetNoticeCmd struct {
+	notice string
+}
+
+func (c *SetNoticeCmd) New() Command {
+	return new(SetNoticeCmd)
+}
+
+func (c *SetNoticeCmd) Name() string {
+	return "SET_NOTICE"
+}
+
+func (c *SetNoticeCmd) Parser(ast *parsec.AST) parsec.Parser {
+	return ast.And(c.Name(), nil,
+		parsec.AtomExact(`n:`, "OP"),
+		ast.Maybe("VALUE", nil, parsec.Token(`.+`, "NOTICE")))
+}
+
+func (c *SetNoticeCmd) Init(ctx Context, query parsec.Queryable) error {
+	if ctx.Player != "星际竞技场" {
+		return fmt.Errorf("%s has no permission", ctx.Player)
+	}
+	c.notice = query.GetChildren()[1].GetValue()
+	return nil
+}
+
+func (c *SetNoticeCmd) String() string {
+	return fmt.Sprintf("cmd-set-notice %s", c.notice)
 }

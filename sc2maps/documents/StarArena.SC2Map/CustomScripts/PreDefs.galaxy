@@ -1,0 +1,33 @@
+const int c_AbilityExFlag = 10000;
+
+int AbilityDataAbilToEx(int type) {
+    if (type / c_AbilityExFlag == 0) {
+        type += c_AbilityExFlag;
+    }
+    return type;
+}
+
+bool AbilityDataIsExAbil(int type) {
+    return type / c_AbilityExFlag  > 0;
+}
+
+int AbilityDataExToAbil(int type) {
+    if (type / c_AbilityExFlag > 0) {
+        type %= c_AbilityExFlag;
+    }
+    return type;
+}
+
+int AbilityDataAbilCost(int type, int cost) {
+    if (type / c_AbilityExFlag > 0) {
+        cost = cost * 3 / 2;
+    }
+    return cost;
+}
+
+string AbilityDataAbilFlagName(int type) {
+    if (type / c_AbilityExFlag > 0) {
+        return "XK";
+    }
+    return "K";
+}

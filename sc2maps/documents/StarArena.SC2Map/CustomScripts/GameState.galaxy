@@ -4,13 +4,15 @@ const int c_unitPlayerAIStatesCap = 5;
 const int c_unitPlayerPropsMaxLife = 0;
 const int c_unitPlayerPropsDamageMultiplier = 1;
 const int c_unitPlayerPropsRangeMultiplier = 2;
-const int c_unitPlayerPropsMoveSpeed = 3;
-const int c_unitPlayerPropsAttackSpeed = 4;
-const int c_unitPlayerPropsCap = 5;
+const int c_unitPlayerPropsAttackSpeed = 3;
+const int c_unitPlayerPropsMaxEnergy = 4;
+const int c_unitplayerPropsToughness = 5;
+const int c_unitPlayerPropsMoveSpeed = 6;
+const int c_unitPlayerPropsCap = 7;
 
-const int c_UnitPlayerMaxLevel = 15;
+const int c_UnitPlayerMaxLevel = 20;
 
-const int c_unitPlayersCap = 40;
+const int c_unitPlayersCap = 20;
 
 const int c_GameStatePlayerIdRed = 4;
 const int c_GameStatePlayerIdBlue = 3;
@@ -24,6 +26,10 @@ struct UnitPlayerBuff {
 typedef structref<UnitPlayerBuff> UnitPlayerBuffRef;
 
 const int c_UnitPlayerBuffsCap = 10;
+const int c_UnitPlayerAbilityQueueCap = 7;
+
+typedef int[c_unitPlayerPropsCap] UnitPlayerProps;
+typedef arrayref<UnitPlayerProps> UnitPlayerPropsRef;
 
 // Type Declarations
 struct UnitPlayer {
@@ -40,11 +46,21 @@ struct UnitPlayer {
     int points;
     int aiMode;
     int level;
+    int maxPoints;
     int revivePoint;
     bool isBot;
     int[c_unitPlayerAIStatesCap] aiStates;
-    int[c_unitPlayerPropsCap] props;
+    UnitPlayerProps props;
     UnitPlayerBuff[c_UnitPlayerBuffsCap] buffs;
+    int abilityHead;
+    int abilityTail;
+    int[c_UnitPlayerAbilityQueueCap] abilityQueue;
+    int[c_UnitPlayerAbilityQueueCap] savedAbilities;
+    int abilsTextTag;
+    int skinType;
+    int template;
+    int servants;
+    bool upvoted;
 };
 
 typedef structref<UnitPlayer> UnitPlayerRef;
@@ -69,7 +85,13 @@ void UnitPlayersOfRanked(UnitPlayerArrayRef outPlayers);
 void UnitPlayerAddBuff(UnitPlayerRef refPlayer, UnitPlayerBuffRef inBuff);
 void UnitPlayerSaveBuffs(UnitPlayerRef refPlayer);
 void UnitPlayerRestoreBuffs(UnitPlayerRef refPlayer, unit inUnit);
-int UnitPlayerGetMinLevel();
+int UnitPlayerGetMidLevel(int playerId);
+bool UnitPlayerPushAbility(UnitPlayerRef refPlayer, int inAbility);
+int UnitPlayerPopAbility(UnitPlayerRef refPlayer);
+int UnitPlayerGetTailAbility(UnitPlayerRef refPlayer);
+string UnitPlayerPrintAbilityQueue(UnitPlayerRef refPlayer);
+int UnitPlayerAbilityCount(UnitPlayerRef refPlayer);
+void UnitPlayerClearAbilityQueue(UnitPlayerRef refPlayer);
 void InitGameState();
 
 static void gamestate_InitUnitPlayerIndexOfName();
@@ -98,6 +120,7 @@ static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source) {
     dest.reviveInterval = source.reviveInterval;
     dest.aiMode = source.aiMode;
     dest.level = source.level;
+    dest.maxPoints = source.maxPoints;
     dest.combo = source.combo;
     dest.revivePoint = source.revivePoint;
     dest.isBot = source.isBot;
@@ -113,6 +136,17 @@ static void gamestate_CopyUnitPlayer(UnitPlayerRef dest, UnitPlayerRef source) {
         dest.buffs[lv_index].duration = source.buffs[lv_index].duration;
         dest.buffs[lv_index].ctime = source.buffs[lv_index].ctime;
     }
+    dest.abilityHead = source.abilityHead;
+    dest.abilityTail = source.abilityTail;
+    for (lv_index = 0; lv_index < c_UnitPlayerAbilityQueueCap; lv_index += 1) {
+        dest.abilityQueue[lv_index] = source.abilityQueue[lv_index];
+        dest.savedAbilities[lv_index] = source.savedAbilities[lv_index];
+    }
+    dest.abilsTextTag = source.abilsTextTag;
+    dest.skinType = source.skinType;
+    dest.template = source.template;
+    dest.servants = source.servants;
+    dest.upvoted = source.upvoted;
 }
 
 static int gamestate_PickAvailableUnitPlayerIndex(int playerId) {
@@ -123,7 +157,7 @@ static int gamestate_PickAvailableUnitPlayerIndex(int playerId) {
     } else if (playerId == c_GameStatePlayerIdBlue) {
         index = c_unitPlayersCap / 2;
     }
-    for (; index < c_unitPlayersCap; index += 1) {
+    for (; index < index + c_unitPlayersCap / 2; index += 1) {
         if (gv_gamestate_unitPlayers[index].name == null) {
             break;
         }
@@ -137,10 +171,20 @@ static void gamestate_SaveUnitPlayerByIndex(int index, UnitPlayerRef player) {
 }
 
 bool AddUnitPlayer(UnitPlayerRef player) {
-    int index = gamestate_PickAvailableUnitPlayerIndex(player.playerId);
-    if (index == c_unitPlayersCap) {
+    int abilIndex;
+    int index;
+    if (gv_gamestate_unitPlayersCount >= c_unitPlayersCap) {
         return false;
     }
+    index = gamestate_PickAvailableUnitPlayerIndex(player.playerId);
+    player.abilityTail = 0;
+    player.abilityHead = 1;
+    for (abilIndex = 0; abilIndex < c_UnitPlayerAbilityQueueCap; abilIndex += 1) {
+        player.abilityQueue[abilIndex] = -1;
+        player.savedAbilities[abilIndex] = -1;
+    }
+    DataTableInstanceCreate();
+    player.servants = DataTableInstanceLastCreated();
     gamestate_SaveUnitPlayerByIndex(index, player);
     gv_gamestate_unitPlayersCount += 1;
     return true;
@@ -148,11 +192,16 @@ bool AddUnitPlayer(UnitPlayerRef player) {
 
 bool RemoveUnitPlayer(string name) {
     UnitPlayer emptyPlayer;
+    UnitPlayerRef lv_player;
 
     if (!DataTableInstanceValueExists(gv_gamestate_unitPlayerIndexOfName, name)) {
         return false;
     }
-    gamestate_CopyUnitPlayer(gv_gamestate_unitPlayers[DataTableInstanceGetInt(gv_gamestate_unitPlayerIndexOfName, name)], emptyPlayer);
+    lv_player = gv_gamestate_unitPlayers[DataTableInstanceGetInt(gv_gamestate_unitPlayerIndexOfName, name)];
+    if (lv_player.abilsTextTag > 0) {
+        TextTagDestroy(lv_player.abilsTextTag);
+    }
+    gamestate_CopyUnitPlayer(lv_player, emptyPlayer);
     DataTableInstanceValueRemove(gv_gamestate_unitPlayerIndexOfName, name);
     gv_gamestate_unitPlayersCount -= 1;
     return true;
@@ -221,7 +270,7 @@ void UnitPlayersOfRanked(UnitPlayerArrayRef outPlayers) {
                 gamestate_CopyUnitPlayer(outPlayers[i], outPlayers[j]);
                 gamestate_CopyUnitPlayer(outPlayers[j], tempPlayer);
             }
-        } 
+        }
     }
 }
 
@@ -300,23 +349,121 @@ void UnitPlayerRestoreBuffs(UnitPlayerRef refPlayer, unit inUnit) {
     }
 }
 
-int UnitPlayerGetMinLevel() {
+int UnitPlayerGetMidLevel(int playerId) {
     int lv_index;
-    int lv_minLevel = c_UnitPlayerMaxLevel - 1;
     UnitPlayerRef lv_player;
+    int[c_unitPlayersCap / 2] lv_playerLevels;
+    int lv_levelIndex;
+    int i;
+    int j;
+    int tempLevel;
+    int lv_midLevel;
 
-    if (gv_gamestate_unitPlayersCount <= 0) {
-        return 1;
-    }
     for (lv_index = 0; lv_index < c_unitPlayersCap; lv_index += 1) {
-        if (!arena_gf_StringIsEmpty(gv_gamestate_unitPlayers[lv_index].name)) {
-            lv_player = gv_gamestate_unitPlayers[lv_index];
-            if (lv_player.level < lv_minLevel) {
-                lv_minLevel = lv_player.level;
-            }
+        lv_player = gv_gamestate_unitPlayers[lv_index];
+        if (lv_player.playerId == playerId && !arena_gf_StringIsEmpty(lv_player.name)) {
+            lv_playerLevels[lv_levelIndex] = lv_player.level;
+            lv_levelIndex += 1;
         }
     }
-    return lv_minLevel;
+    
+    for (i = 0; i < lv_levelIndex; i += 1) {
+        for (j = i+1; j < lv_levelIndex+1; j += 1) {
+            if (lv_playerLevels[i] < lv_playerLevels[j]) {
+                tempLevel = lv_playerLevels[i];
+                lv_playerLevels[i] = lv_playerLevels[j];
+                lv_playerLevels[j] = tempLevel;
+            }
+        } 
+    }
+
+    if (lv_levelIndex % 2 == 0) {
+        lv_midLevel = lv_playerLevels[lv_levelIndex / 2];
+    } else {
+        lv_midLevel = (lv_playerLevels[lv_levelIndex / 2] + lv_playerLevels[lv_levelIndex / 2 + 1]) / 2;
+    }
+    if (lv_midLevel <= 0) {
+        lv_midLevel = 1;
+    } else if (lv_midLevel > c_UnitPlayerMaxLevel) {
+        lv_midLevel = c_UnitPlayerMaxLevel;
+    }
+
+    return lv_midLevel;
+}
+
+bool UnitPlayerPushAbility(UnitPlayerRef refPlayer, int inAbility) {
+    int lv_index = refPlayer.abilityHead;
+    if (refPlayer.abilityQueue[lv_index] >= 0 || lv_index == refPlayer.abilityTail) {
+        return false;
+    }
+    refPlayer.abilityQueue[lv_index] = inAbility;
+    lv_index += 1;
+    if (lv_index >= c_UnitPlayerAbilityQueueCap) {
+        lv_index = 0;
+    }
+    refPlayer.abilityHead = lv_index;
+    return true;
+}
+
+int UnitPlayerPopAbility(UnitPlayerRef refPlayer) {
+    int lv_abil;
+    int lv_index = refPlayer.abilityTail + 1;
+    if (lv_index >= c_UnitPlayerAbilityQueueCap) {
+        lv_index = 0;
+    }
+    if (lv_index == refPlayer.abilityHead) {
+        return -1;
+    }
+    lv_abil = refPlayer.abilityQueue[lv_index];
+    refPlayer.abilityQueue[lv_index] = -1;
+    refPlayer.abilityTail = lv_index;
+    return lv_abil;
+}
+
+int UnitPlayerGetTailAbility(UnitPlayerRef refPlayer) {
+    int lv_index = refPlayer.abilityTail + 1;
+    if (lv_index >= c_UnitPlayerAbilityQueueCap) {
+        lv_index = 0;
+    }
+    if (lv_index == refPlayer.abilityHead) {
+        return -1;
+    }
+    return refPlayer.abilityQueue[lv_index];
+}
+
+string UnitPlayerPrintAbilityQueue(UnitPlayerRef refPlayer) {
+    int lv_index = refPlayer.abilityTail;
+    string lv_abilities;
+    for (;;) {
+        lv_index += 1;
+        if (lv_index >= c_UnitPlayerAbilityQueueCap) {
+            lv_index = 0;
+        }
+        if (lv_index == refPlayer.abilityHead) {
+            break;
+        }
+        lv_abilities += AbilityDataAbilFlagName(refPlayer.abilityQueue[lv_index]) + IntToString(AbilityDataExToAbil(refPlayer.abilityQueue[lv_index]));
+    }
+    return lv_abilities;
+}
+
+int UnitPlayerAbilityCount(UnitPlayerRef refPlayer) {
+    int lv_count;
+    if (refPlayer.abilityHead > refPlayer.abilityTail) {
+        lv_count = refPlayer.abilityHead - refPlayer.abilityTail - 1;
+    } else if (refPlayer.abilityHead <= refPlayer.abilityTail) {
+        lv_count = c_UnitPlayerAbilityQueueCap - refPlayer.abilityTail + refPlayer.abilityHead - 1;
+    }
+    return lv_count;
+}
+
+void UnitPlayerClearAbilityQueue(UnitPlayerRef refPlayer) {
+    int lv_index;
+    refPlayer.abilityTail = 0;
+    refPlayer.abilityHead = 1;
+    for (lv_index = 0; lv_index < c_UnitPlayerAbilityQueueCap; lv_index += 1) {
+        refPlayer.abilityQueue[lv_index] = -1;
+    }
 }
 
 void InitGameState() {

@@ -13,10 +13,15 @@ var (
 	cmdAST, cmdParser = makeParser()
 )
 
+type GameState interface {
+	FindAvailablePlayerId(humanOnly bool) uint32
+}
+
 type Context struct {
 	SC2RedPlayer  uint32
 	SC2BluePlayer uint32
 	Player        string
+	State         GameState
 }
 
 type Command interface {

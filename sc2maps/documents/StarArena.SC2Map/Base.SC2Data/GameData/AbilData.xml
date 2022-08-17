@@ -5,7 +5,12 @@
             <Flags index="UseDefaultButton" value="1"/>
             <Flags index="CreateDefaultButton" value="1"/>
         </CmdButtonArray>
-        <AutoCastFilters value="Visible;Player,Ally,Missile,Hidden,Invulnerable"/>
+        <AutoCastFilters value="-;Player,Ally,Missile,Hidden,Invulnerable"/>
+        <Cost>
+            <Cooldown TimeUse="6"/>
+        </Cost>
+        <Flags index="AutoCast" value="0"/>
+        <Flags index="AutoCastOn" value="0"/>
     </CAbilAugment>
     <CAbilEffectTarget id="AlarakKnockback">
         <CmdButtonArray index="Execute">
@@ -17,6 +22,9 @@
             <Flags index="CreateDefaultButton" value="1"/>
         </CmdButtonArray>
         <Range index="0" value="16"/>
+        <Cost index="0">
+            <Cooldown TimeUse="8"/>
+        </Cost>
     </CAbilEffectTarget>
     <CAbilEffectTarget id="ParasiticBomb">
         <Cost index="0">
@@ -83,21 +91,6 @@
         <TargetFilters index="0" value="Visible;Missile,Item,Stasis,Dead,Hidden,Invulnerable"/>
         <Range index="0" value="200"/>
         <CmdButtonArray index="Execute">
-            <Flags index="UseDefaultButton" value="1"/>
-            <Flags index="CreateDefaultButton" value="1"/>
-        </CmdButtonArray>
-        <CmdButtonArray index="Cancel">
-            <Flags index="UseDefaultButton" value="1"/>
-            <Flags index="CreateDefaultButton" value="1"/>
-        </CmdButtonArray>
-    </CAbilEffectTarget>
-    <CAbilEffectTarget id="SpawnBanelings">
-        <Cost index="0">
-            <Vital index="Energy" value="0"/>
-            <Cooldown TimeUse="20"/>
-        </Cost>
-        <Range index="0" value="200"/>
-        <CmdButtonArray index="Execute" Requirements="">
             <Flags index="UseDefaultButton" value="1"/>
             <Flags index="CreateDefaultButton" value="1"/>
         </CmdButtonArray>
