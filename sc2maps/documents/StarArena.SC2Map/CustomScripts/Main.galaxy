@@ -1,10 +1,14 @@
 include "CustomScripts/ArenaLib"
+include "CustomScripts/PreDefs"
 include "CustomScripts/WeaponConf"
 include "CustomScripts/AbilityConf"
+include "CustomScripts/SkinConf"
 include "CustomScripts/GameState"
 include "CustomScripts/UnitConf"
-include "CustomScripts/GiftItem"
+include "CustomScripts/ArmyConf"
+include "CustomScripts/GiftConf"
 include "CustomScripts/AIMode"
+include "CustomScripts/PlayerTemplate"
 include "CustomScripts/UnitControl"
 include "CustomScripts/GamePlay"
 
@@ -12,10 +16,13 @@ void InitCustomScripts() {
     InitArenaLib();
     InitWeaponData();
     InitAbilityData();
+    InitSkinData();
     InitGameState();
     InitUnitData();
-    InitGiftItme();
+    InitArmyData();
+    InitGiftData();
     InitAIMode();
+    InitPlayerTemplate();
     InitUnitControl();
     InitGamePlay();
 }

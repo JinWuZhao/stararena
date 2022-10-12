@@ -34,7 +34,7 @@ bool arena_gf_StringIsEmpty(string lp_str);
 trigger arena_gt_ProcessCommand;
 trigger arena_gt_KillUnit;
 trigger arena_gt_CleanDeadUnit;
-trigger arena_gt_UnitLifeChange;
+trigger arena_gt_UnitPropChange;
 
 // Library Initialization
 void arena_InitVariables ();
@@ -156,6 +156,7 @@ unit arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed l
     // Variable Declarations
     fixed lv_realTagHeight;
     fixed lv_unitHealth;
+    fixed lv_unitEnergy;
     unit lv_createdUnit;
     int lv_textTag;
     string lv_unitText;
@@ -172,8 +173,9 @@ unit arena_gf_CreateUnit (int lp_player, point lp_point, string lp_type, fixed l
     if (!arena_gf_StringIsEmpty(lp_textTag)) {
         if (showTextTag) {
             lv_realTagHeight = (UnitGetHeight(lv_createdUnit) + lp_scale / 100 + lp_tagHeight);
-            lv_unitHealth = UnitGetPropertyFixed(lv_createdUnit, c_unitPropLifePercent, c_unitPropCurrent);
-            lv_unitText = lp_textTag + " " + FixedToString(lv_unitHealth, 0) + "%";
+            lv_unitHealth = UnitGetPropertyFixed(lv_createdUnit, c_unitPropLife, c_unitPropCurrent);
+            lv_unitEnergy = UnitGetPropertyFixed(lv_createdUnit, c_unitPropEnergy, c_unitPropCurrent);
+            lv_unitText = lp_textTag + " " + FixedToString(lv_unitHealth, 0) + "/" + FixedToString(lv_unitEnergy, 0);
             lv_textTag = TextTagCreate(StringToText(lv_unitText), 22, UnitGetPosition(lv_createdUnit), lv_realTagHeight, true, false, PlayerGroupAll());
             TextTagAttachToUnit(lv_textTag, lv_createdUnit, lv_realTagHeight);
             DataTableInstanceSetInt(arena_gv_textTagByUnitTag, IntToString(UnitGetTag(lv_createdUnit)), lv_textTag);
@@ -300,9 +302,10 @@ void arena_gt_CleanDeadUnit_Init () {
     TriggerAddEventUnitDied(arena_gt_CleanDeadUnit, null);
 }
 
-bool arena_gt_UnitLifeChange_Func(bool testConds, bool runActions) {
+bool arena_gt_UnitPropChange_Func(bool testConds, bool runActions) {
     string lv_target;
     fixed lv_unitHealth;
+    fixed lv_unitEnergy;
     int lv_textTag;
     unit lv_unit;
     string lv_text;
@@ -313,26 +316,28 @@ bool arena_gt_UnitLifeChange_Func(bool testConds, bool runActions) {
 
     lv_unit = EventUnit();
     lv_target = DataTableGetString(true, (arena_gv_unitTagPrefix + IntToString(UnitGetTag(lv_unit))));
-    lv_unitHealth = UnitGetPropertyFixed(lv_unit, c_unitPropLifePercent, c_unitPropCurrent);
+    lv_unitHealth = UnitGetPropertyFixed(lv_unit, c_unitPropLife, c_unitPropCurrent);
+    lv_unitEnergy = UnitGetPropertyFixed(lv_unit, c_unitPropEnergy, c_unitPropCurrent);
     lv_textTag = DataTableInstanceGetInt(arena_gv_textTagByUnitTag, IntToString(UnitGetTag(lv_unit)));
     if (lv_textTag > 0 && !arena_gf_StringIsEmpty(lv_target)) {
-        lv_text = lv_target + " " + FixedToString(lv_unitHealth, 0) + "%";
+        lv_text = lv_target + " " + FixedToString(lv_unitHealth, 0) + "/" + FixedToString(lv_unitEnergy, 0);
         TextTagSetText(lv_textTag, StringToText(lv_text));
     }
 
     return true;
 }
 
-void arena_gt_UnitLifeChange_Init() {
-    arena_gt_UnitLifeChange = TriggerCreate("arena_gt_UnitLifeChange_Func");
-    TriggerAddEventUnitProperty(arena_gt_UnitLifeChange, null, c_unitPropLife);
+void arena_gt_UnitPropChange_Init() {
+    arena_gt_UnitPropChange = TriggerCreate("arena_gt_UnitPropChange_Func");
+    TriggerAddEventUnitProperty(arena_gt_UnitPropChange, null, c_unitPropLife);
+    TriggerAddEventUnitProperty(arena_gt_UnitPropChange, null, c_unitPropEnergy);
 }
 
 void arena_InitTriggers () {
     arena_gt_ProcessCommand_Init();
     arena_gt_KillUnit_Init();
     arena_gt_CleanDeadUnit_Init();
-    arena_gt_UnitLifeChange_Init();
+    arena_gt_UnitPropChange_Init();
 }
 
 bool arena_InitLib_completed = false;

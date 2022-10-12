@@ -6,4 +6,7 @@
     <Dependencies>
         <Value>bnet:虚空之遗 (战役)/0.0/999,file:Campaigns/Void.SC2Campaign</Value>
     </Dependencies>
+    <Preload>
+        <Value>Bank;stararena;1</Value>
+    </Preload>
 </DocInfo>

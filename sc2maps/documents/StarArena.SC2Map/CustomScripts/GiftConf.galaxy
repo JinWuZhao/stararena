@@ -1,0 +1,223 @@
+const int c_GiftKindUpvote = 0;
+const int c_GiftKindBasic = 1;
+const int c_GiftKindAdvanced = 2;
+const int c_GiftKindDeluxe = 3;
+const int c_GiftKindCount = 4;
+
+void GiftDataAction(UnitPlayerRef refPlayer);
+
+struct GiftData {
+    int kind;
+    string price;
+    string name;
+    string desc;
+    funcref<GiftDataAction> apply;
+};
+typedef structref<GiftData> GiftDataRef;
+
+static GiftData[c_GiftKindCount] gv_giftdata_gifts;
+
+static const int c_giftdata_UnitRedCenter = 1585478384;
+static const int c_giftdata_UnitBlueCenter = 177235035;
+
+static timer gv_loopTimer;
+static datetime gv_startTime;
+static trigger gt_TimerLoop;
+
+void GiftDataCopy(GiftDataRef dest, GiftDataRef source);
+bool GiftDataGet(int kind, GiftDataRef outGift);
+void GiftDataApply(UnitPlayerRef refPlayer, GiftDataRef inGift);
+void InitGiftData();
+
+void GiftDataCopy(GiftDataRef dest, GiftDataRef source) {
+    dest.kind = source.kind;
+    dest.price = source.price;
+    dest.name = source.name;
+    dest.desc = source.desc;
+    dest.apply = source.apply;
+}
+
+bool GiftDataGet(int kind, GiftDataRef outGift) {
+    if (kind < 0 || kind >= c_GiftKindCount) {
+        return false;
+    }
+    GiftDataCopy(outGift, gv_giftdata_gifts[kind]);
+    return true;
+}
+
+void GiftDataApply(UnitPlayerRef refPlayer, GiftDataRef inGift) {
+    if (inGift.apply != null) {
+        inGift.apply(refPlayer);
+    }
+}
+
+static unit giftdata_spawnUnit(UnitPlayerRef refPlayer, int type) {
+    string lv_team;
+    point lv_point;
+    unit lv_target;
+    unit lv_unit;
+    UnitData lv_unitData;
+    int lv_index;
+
+    if (refPlayer.playerId == c_GameStatePlayerIdRed) {
+        lv_team = "Red";
+        lv_target = UnitFromId(c_giftdata_UnitBlueCenter);
+    } else if (refPlayer.playerId == c_GameStatePlayerIdBlue) {
+        lv_team = "Blue";
+        lv_target = UnitFromId(c_giftdata_UnitRedCenter);
+    } else {
+        return null;
+    }
+    lv_point = PointFromName(lv_team + "-0"+IntToString(RandomInt(3, 4)));
+    UnitDataGet(type, lv_unitData);
+    lv_unit = arena_gf_CreateUnit(refPlayer.playerId, lv_point, lv_unitData.unitType, PointGetFacing(lv_point), 130, "", 2, false);
+    for (lv_index = 0; lv_index < c_unitPlayerPropsCap; lv_index += 1) {
+        if (lv_index == c_unitPlayerPropsMaxLife) {
+            UnitDataSetUnitProp(lv_index, (refPlayer.props[lv_index] + refPlayer.points), lv_unitData, lv_unit);
+        } else {
+            UnitDataSetUnitProp(lv_index, refPlayer.props[lv_index], lv_unitData, lv_unit);
+        }
+    }
+    if (UnitIsAlive(lv_target)) {
+        UnitIssueOrder(lv_unit, OrderTargetingPoint(AbilityCommand("move", 3), UnitGetPosition(lv_target)), c_orderQueueReplace);
+    }
+    UnitBehaviorAdd(lv_unit, "StarArenaGiftUnit", lv_unit, 1);
+    DataTableInstanceSetUnit(refPlayer.servants, IntToString(UnitGetTag(lv_unit)), lv_unit);
+    return lv_unit;
+}
+
+static void giftdata_ActionUpvote(UnitPlayerRef refPlayer) {
+    int lv_prop;
+    UnitPlayerBuff lv_buff;
+    unit lv_unit = arena_gf_UnitFromName(refPlayer.name);
+    string lv_awardMsg = refPlayer.name;
+
+    if (!refPlayer.upvoted) {
+        lv_awardMsg += " 获得了 ";
+        lv_prop = RandomInt(0, c_unitPlayerPropsCap);
+        lv_buff.duration = 60 * 3;
+        if (lv_prop == c_unitPlayerPropsMaxLife) {
+            lv_buff.behavior = "StarArenaMaxLifeEnhanceAddition";
+            lv_buff.count = 8;
+            lv_awardMsg += IntToString(lv_buff.count) + "点生命加成";
+        } else if (lv_prop == c_unitPlayerPropsDamageMultiplier) {
+            lv_buff.behavior = "StarArenaAttackDamageEnhanceAddition";
+            lv_buff.count = 8;
+            lv_awardMsg += IntToString(lv_buff.count) + "点伤害加成";
+        } else if (lv_prop == c_unitPlayerPropsRangeMultiplier) {
+            lv_buff.behavior = "StarArenaAttackRangeEnhanceAddition";
+            lv_buff.count = 8;
+            lv_awardMsg += IntToString(lv_buff.count) + "点射程加成";
+        } else if (lv_prop == c_unitPlayerPropsAttackSpeed) {
+            lv_buff.behavior = "StarArenaAttackSpeedEnhanceAddition";
+            lv_buff.count = 8;
+            lv_awardMsg += IntToString(lv_buff.count) + "点攻速加成";
+        } else if (lv_prop == c_unitPlayerPropsMaxEnergy) {
+            lv_buff.behavior = "StarArenaMaxEnergyEnhanceAddition";
+            lv_buff.count = 4;
+            lv_awardMsg += IntToString(lv_buff.count) + "点能量加成";
+        } else if (lv_prop == c_unitplayerPropsToughness) {
+            lv_buff.behavior = "StarArenaToughnessEnhanceAddition";
+            lv_buff.count = 4;
+            lv_awardMsg += IntToString(lv_buff.count) + "点韧性加成";
+        } else if (lv_prop == c_unitPlayerPropsMoveSpeed) {
+            lv_buff.behavior = "StarArenaMoveSpeedEnhanceAddition";
+            lv_buff.count = 4;
+            lv_awardMsg += IntToString(lv_buff.count) + "点移速加成";
+        }
+        if (lv_buff.behavior != null) {
+            lv_awardMsg += "，持续" + FixedToString(lv_buff.duration, 0) + "秒";
+            UnitPlayerAddBuff(refPlayer, lv_buff);
+            if (UnitIsAlive(lv_unit)) {
+                UnitPlayerRestoreBuffs(refPlayer, lv_unit);
+            }
+        } else {
+            lv_awardMsg += "谢谢惠顾！";
+        }
+        refPlayer.upvoted = true;
+        SaveUnitPlayer(refPlayer);
+    } else {
+        lv_awardMsg += " 已经抽过奖了，请等待下一轮";
+    }
+    arena_gf_ShowMessage(lv_awardMsg);
+}
+
+static void giftdata_ActionBasic(UnitPlayerRef refPlayer) {
+    unit lv_unit = giftdata_spawnUnit(refPlayer, c_UnitDataTypeSiegeTank);
+    UnitWeaponRemove(lv_unit, "90mmCannons");
+    UnitWeaponAdd(lv_unit, refPlayer.weaponType, "SiegeTank");
+}
+
+static void giftdata_ActionAdvanced(UnitPlayerRef refPlayer) {
+    unit lv_unit = giftdata_spawnUnit(refPlayer, c_UnitDataTypeThor);
+    UnitWeaponRemove(lv_unit, "ThorsHammer");
+    UnitWeaponAdd(lv_unit, refPlayer.weaponType, null);
+}
+
+static void giftdata_ActionDeluxe(UnitPlayerRef refPlayer) {
+    unit lv_unit = giftdata_spawnUnit(refPlayer, c_UnitDataTypeMengskThor);
+    UnitWeaponRemove(lv_unit, "MengskThorsHammer");
+    UnitWeaponAdd(lv_unit, refPlayer.weaponType, null);
+}
+
+bool giftdata_TimerLoop_Func(bool testConds, bool runActions) {
+    GiftData lv_gift;
+    datetime lv_timePast = IntToDateTime(DateTimeToInt(CurrentDateTimeGet()) - DateTimeToInt(gv_startTime));
+    int lv_minute = GetDateTimeMinute(lv_timePast);
+    int lv_index;
+    UnitPlayer lv_player;
+
+    if (!runActions) {
+        return true;
+    }
+
+    GiftDataGet(c_GiftKindUpvote, lv_gift);
+    lv_gift.desc = "第" + IntToString(lv_minute / 4 + 1) + "轮幸运抽奖";
+    GiftDataCopy(gv_giftdata_gifts[c_GiftKindUpvote], lv_gift);
+
+    for (lv_index = 0; lv_index < c_unitPlayersCap; lv_index += 1) {
+        if (UnitPlayerGet(lv_index, lv_player)) {
+            lv_player.upvoted = false;
+            SaveUnitPlayer(lv_player);
+        }
+    }
+    return true;
+}
+
+void InitGiftData() {
+    GiftDataRef lv_gift;
+
+    lv_gift = gv_giftdata_gifts[c_GiftKindUpvote];
+    lv_gift.kind = c_GiftKindUpvote;
+    lv_gift.price = "点赞";
+    lv_gift.name = "奖品";
+    lv_gift.desc = "第1轮幸运抽奖";
+    lv_gift.apply = giftdata_ActionUpvote;
+
+    lv_gift = gv_giftdata_gifts[c_GiftKindBasic];
+    lv_gift.kind = c_GiftKindBasic;
+    lv_gift.price = "辣条";
+    lv_gift.name = "精英坦克";
+    lv_gift.desc = "召唤1个" + lv_gift.name;
+    lv_gift.apply = giftdata_ActionBasic;
+
+    lv_gift = gv_giftdata_gifts[c_GiftKindAdvanced];
+    lv_gift.kind = c_GiftKindAdvanced;
+    lv_gift.price = "小花花";
+    lv_gift.name = "精英雷神";
+    lv_gift.desc = "召唤1个" + lv_gift.name;
+    lv_gift.apply = giftdata_ActionAdvanced;
+
+    lv_gift = gv_giftdata_gifts[c_GiftKindDeluxe];
+    lv_gift.kind = c_GiftKindDeluxe;
+    lv_gift.price = "粉丝团灯牌";
+    lv_gift.name = "精英战锤";
+    lv_gift.desc = "召唤1个" + lv_gift.name;
+    lv_gift.apply = giftdata_ActionDeluxe;
+
+    gv_loopTimer = TimerCreate();
+    gv_startTime = CurrentDateTimeGet();
+    TimerStart(gv_loopTimer, 60 * 4, true, c_timeReal);
+    gt_TimerLoop = TriggerCreate("giftdata_TimerLoop_Func");
+    TriggerAddEventTimer(gt_TimerLoop, gv_loopTimer);
+}

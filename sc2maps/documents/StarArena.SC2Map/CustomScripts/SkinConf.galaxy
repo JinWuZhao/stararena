@@ -1,0 +1,76 @@
+const int c_SkinDataStateTank = 0;
+const int c_SkinDataStateTankSieged = 1;
+const int c_SkinDataStateTankMorph = 2;
+const int c_SkinDataStateTankMax = 3;
+
+struct SkinData {
+    string[c_SkinDataStateTankMax] models;
+};
+
+typedef structref<SkinData> SkinDataRef;
+
+const int c_SkinDataTypeSiegeTank = 0;
+const int c_SkinDataTypeSilverTank = 1;
+const int c_SkinDataTypeUmojanTank = 2;
+const int c_SkinDataTypeCommandoTank = 3;
+const int c_SkinDataTypeCovertOpsTank = 4;
+const int c_SkinDataTypeJunkerTank = 5;
+const int c_SkinDataTypeMengskTank = 6;
+const int c_SkinDataTypeCount = 7;
+static SkinData[c_SkinDataTypeCount] gv_skindata_Skins;
+
+void InitSkinData();
+bool SkinDataSwapModel(unit inUnit, int inIndex, int inState);
+
+void InitSkinData() {
+    SkinDataRef lv_skin;
+
+    lv_skin = gv_skindata_Skins[c_SkinDataTypeSiegeTank];
+    lv_skin.models[c_SkinDataStateTank] = "SiegeTank";
+    lv_skin.models[c_SkinDataStateTankSieged] = "SiegeTankSieged";
+    lv_skin.models[c_SkinDataStateTankMorph] = "SiegeTankSiegedMorph";
+
+    lv_skin = gv_skindata_Skins[c_SkinDataTypeSilverTank];
+    lv_skin.models[c_SkinDataStateTank] = "SiegeTank_Silver";
+    lv_skin.models[c_SkinDataStateTankSieged] = "SiegeTank_Silver_Sieged";
+    lv_skin.models[c_SkinDataStateTankMorph] = "SiegeTank_Silver_Morph";
+
+    lv_skin = gv_skindata_Skins[c_SkinDataTypeUmojanTank];
+    lv_skin.models[c_SkinDataStateTank] = "SiegeTank_Umojan";
+    lv_skin.models[c_SkinDataStateTankSieged] = "SiegeTank_Umojan_Sieged";
+    lv_skin.models[c_SkinDataStateTankMorph] = "SiegeTank_Umojan_Morph";
+
+    lv_skin = gv_skindata_Skins[c_SkinDataTypeCommandoTank];
+    lv_skin.models[c_SkinDataStateTank] = "SiegeTank_Commando";
+    lv_skin.models[c_SkinDataStateTankSieged] = "SiegeTank_Commando_Sieged";
+    lv_skin.models[c_SkinDataStateTankMorph] = "SiegeTank_Commando_Morph";
+
+    lv_skin = gv_skindata_Skins[c_SkinDataTypeCovertOpsTank];
+    lv_skin.models[c_SkinDataStateTank] = "SiegeTank_CovertOps";
+    lv_skin.models[c_SkinDataStateTankSieged] = "SiegeTank_CovertOps_Sieged";
+    lv_skin.models[c_SkinDataStateTankMorph] = "SiegeTank_CovertOps_Morph";
+
+    lv_skin = gv_skindata_Skins[c_SkinDataTypeJunkerTank];
+    lv_skin.models[c_SkinDataStateTank] = "SiegeTank_Junker";
+    lv_skin.models[c_SkinDataStateTankSieged] = "SiegeTank_Junker_Sieged";
+    lv_skin.models[c_SkinDataStateTankMorph] = "SiegeTank_Junker_Morph";
+
+    lv_skin = gv_skindata_Skins[c_SkinDataTypeMengskTank];
+    lv_skin.models[c_SkinDataStateTank] = "MengskSiegeTank";
+    lv_skin.models[c_SkinDataStateTankSieged] = "MengskSiegeTankSieged";
+    lv_skin.models[c_SkinDataStateTankMorph] = "MengskSiegeTankSiegedMorph";
+}
+
+bool SkinDataSwapModel(unit inUnit, int inIndex, int inState) {
+    if (!UnitIsAlive(inUnit)) {
+        return false;
+    }
+    if (inIndex < 0 || inIndex >= c_SkinDataTypeCount) {
+        return false;
+    }
+    if (inState < 0 || inState >= c_SkinDataStateTankMax) {
+        return false;
+    }
+    libNtve_gf_SendActorMessageToUnit(inUnit, libNtve_gf_ModelSwap(gv_skindata_Skins[inIndex].models[inState], 0));
+    return true;
+}

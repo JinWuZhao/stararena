@@ -2,7 +2,6 @@
 <Catalog>
     <CWeaponLegacy id="90mmCannons">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
-        <Period value="0.9"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="ATSLaserBattery">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
@@ -16,11 +15,6 @@
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
         <DisplayAttackCount value="6"/>
         <Range value="9"/>
-    </CWeaponLegacy>
-    <CWeaponLegacy id="CrucioShockCannon">
-        <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
-        <Range value="200"/>
-        <MinimumRange value="0"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="DisruptionBeam">
         <Range value="9"/>
@@ -42,9 +36,8 @@
     <CWeaponLegacy id="LiberatorMissileLaunchers">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
     </CWeaponLegacy>
-    <CWeaponLegacy id="MengskThorsHammer">
+    <CWeaponLegacy id="MengskSiegeTank">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
-        <Period value="1.5"/>
     </CWeaponLegacy>
     <CWeaponLegacy id="ParasiteSpore">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
@@ -71,5 +64,8 @@
     <CWeaponLegacy id="ThermalLances">
         <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
         <Period value="2.2"/>
+    </CWeaponLegacy>
+    <CWeaponLegacy id="ThorsHammer">
+        <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable"/>
     </CWeaponLegacy>
 </Catalog>

@@ -1,0 +1,4 @@
+﻿Actor/Name/StarArenaBeaconBlue2=StarArena Beacon Blue
+Actor/Name/StarArenaBeaconGiftUnit=StarArena Beacon Gift Unit
+Actor/Name/StarArenaBeaconRed=StarArena Beacon Red
+Validator/Name/NotMengskSiegedTank=NotMengskSiegedTank (Unnamed)

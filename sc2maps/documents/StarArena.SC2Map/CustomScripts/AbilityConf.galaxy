@@ -15,17 +15,28 @@ const int c_AbilityKindPassive = 1;
 
 const int c_AbilityRangeWeapon = 0;
 const int c_AbilityRangeFixed = 1;
+const int c_AbilityRangeUnlimited = 2;
 
-bool AbilityCastAction(unit inCaster, unit inTaget, string type);
+const int c_AbilityCooldownAbility = 0;
+const int c_AbilityCooldownUnit = 1;
+const int c_AbilityCooldownBehavior = 2;
+
+bool AbilityCastAction(unit inCaster, unit intarget, string type);
+bool AbilityCheckComplete(unit inCaster, unit intarget, int type, bool cancel);
 
 struct AbilityData {
     int index;
     string type;
-    string cooldown;
+    string cooldownLink;
     string name;
     int kind;
     int rangeType;
+    int cooldownLocation;
+    fixed recoveryTime;
+    fixed cancelTime;
+    int initialCost;
     funcref<AbilityCastAction> castAction;
+    funcref<AbilityCheckComplete> checkComplete;
 };
 typedef structref<AbilityData> AbilityDataRef;
 
@@ -38,18 +49,25 @@ string AbilityDataGetType(int inIndex);
 string AbilityDataGetName(int inIndex);
 bool AbilityDataGetByType(string inType, AbilityDataRef outAbility);
 fixed AbilityDataGetCoolDown(unit inUnit, AbilityDataRef inAbility);
-bool AbilityDataApply(unit inUnit, string inType);
+fixed AbilityDataGetCoolDownMax(AbilityDataRef inAbility);
+bool AbilityDataApply(unit inUnit, string oldType, string newType);
 bool AbilityDataCast(unit inCaster, unit inTarget, AbilityDataRef inAbility);
+bool AbilityDataCheckComplete(unit inCaster, AbilityDataRef inAbility, bool cancel);
 void InitAbilityData();
 
 void AbilityDataCopy(AbilityDataRef dest, AbilityDataRef source) {
     dest.index = source.index;
     dest.type = source.type;
-    dest.cooldown = source.cooldown;
+    dest.cooldownLink = source.cooldownLink;
     dest.kind = source.kind;
     dest.rangeType = source.rangeType;
+    dest.cooldownLocation = source.cooldownLocation;
+    dest.recoveryTime = source.recoveryTime;
+    dest.cancelTime = source.cancelTime;
     dest.name = source.name;
+    dest.initialCost = source.initialCost;
     dest.castAction = source.castAction;
+    dest.checkComplete = source.checkComplete;
 }
 
 bool AbilityDataGet(int inIndex, AbilityDataRef outAbility) {
@@ -83,20 +101,45 @@ bool AbilityDataGetByType(string inType, AbilityDataRef outAbility) {
 }
 
 fixed AbilityDataGetCoolDown(unit inUnit, AbilityDataRef inAbility) {
-    if (inAbility.cooldown == "None") {
+    if (inAbility.cooldownLink == "None") {
         return 6000;
     }
-    return UnitAbilityGetCooldown(inUnit, inAbility.type, inAbility.cooldown);
+    if (inAbility.cooldownLocation == c_AbilityCooldownUnit) {
+        return UnitGetCooldown(inUnit, inAbility.cooldownLink);
+    }
+    if (inAbility.cooldownLocation == c_AbilityCooldownBehavior) {
+        return UnitBehaviorGetCooldown(inUnit, inAbility.cooldownLink, "Behavior/" + inAbility.cooldownLink);
+    }
+    return UnitAbilityGetCooldown(inUnit, inAbility.type, inAbility.cooldownLink);
 }
 
-bool AbilityDataApply(unit inUnit, string inType) {
+fixed AbilityDataGetCoolDownMax(AbilityDataRef inAbility) {
+    if (inAbility.cooldownLink == "None") {
+        return 6000;
+    }
+    if (inAbility.cooldownLocation == c_AbilityCooldownBehavior) {
+        return StringToFixed(CatalogFieldValueGet(c_gameCatalogBehavior, inAbility.cooldownLink, "Cost[0].Cooldown.TimeStart", c_playerAny));
+    }
+    return StringToFixed(CatalogFieldValueGet(c_gameCatalogAbil, inAbility.type, "Cost[0].Cooldown.TimeUse", c_playerAny));
+}
+
+bool AbilityDataApply(unit inUnit, string oldType, string newType) {
     AbilityData lv_ability;
-    UnitAbilityRemove(inUnit, UnitAbilityGet(inUnit, 5));
-    if (inType != "None") {
-        if (AbilityDataGetByType(inType, lv_ability) && lv_ability.kind == c_AbilityKindPassive) {
-            UnitBehaviorAdd(inUnit, inType, inUnit, 1);
+    if (!arena_gf_StringIsEmpty(oldType) && oldType != "None") {
+        if (AbilityDataGetByType(oldType, lv_ability) && lv_ability.kind == c_AbilityKindPassive) {
+            UnitBehaviorRemove(inUnit, oldType, 1);
         } else {
-            UnitAbilityAdd(inUnit, inType);
+            UnitAbilityRemove(inUnit, UnitAbilityGet(inUnit, 5));
+            if (lv_ability.cooldownLocation == c_AbilityCooldownUnit) {
+                UnitModifyCooldown(inUnit, lv_ability.cooldownLink, 0, c_cooldownOperationSet);
+            }
+        }
+    }
+    if (!arena_gf_StringIsEmpty(newType) && newType != "None") {
+        if (AbilityDataGetByType(newType, lv_ability) && lv_ability.kind == c_AbilityKindPassive) {
+            UnitBehaviorAdd(inUnit, newType, inUnit, 1);
+        } else {
+            UnitAbilityAdd(inUnit, newType);
         }
     }
     return true;
@@ -109,13 +152,16 @@ bool AbilityDataCast(unit inCaster, unit inTarget, AbilityDataRef inAbility) {
     if (!UnitIsAlive(inCaster) || !UnitIsAlive(inTarget)) {
         return false;
     }
+    if (inAbility.castAction == null) {
+        return true;
+    }
     if (inAbility.rangeType == c_AbilityRangeWeapon) {
         for (lv_index = 1; lv_index <= UnitWeaponCount(inCaster); lv_index += 1) {
             if (UnitWeaponIsEnabled(inCaster, lv_index) && UnitWeaponRange(inCaster, lv_index) > lv_range) {
                 lv_range = UnitWeaponRange(inCaster, lv_index);
             }
         }
-        if ((lv_range + UnitGetPropertyFixed(inCaster, c_unitPropRadius, true)) * 1.2 < DistanceBetweenPoints(UnitGetPosition(inCaster), UnitGetPosition(inTarget))) {
+        if (lv_range + UnitGetPropertyFixed(inCaster, c_unitPropRadius, true) + UnitGetPropertyFixed(inTarget, c_unitPropRadius, true) < DistanceBetweenPoints(UnitGetPosition(inCaster), UnitGetPosition(inTarget))) {
             return false;
         }
     } else if (inAbility.rangeType == c_AbilityRangeFixed) {
@@ -124,20 +170,59 @@ bool AbilityDataCast(unit inCaster, unit inTarget, AbilityDataRef inAbility) {
             return false;
         }
     }
-    if (inAbility.castAction == null) {
-        return true;
-    }
     return inAbility.castAction(inCaster, inTarget, inAbility.type);
 }
 
-static bool abilitydata_CastTargetUnit(unit inCaster, unit inTaget, string type) {
-    order lv_order = OrderTargetingUnit(AbilityCommand(type, 0), inTaget);
+bool AbilityDataCheckComplete(unit inCaster, AbilityDataRef inAbility, bool cancel) {
+    order lv_order;
+    unit lv_target;
+    if (!UnitIsAlive(inCaster)) {
+        return true;
+    }
+    lv_order = UnitOrder(inCaster, 0);
+    if (lv_order == null) {
+        return true;
+    }
+    lv_target = OrderGetTargetUnit(lv_order);
+    if (!UnitIsAlive(lv_target)) {
+        return true;
+    }
+    if (inAbility.checkComplete == null) {
+        return true;
+    }
+    return inAbility.checkComplete(inCaster, lv_target, inAbility.index, cancel);
+}
+
+static bool abilitydata_CastTargetUnit(unit inCaster, unit intarget, string type) {
+    order lv_order = OrderTargetingUnit(AbilityCommand(type, 0), intarget);
     return UnitIssueOrder(inCaster, lv_order, c_orderQueueReplace);
 }
 
-static bool abilitydata_CastTargetPoint(unit inCaster, unit inTaget, string type) {
-    order lv_order = OrderTargetingPoint(AbilityCommand(type, 0), UnitGetPosition(inTaget));
+static bool abilitydata_CastTargetPoint(unit inCaster, unit intarget, string type) {
+    order lv_order = OrderTargetingPoint(AbilityCommand(type, 0), UnitGetPosition(intarget));
     return UnitIssueOrder(inCaster, lv_order, c_orderQueueReplace);
+}
+
+static bool abilitydata_CheckCompleteRecovery(unit inCaster, unit intarget, int type, bool cancel) {
+    AbilityData abil;
+    fixed cooldownleft;
+    AbilityDataGet(type, abil);
+    cooldownleft = AbilityDataGetCoolDownMax(abil) - AbilityDataGetCoolDown(inCaster, abil);
+    if (cancel) {
+        return cooldownleft >= abil.cancelTime;
+    }
+    return cooldownleft >= abil.recoveryTime;
+}
+
+static bool abilitydata_CheckCompleteCharge(unit inCaster, unit intarget, int type, bool cancel) {
+    AbilityData abil;
+    if (!abilitydata_CheckCompleteRecovery(inCaster, intarget, type, cancel)) {
+        return false;
+    }
+    if (AbilityDataGet(type, abil) && AbilityDataGetCoolDown(inCaster, abil) < 4) {
+        return true;
+    }
+    return DistanceBetweenPoints(UnitGetPosition(inCaster), UnitGetPosition(intarget)) <= 6;
 }
 
 void InitAbilityData() {
@@ -150,78 +235,118 @@ void InitAbilityData() {
     lv_ability = gv_abilitydata_types[c_AbilityTypeNone];
     lv_ability.index = c_AbilityTypeNone;
     lv_ability.type = "None";
-    lv_ability.cooldown = "None";
+    lv_ability.cooldownLink = "None";
     lv_ability.name = "无";
     lv_ability.castAction = null;
+    lv_ability.checkComplete = null;
 
     lv_ability = gv_abilitydata_types[c_AbilityTypeYamatoGun];
     lv_ability.index = c_AbilityTypeYamatoGun;
     lv_ability.type = "Yamato";
-    lv_ability.cooldown = "Yamato";
+    lv_ability.cooldownLink = "Yamato";
+    lv_ability.recoveryTime = 1;
+    lv_ability.cancelTime = 0.2;
     lv_ability.name = "大和炮";
+    lv_ability.initialCost = 50;
     lv_ability.castAction = abilitydata_CastTargetUnit;
+    lv_ability.checkComplete = abilitydata_CheckCompleteRecovery;
 
     lv_ability = gv_abilitydata_types[c_AbilityTypePsiStorm];
     lv_ability.index = c_AbilityTypePsiStorm;
     lv_ability.type = "PsiStorm";
-    lv_ability.cooldown = "Abil/PsiStorm";
+    lv_ability.cooldownLink = "Abil/PsiStorm";
     lv_ability.name = "灵能风暴";
+    lv_ability.recoveryTime = 1;
+    lv_ability.cancelTime = 0.2;
+    lv_ability.initialCost = 40;
     lv_ability.castAction = abilitydata_CastTargetPoint;
+    lv_ability.checkComplete = abilitydata_CheckCompleteRecovery;
 
     lv_ability = gv_abilitydata_types[c_AbilityTypePurificationNovaTargeted];
     lv_ability.index = c_AbilityTypePurificationNovaTargeted;
     lv_ability.type = "PurificationNovaTargeted";
-    lv_ability.cooldown = "Abil/PurificationNovaTargeted";
+    lv_ability.cooldownLink = "Abil/PurificationNovaTargetted";
     lv_ability.name = "净化新星";
+    lv_ability.recoveryTime = 1;
+    lv_ability.cancelTime = 0.2;
+    lv_ability.initialCost = 70;
     lv_ability.castAction = abilitydata_CastTargetPoint;
+    lv_ability.checkComplete = abilitydata_CheckCompleteRecovery;
 
     lv_ability = gv_abilitydata_types[c_AbilityTypeRavagerCorrosiveBile];
     lv_ability.index = c_AbilityTypeRavagerCorrosiveBile;
     lv_ability.type = "RavagerCorrosiveBile";
-    lv_ability.cooldown = "Abil/RavagerCorrosiveBile";
+    lv_ability.cooldownLink = "Abil/RavagerCorrosiveBile";
     lv_ability.name = "腐蚀胆汁";
+    lv_ability.recoveryTime = 1;
+    lv_ability.cancelTime = 0.2;
+    lv_ability.initialCost = 50;
     lv_ability.castAction = abilitydata_CastTargetPoint;
+    lv_ability.checkComplete = abilitydata_CheckCompleteRecovery;
 
     lv_ability = gv_abilitydata_types[c_AbilityTypeParasiticBomb];
     lv_ability.index = c_AbilityTypeParasiticBomb;
     lv_ability.type = "ParasiticBomb";
-    lv_ability.cooldown = "Abil/ParasiticBomb";
+    lv_ability.cooldownLink = "Abil/ParasiticBomb";
     lv_ability.name = "寄生弹";
+    lv_ability.recoveryTime = 1;
+    lv_ability.cancelTime = 0.2;
+    lv_ability.initialCost = 60;
     lv_ability.castAction = abilitydata_CastTargetUnit;
+    lv_ability.checkComplete = abilitydata_CheckCompleteRecovery;
 
     lv_ability = gv_abilitydata_types[c_AbilityTypeAlarakDeadlyCharge];
     lv_ability.index = c_AbilityTypeAlarakDeadlyCharge;
     lv_ability.type = "AlarakDeadlyCharge";
-    lv_ability.cooldown = "Charge";
+    lv_ability.rangeType = c_AbilityRangeUnlimited;
+    lv_ability.cooldownLink = "Charge";
+    lv_ability.cooldownLocation = c_AbilityCooldownUnit;
     lv_ability.name = "致命冲锋";
-    lv_ability.castAction = null;
+    lv_ability.recoveryTime = 1;
+    lv_ability.cancelTime = 0.2;
+    lv_ability.initialCost = 40;
+    lv_ability.castAction = abilitydata_CastTargetUnit;
+    lv_ability.checkComplete = abilitydata_CheckCompleteCharge;
 
     lv_ability = gv_abilitydata_types[c_AbilityTypeShrineGuardianAntiGrav];
     lv_ability.index = c_AbilityTypeShrineGuardianAntiGrav;
     lv_ability.type = "ShrineGuardianAntiGrav";
-    lv_ability.cooldown = "Abil/ShrineGuardianAntiGrav";
+    lv_ability.cooldownLink = "Abil/ShrineGuardianAntiGrav";
     lv_ability.name = "反重力";
+    lv_ability.recoveryTime = 1;
+    lv_ability.cancelTime = 0.2;
+    lv_ability.initialCost = 60;
     lv_ability.castAction = abilitydata_CastTargetUnit;
+    lv_ability.checkComplete = abilitydata_CheckCompleteRecovery;
 
     lv_ability = gv_abilitydata_types[c_AbilityTypeArtanisResurgence];
     lv_ability.index = c_AbilityTypeArtanisResurgence;
     lv_ability.type = "ArtanisResurgence";
-    lv_ability.cooldown = "None";
+    lv_ability.cooldownLink = "ArtanisResurgenceReviveSupressed";
     lv_ability.kind = c_AbilityKindPassive;
+    lv_ability.cooldownLocation = c_AbilityCooldownBehavior;
     lv_ability.name = "坦克炸弹";
+    lv_ability.recoveryTime = 1;
+    lv_ability.cancelTime = 0.2;
+    lv_ability.initialCost = 70;
     lv_ability.castAction = null;
+    lv_ability.checkComplete = abilitydata_CheckCompleteRecovery;
 
     lv_ability = gv_abilitydata_types[c_AbilityTypeAlarakKnockback];
     lv_ability.index = c_AbilityTypeAlarakKnockback;
     lv_ability.type = "AlarakKnockback";
-    lv_ability.cooldown = "Abil/AlarakKnockback";
+    lv_ability.cooldownLink = "Abil/AlarakKnockback";
     lv_ability.rangeType = c_AbilityRangeFixed;
     lv_ability.name = "湮灭波";
+    lv_ability.recoveryTime = 1;
+    lv_ability.cancelTime = 0.2;
+    lv_ability.initialCost = 50;
     lv_ability.castAction = abilitydata_CastTargetPoint;
+    lv_ability.checkComplete = abilitydata_CheckCompleteRecovery;
 
     for (lv_index = 0; lv_index < c_AbilityTypeCount; lv_index += 1) {
         lv_ability = gv_abilitydata_types[lv_index];
-        if (lv_ability.name != null) {
+        if (lv_ability.type != null) {
             DataTableInstanceSetInt(gv_abilitydata_dataByType, lv_ability.type, lv_index);
         }
     }
