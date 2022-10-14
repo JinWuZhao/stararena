@@ -10,6 +10,7 @@ import (
 
 type JoinGameCmd struct {
 	player      string
+	playerUID   uint32
 	sc2PlayerId uint32
 	isBot       bool
 }
@@ -60,6 +61,7 @@ func (c *JoinGameCmd) Parser(ast *parsec.AST) parsec.Parser {
 
 func (c *JoinGameCmd) Init(ctx Context, query parsec.Queryable) error {
 	c.player = ctx.Player
+	c.playerUID = ctx.PlayerUID
 	c.sc2PlayerId = ctx.State.FindAvailablePlayerId(true)
 	return nil
 }
@@ -68,7 +70,7 @@ func (c *JoinGameCmd) String() string {
 	if c.isBot {
 		return fmt.Sprintf("cmd-add-player %s %d bot", c.player, c.sc2PlayerId)
 	}
-	return fmt.Sprintf("cmd-add-player %s %d", c.player, c.sc2PlayerId)
+	return fmt.Sprintf("cmd-add-player %s %d %d", c.player, c.sc2PlayerId, c.playerUID)
 }
 
 type LeaveGameCmd struct {
@@ -491,7 +493,7 @@ func (c *SetNoticeCmd) Parser(ast *parsec.AST) parsec.Parser {
 }
 
 func (c *SetNoticeCmd) Init(ctx Context, query parsec.Queryable) error {
-	if ctx.Player != "星际竞技场" {
+	if ctx.Player != ctx.Streamer {
 		return fmt.Errorf("%s has no permission", ctx.Player)
 	}
 	c.notice = query.GetChildren()[1].GetValue()

@@ -7,8 +7,9 @@ import (
 )
 
 type BiliDanMu struct {
-	Enable bool   `toml:"enable"`
-	RoomId uint32 `toml:"room_id"`
+	Enable   bool   `toml:"enable"`
+	RoomId   uint32 `toml:"room_id"`
+	Streamer string `toml:"streamer"`
 }
 
 type SC2Client struct {

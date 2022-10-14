@@ -88,6 +88,8 @@ func (s *Controller) ReceiveMessage(message bilidanmu.Message) {
 			SC2RedPlayer:  s.config.RedPlayer,
 			SC2BluePlayer: s.config.BluePlayer,
 			Player:        m.Uname,
+			PlayerUID:     m.UID,
+			Streamer:      s.config.Streamer,
 			State:         s.gameState,
 		}
 		cmd, err := command.ParseCommand(ctx, m.Text)

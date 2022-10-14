@@ -1,6 +1,7 @@
 [bilidanmu]
 enable = true
 room_id = 23891811
+streamer = "星际竞技场"
 
 [sc2client]
 red_player = 4 # SC2地图中红队玩家ID
