@@ -353,7 +353,7 @@ int UnitPlayerGetMidLevel(int playerId) {
     int lv_index;
     UnitPlayerRef lv_player;
     int[c_unitPlayersCap / 2] lv_playerLevels;
-    int lv_levelIndex;
+    int lv_levelIndex = -1;
     int i;
     int j;
     int tempLevel;
@@ -362,8 +362,8 @@ int UnitPlayerGetMidLevel(int playerId) {
     for (lv_index = 0; lv_index < c_unitPlayersCap; lv_index += 1) {
         lv_player = gv_gamestate_unitPlayers[lv_index];
         if (lv_player.playerId == playerId && !arena_gf_StringIsEmpty(lv_player.name)) {
-            lv_playerLevels[lv_levelIndex] = lv_player.level;
             lv_levelIndex += 1;
+            lv_playerLevels[lv_levelIndex] = lv_player.level;
         }
     }
     
@@ -377,13 +377,15 @@ int UnitPlayerGetMidLevel(int playerId) {
         } 
     }
 
-    if (lv_levelIndex % 2 == 0) {
-        lv_midLevel = lv_playerLevels[lv_levelIndex / 2];
-    } else {
-        lv_midLevel = (lv_playerLevels[lv_levelIndex / 2] + lv_playerLevels[lv_levelIndex / 2 + 1]) / 2;
+    if (lv_levelIndex >= 0) {
+        if (lv_levelIndex % 2 == 0) {
+            lv_midLevel = lv_playerLevels[lv_levelIndex / 2];
+        } else {
+            lv_midLevel = (lv_playerLevels[lv_levelIndex / 2] + lv_playerLevels[lv_levelIndex / 2 + 1]) / 2;
+        }
     }
     if (lv_midLevel <= 0) {
-        lv_midLevel = 1;
+        lv_midLevel = 10;
     } else if (lv_midLevel > c_UnitPlayerMaxLevel) {
         lv_midLevel = c_UnitPlayerMaxLevel;
     }

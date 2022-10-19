@@ -222,13 +222,14 @@ void InitPlayerTemplate() {
     lv_template.type = c_PlayerTemplateTypeArmorHero;
     lv_template.name = "铠甲勇士";
     lv_template.weapon = c_WeaponDataTypeAdept;
-    lv_template.props[c_unitPlayerPropsMaxLife] = 48;
+    lv_template.props[c_unitPlayerPropsMaxLife] = 40;
+    lv_template.props[c_unitPlayerPropsDamageMultiplier] = 8;
     lv_template.props[c_unitPlayerPropsMaxEnergy] = 12;
     lv_template.props[c_unitplayerPropsToughness] = 20;
     lv_template.overflowProp = c_unitPlayerPropsMaxLife;
     lv_template.assign = autoAssignProps;
     lv_template.aiTactic = aiTacticGuard;
-    lv_template.desc = "属性方案：A48+ E12 F20";
+    lv_template.desc = "属性方案：A40+ B8 E12 F20";
 
     lv_template = gv_playertemp_templates[c_PlayerTemplateTypeWarGear];
     lv_template.type = c_PlayerTemplateTypeWarGear;

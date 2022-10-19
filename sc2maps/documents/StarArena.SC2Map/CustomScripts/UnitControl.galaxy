@@ -353,15 +353,13 @@ bool unitctrl_SetTemplate_Func(bool testConds, bool runActions) {
         return false;
     }
 
-    if (lv_player.level <= 5) {
-        lv_player.props[c_unitPlayerPropsMaxLife] = 0;
-        lv_player.props[c_unitPlayerPropsDamageMultiplier] = 0;
-        lv_player.props[c_unitPlayerPropsRangeMultiplier] = 0;
-        lv_player.props[c_unitPlayerPropsAttackSpeed] = 0;
-        lv_player.props[c_unitPlayerPropsMaxEnergy] = 0;
-        lv_player.props[c_unitplayerPropsToughness] = 0;
-        lv_player.points = lv_player.level * 4;
-    }
+    lv_player.props[c_unitPlayerPropsMaxLife] = 0;
+    lv_player.props[c_unitPlayerPropsDamageMultiplier] = 0;
+    lv_player.props[c_unitPlayerPropsRangeMultiplier] = 0;
+    lv_player.props[c_unitPlayerPropsAttackSpeed] = 0;
+    lv_player.props[c_unitPlayerPropsMaxEnergy] = 0;
+    lv_player.props[c_unitplayerPropsToughness] = 0;
+    lv_player.points = lv_player.level * 4;
     lv_player.template = lv_tpl;
     SaveUnitPlayer(lv_player);
     arena_gf_ShowMessage(lv_player.name + " 的坦克转化为 " + lv_template.name + "，\n" + lv_template.desc);
